@@ -1,0 +1,154 @@
+.category-list {
+    border-top: 1px solid #f0eeee;
+}
+.category-item {
+    border-right: 1px solid #f0eeee;
+    border-bottom: 1px solid #f0eeee;
+    width: calc(100% / 7);
+    font-size: 14px;
+}
+.category-item:hover,
+.grid-item-4:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.123s;
+}
+
+.grid-wrapper {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.grid-item {
+    flex: 1 0 calc(50% - 8px);
+    /* Cho xs={6}, chiếm 1/2 màn hình */
+    max-width: calc(50% - 8px);
+}
+
+@media (min-width: 600px) and (max-width: 999px) {
+    .grid-item {
+        flex: 1 0 calc(33.333% - 8px);
+        max-width: calc(33.333% - 8px);
+    }
+}
+
+@media (min-width: 1000px) {
+    .grid-item {
+        flex: 1 0 calc(20% - 8px);
+        max-width: calc(20% - 8px);
+    }
+    .grid-item-4 {
+        flex: 1 0 calc(25% - 8px);
+        max-width: calc(25% - 8px);
+    }
+}
+
+.grid-item:hover,
+.grid-item-4:hover {
+    transform: translateY(-5px);
+    cursor: pointer;
+    transition: all linear 0.123s;
+}
+
+.wrap-name {
+    height: 40px;
+}
+
+.product-name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 13px;
+    color: #444444;
+    font-weight: 500;
+    margin-top: 5px;
+}
+
+/* Class cho phần tử chính NkXHv4 */
+.nkxh-v4 {
+    bottom: 0;
+    position: absolute;
+    right: 0;
+    height: 15px;
+    overflow: hidden;
+    width: 15px;
+}
+
+/* Pseudo-element ::before cho NkXHv4 */
+.nkxh-v4::before {
+    border: 15px solid transparent;
+    border-bottom: 15px solid var(--brand-primary-color, #2563eb);
+    bottom: 0;
+    content: '';
+    position: absolute;
+    right: -15px;
+}
+
+/* Class cho phần tử con QX2JQy */
+.nkxh-v4 .qx2j-qy {
+    bottom: 0;
+    position: absolute;
+    right: 0;
+    height: 8px;
+    width: 8px;
+}
+
+.filter-wrap h4 {
+    color: #999;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.filter-wrap h4 span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.filter-wrap ul {
+    font-size: 14px;
+}
+
+.filter-wrap ul li {
+    padding: 6px;
+    transition: all linear 0.123s;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.filter-wrap ul li a {
+    padding: 3px 0;
+}
+
+.filter-wrap ul li a:hover {
+    color: #2563eb;
+    cursor: pointer;
+    transition: all linear 0.123s;
+}
+
+.sort-price-select {
+    align-items: center;
+    background: #fff;
+    border: 0;
+    border-radius: 2px;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    height: 2.125rem;
+    justify-content: space-between;
+    line-height: 2.125rem;
+    min-width: 12.5rem;
+    padding-left: 0.75rem;
+    position: relative;
+    text-align: left;
+    transition: border-color 0.1s ease;
+}
+.sort-price-content p:hover {
+    color: #2563eb;
+    transition: all linear 0.123s;
+    cursor: pointer;
+}
