@@ -28,7 +28,7 @@ export default function Login() {
                             </Button>
                         </div>
                     </div>
-                    <div className='mb-5 text-sm text-gray-600 text-center'>
+                    <div className='my-5 text-sm text-gray-600 text-center'>
                         <p>hoặc với email</p>
                     </div>
                     <form className='space-y-4'>

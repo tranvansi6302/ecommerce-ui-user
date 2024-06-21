@@ -1,7 +1,8 @@
-import { Button, TextField } from '@mui/material'
+import { Button } from '@mui/material'
 import { Link } from 'react-router-dom'
 import registerBanner from '~/assets/images/registerBanner.jpg'
 import { GoogleIcon } from '~/assets/svg'
+import InputAuth from '~/components/InputAuth'
 import pathConfig from '~/configs/path.config'
 import AuthLayout from '~/layouts/AuthLayout'
 
@@ -28,15 +29,14 @@ export default function Register() {
                             </Button>
                         </div>
                     </div>
-                    <div className='mb-5 text-sm text-gray-600 text-center'>
+                    <div className='my-5 text-sm text-gray-600 text-center'>
                         <p>hoặc với email</p>
                     </div>
                     <form className='space-y-4'>
-                        <TextField fullWidth id='email' label='Email' variant='outlined' />
-
-                        <TextField fullWidth id='password' label='Mật khẩu' variant='outlined' />
-
-                        <TextField fullWidth id='confirm_password' label='Xác nhận mật khẩu' variant='outlined' />
+                        <InputAuth name='fullname' label='Họ Tên' />
+                        <InputAuth name='email' label='Email' />
+                        <InputAuth name='password' label='Mật Khẩu' />
+                        <InputAuth name='confirm_password' label='Xác Nhận Mật Khẩu' />
 
                         <Button fullWidth sx={{ py: 1.5 }} variant='contained'>
                             Đăng ký

@@ -1,5 +1,8 @@
 const pathConfig = {
     register: '/register',
-    login: '/login'
+    login: '/login',
+    home: '/',
+    productDetail: ':id',
+    productFilter: '/filters'
 }
 export default pathConfig
