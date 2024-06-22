@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
+import Authenticate from '~/components/Authenticate'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import MainLayout from '~/layouts/MainLayout'
@@ -42,6 +43,14 @@ export default function AppRouter() {
             element: (
                 <MainLayout>
                     <ProductFilter />
+                </MainLayout>
+            )
+        },
+        {
+            path: '/authenticate',
+            element: (
+                <MainLayout>
+                    <Authenticate />
                 </MainLayout>
             )
         },

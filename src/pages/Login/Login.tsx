@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Button } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
@@ -14,6 +13,7 @@ import { AppContext } from '~/contexts/app.context'
 import AuthLayout from '~/layouts/AuthLayout'
 import { AuthSchemaType, authSchema } from '~/schemas/auth.schema'
 import authService from '~/services/auth.service'
+import { loginWithGoogle } from '~/utils/auth'
 
 type LoginFormData = Pick<AuthSchemaType, 'email' | 'password'>
 
@@ -62,10 +62,10 @@ export default function Login() {
                     </h1>
                     <div className='mt-4 flex flex-col lg:flex-row items-center justify-between'>
                         <div className='w-full lg:mb-0'>
-                            <Button sx={{ py: 1.5 }} type='button' fullWidth>
+                            <MyButtonV2 onClick={loginWithGoogle} variant='text' sx={{ py: 1.5 }} type='button'>
                                 <GoogleIcon />
                                 <p className='pl-2 mt-0.5'>Tiếp tục với google</p>
-                            </Button>
+                            </MyButtonV2>
                         </div>
                     </div>
                     <div className='my-5 text-sm text-gray-600 text-center'>
