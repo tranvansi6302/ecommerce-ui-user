@@ -8,6 +8,7 @@ import { User } from '~/@types/users.type'
 import loginBanner from '~/assets/images/loginBanner.jpg'
 import { GoogleIcon } from '~/assets/svg'
 import InputAuth from '~/components/InputAuth'
+import MyButtonV2 from '~/components/MyButtonV2'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import AuthLayout from '~/layouts/AuthLayout'
@@ -75,9 +76,9 @@ export default function Login() {
 
                         <InputAuth register={register} errors={errors} name='password' label='Mật khẩu' />
 
-                        <Button type='submit' fullWidth sx={{ py: 1.5 }} variant='contained'>
+                        <MyButtonV2 loading={loginMutation.isPending} type='submit' sx={{ py: 1.5 }}>
                             Đăng nhập
-                        </Button>
+                        </MyButtonV2>
                     </form>
                     <div className='mt-4 text-sm text-gray-600 text-center'>
                         <p>

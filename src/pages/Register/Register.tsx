@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import registerBanner from '~/assets/images/registerBanner.jpg'
 import { GoogleIcon } from '~/assets/svg'
 import InputAuth from '~/components/InputAuth'
+import MyButtonV2 from '~/components/MyButtonV2'
 import pathConfig from '~/configs/path.config'
 import AuthLayout from '~/layouts/AuthLayout'
 import { AuthSchemaType, authSchema } from '~/schemas/auth.schema'
@@ -76,9 +77,9 @@ export default function Register() {
                             type='password'
                         />
 
-                        <Button type='submit' fullWidth sx={{ py: 1.5 }} variant='contained'>
+                        <MyButtonV2 loading={registerMutation.isPending} type='submit' sx={{ py: 1.5 }}>
                             Đăng ký
-                        </Button>
+                        </MyButtonV2>
                     </form>
                     <div className='mt-4 text-sm text-gray-600 text-center'>
                         <p>
