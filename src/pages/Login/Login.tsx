@@ -44,6 +44,7 @@ export default function Login() {
             }
         })
     })
+
     return (
         <AuthLayout>
             <div className='hidden lg:flex flex-col items-center justify-center flex-1 bg-white text-black'>

@@ -1,18 +1,22 @@
+import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { Container } from '@mui/system'
+import { MouseEvent, useContext, useState } from 'react'
+import { IoChevronDownSharp } from 'react-icons/io5'
+import { LuBadgeInfo } from 'react-icons/lu'
 import { Link } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
-import { MyCartIcon, NeedHelpIcon, UserNoLoginIcon } from '~/assets/svg'
-import { IoChevronDownSharp } from 'react-icons/io5'
+import { MyCartIcon, NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
-import { useContext, useEffect } from 'react'
 import { AppContext } from '~/contexts/app.context'
 
+const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
 export default function MainHeader() {
-    const { profile } = useContext(AppContext)
+    const { profile, isAuthenticated } = useContext(AppContext)
 
-    useEffect(() => {
-        console.log(profile)
-    }, [])
+    const [openSetting, setOpenSetting] = useState<null | HTMLElement>(null)
+
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => setOpenSetting(event.currentTarget)
+
     return (
         <Fragment>
             <header className='w-full bg-white'>
@@ -40,11 +44,12 @@ export default function MainHeader() {
                                 </ul>
                             </div>
                             <div className='w-full px-4 md:w-1/3 lg:w-1/2'>
-                                <div className='hidden items-center justify-end md:flex'>
+                                <div className='hidden items-center gap-6 justify-end md:flex'>
                                     <div>
                                         <div className='relative'>
-                                            <select className='w-full appearance-none rounded-lg bg-transparent py-3 pl-3 pr-5 text-sm font-medium text-body-color outline-none'>
+                                            <select className='w-full appearance-none rounded-lg bg-transparent py-3 pl-3 pr-5 text-sm font-medium text-body-color outline-none capitalize'>
                                                 <option>Tiếng việt</option>
+                                                <option>English</option>
                                             </select>
                                             <span className='absolute right-0 top-1/2 -translate-y-1/2 text-body-color'>
                                                 <svg
@@ -60,6 +65,51 @@ export default function MainHeader() {
                                             </span>
                                         </div>
                                     </div>
+                                    {isAuthenticated ? (
+                                        <Box sx={{ flexGrow: 0 }}>
+                                            <Tooltip title={profile?.full_name}>
+                                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                                    <Avatar
+                                                        sx={{ width: '32px', height: '32px' }}
+                                                        alt='Remy Sharp'
+                                                        src='/static/images/avatar/2.jpg'
+                                                    />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Menu
+                                                sx={{ mt: '45px' }}
+                                                id='menu-appbar'
+                                                anchorEl={openSetting}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right'
+                                                }}
+                                                keepMounted
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right'
+                                                }}
+                                                open={Boolean(openSetting)}
+                                                onClose={() => setOpenSetting(null)}
+                                            >
+                                                {settings.map((setting) => (
+                                                    <MenuItem key={setting} onClick={() => setOpenSetting(null)}>
+                                                        <Typography fontSize='14px' textAlign='center'>
+                                                            {setting}
+                                                        </Typography>
+                                                    </MenuItem>
+                                                ))}
+                                            </Menu>
+                                        </Box>
+                                    ) : (
+                                        <Link
+                                            to={pathConfig.login}
+                                            className='text-blue-600 text-[14px] capitalize flex items-center gap-1'
+                                        >
+                                            Chưa đăng nhập
+                                            <LuBadgeInfo fontSize='16px' />
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -147,7 +197,7 @@ export default function MainHeader() {
                                         </nav>
                                     </div>
                                 </div>
-                                <div className='hidden w-full items-center justify-end space-x-4 pr-[70px] sm:flex lg:pr-0'>
+                                <div className='hidden w-full items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-0'>
                                     <div className='hidden items-center pr-1 xl:flex'>
                                         <div className='mr-3 flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'>
                                             <NeedHelpIcon />
@@ -159,14 +209,6 @@ export default function MainHeader() {
                                                 +84 369060306
                                             </p>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <Link
-                                            to={pathConfig.login}
-                                            className='relative flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'
-                                        >
-                                            <UserNoLoginIcon />
-                                        </Link>
                                     </div>
 
                                     <div className='relative z-20'>
