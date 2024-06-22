@@ -2,6 +2,8 @@
 import { Box, CircularProgress, Typography } from '@mui/material'
 import { useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { API_URL } from '~/configs/api.config'
+import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import { saveProfileToLS, saveTokenToLS } from '~/utils/auth'
 
@@ -14,18 +16,18 @@ export default function Authenticate() {
         if (isMatch) {
             const authCode = isMatch[1]
 
-            fetch(`http://localhost:8080/api/v1/auth/oauth2/google?code=${authCode}`, {
+            fetch(`${API_URL.BASE}${API_URL.LOGIN_GOOGLE}?code=${authCode}`, {
                 method: 'POST'
             })
                 .then((response) => {
                     return response.json()
                 })
                 .then((data) => {
-                    saveProfileToLS(data.result.user)
-                    setProfile(data.result.user)
-                    saveTokenToLS(data.result.token)
+                    saveProfileToLS(data?.result?.user)
+                    setProfile(data?.result?.user)
+                    saveTokenToLS(data?.result?.token)
                     setIsAuthenticated(true)
-                    navigate('/')
+                    navigate(pathConfig.home)
                 })
         }
     }, [])

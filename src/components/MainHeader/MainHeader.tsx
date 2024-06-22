@@ -3,19 +3,51 @@ import { Container } from '@mui/system'
 import { MouseEvent, useContext, useState } from 'react'
 import { IoChevronDownSharp } from 'react-icons/io5'
 import { LuBadgeInfo } from 'react-icons/lu'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 import { MyCartIcon, NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
+import { LuChevronDown } from 'react-icons/lu'
 import { AppContext } from '~/contexts/app.context'
+import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
+import avatarDefault from '~/assets/images/avatarDefault.png'
+import { toast } from 'react-toastify'
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout']
+const settings = [
+    {
+        id: 'account',
+        label: 'Tài khoản của tôi'
+    },
+    {
+        id: 'order',
+        label: 'Đơn mua'
+    },
+    {
+        id: 'logout',
+        label: 'Đăng xuất'
+    }
+]
 export default function MainHeader() {
-    const { profile, isAuthenticated } = useContext(AppContext)
+    const navigate = useNavigate()
+    const { profile, isAuthenticated, setIsAuthenticated } = useContext(AppContext)
 
     const [openSetting, setOpenSetting] = useState<null | HTMLElement>(null)
 
     const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => setOpenSetting(event.currentTarget)
+
+    const handleSetting = (setting: string) => {
+        setOpenSetting(null)
+        switch (setting) {
+            case 'logout':
+                clearProfileFromLS()
+                clearTokenFromLS()
+                setIsAuthenticated(false)
+                navigate(pathConfig.login)
+                toast.success('Đăng xuất thành công')
+                break
+            default:
+        }
+    }
 
     return (
         <Fragment>
@@ -52,16 +84,7 @@ export default function MainHeader() {
                                                 <option>English</option>
                                             </select>
                                             <span className='absolute right-0 top-1/2 -translate-y-1/2 text-body-color'>
-                                                <svg
-                                                    width={14}
-                                                    height={14}
-                                                    viewBox='0 0 14 14'
-                                                    fill='none'
-                                                    xmlns='http://www.w3.org/2000/svg'
-                                                    className='fill-current'
-                                                >
-                                                    <path d='M7.00001 9.97501C6.86876 9.97501 6.75938 9.93126 6.65001 9.84376L1.61876 4.90001C1.42188 4.70314 1.42188 4.39689 1.61876 4.20001C1.81563 4.00314 2.12188 4.00314 2.31876 4.20001L7.00001 8.77189L11.6813 4.15626C11.8781 3.95939 12.1844 3.95939 12.3813 4.15626C12.5781 4.35314 12.5781 4.65939 12.3813 4.85626L7.35001 9.80001C7.24063 9.90939 7.13126 9.97501 7.00001 9.97501Z' />
-                                                </svg>
+                                                <LuChevronDown />
                                             </span>
                                         </div>
                                     </div>
@@ -71,8 +94,8 @@ export default function MainHeader() {
                                                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                                     <Avatar
                                                         sx={{ width: '32px', height: '32px' }}
-                                                        alt='Remy Sharp'
-                                                        src='/static/images/avatar/2.jpg'
+                                                        alt='avatar'
+                                                        src={profile?.avatar ? profile.avatar : avatarDefault}
                                                     />
                                                 </IconButton>
                                             </Tooltip>
@@ -93,9 +116,15 @@ export default function MainHeader() {
                                                 onClose={() => setOpenSetting(null)}
                                             >
                                                 {settings.map((setting) => (
-                                                    <MenuItem key={setting} onClick={() => setOpenSetting(null)}>
-                                                        <Typography fontSize='14px' textAlign='center'>
-                                                            {setting}
+                                                    <MenuItem key={setting.id} onClick={() => handleSetting(setting.id)}>
+                                                        <Typography
+                                                            sx={{
+                                                                textTransform: 'capitalize'
+                                                            }}
+                                                            fontSize='14px'
+                                                            textAlign='center'
+                                                        >
+                                                            {setting.label}
                                                         </Typography>
                                                     </MenuItem>
                                                 ))}
