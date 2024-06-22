@@ -4,8 +4,15 @@ import { Fragment } from 'react/jsx-runtime'
 import { MyCartIcon, NeedHelpIcon, UserNoLoginIcon } from '~/assets/svg'
 import { IoChevronDownSharp } from 'react-icons/io5'
 import pathConfig from '~/configs/path.config'
+import { useContext, useEffect } from 'react'
+import { AppContext } from '~/contexts/app.context'
 
 export default function MainHeader() {
+    const { profile } = useContext(AppContext)
+
+    useEffect(() => {
+        console.log(profile)
+    }, [])
     return (
         <Fragment>
             <header className='w-full bg-white'>

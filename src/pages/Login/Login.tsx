@@ -1,11 +1,49 @@
-import { Button, TextField } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { Button } from '@mui/material'
+import { useMutation } from '@tanstack/react-query'
+import { useContext } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
+import { User } from '~/@types/users.type'
 import loginBanner from '~/assets/images/loginBanner.jpg'
 import { GoogleIcon } from '~/assets/svg'
+import InputAuth from '~/components/InputAuth'
 import pathConfig from '~/configs/path.config'
+import { AppContext } from '~/contexts/app.context'
 import AuthLayout from '~/layouts/AuthLayout'
+import { AuthSchemaType, authSchema } from '~/schemas/auth.schema'
+import authService from '~/services/auth.service'
+
+type LoginFormData = Pick<AuthSchemaType, 'email' | 'password'>
 
 export default function Login() {
+    const { setIsAuthenticated, setProfile } = useContext(AppContext)
+    const navigate = useNavigate()
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<LoginFormData>({
+        defaultValues: {
+            email: '',
+            password: ''
+        },
+        resolver: yupResolver(authSchema.pick(['email', 'password']))
+    })
+
+    const loginMutation = useMutation({
+        mutationFn: (data: LoginFormData) => authService.login(data)
+    })
+
+    const onSubmit = handleSubmit((data) => {
+        loginMutation.mutate(data, {
+            onSuccess: (data) => {
+                setIsAuthenticated(true)
+                setProfile(data.data.result?.user as User)
+                navigate(pathConfig.home)
+            }
+        })
+    })
     return (
         <AuthLayout>
             <div className='hidden lg:flex flex-col items-center justify-center flex-1 bg-white text-black'>
@@ -31,12 +69,12 @@ export default function Login() {
                     <div className='my-5 text-sm text-gray-600 text-center'>
                         <p>hoặc với email</p>
                     </div>
-                    <form className='space-y-4'>
-                        <TextField fullWidth id='email' label='Email' variant='outlined' />
+                    <form onSubmit={onSubmit} className='space-y-4'>
+                        <InputAuth register={register} errors={errors} name='email' label='Email' />
 
-                        <TextField fullWidth id='password' label='Mật khẩu' variant='outlined' />
+                        <InputAuth register={register} errors={errors} name='password' label='Mật khẩu' />
 
-                        <Button fullWidth sx={{ py: 1.5 }} variant='contained'>
+                        <Button type='submit' fullWidth sx={{ py: 1.5 }} variant='contained'>
                             Đăng nhập
                         </Button>
                     </form>

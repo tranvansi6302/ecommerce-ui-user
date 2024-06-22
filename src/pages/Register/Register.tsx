@@ -13,7 +13,6 @@ import { AuthSchemaType, authSchema } from '~/schemas/auth.schema'
 import authService from '~/services/auth.service'
 
 type RegisterFormData = AuthSchemaType
-type RegisterRequest = Omit<AuthSchemaType, 'confirm_password'>
 export default function Register() {
     const navigate = useNavigate()
     const {
@@ -21,11 +20,17 @@ export default function Register() {
         handleSubmit,
         formState: { errors }
     } = useForm<RegisterFormData>({
+        defaultValues: {
+            full_name: '',
+            email: '',
+            password: '',
+            confirm_password: ''
+        },
         resolver: yupResolver(authSchema)
     })
 
     const registerMutation = useMutation({
-        mutationFn: (data: RegisterRequest) => authService.register(data)
+        mutationFn: (data: Omit<AuthSchemaType, 'confirm_password'>) => authService.register(data)
     })
 
     const onSubmit = handleSubmit((data) => {
