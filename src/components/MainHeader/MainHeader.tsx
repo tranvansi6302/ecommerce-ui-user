@@ -164,13 +164,13 @@ export default function MainHeader() {
                                                                         Loại sản phẩm
                                                                     </h3>
                                                                     <Link
-                                                                        to={pathConfig.productFilter}
+                                                                        to={pathConfig.productFilters}
                                                                         className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
                                                                     >
                                                                         Áo thun nam
                                                                     </Link>
                                                                     <Link
-                                                                        to={pathConfig.productFilter}
+                                                                        to={pathConfig.productFilters}
                                                                         className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
                                                                     >
                                                                         Áo khoác nữ
@@ -183,7 +183,7 @@ export default function MainHeader() {
                                                                         Thương hiệu
                                                                     </h3>
                                                                     <Link
-                                                                        to={pathConfig.productFilter}
+                                                                        to={pathConfig.productFilters}
                                                                         className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
                                                                     >
                                                                         Adidas
