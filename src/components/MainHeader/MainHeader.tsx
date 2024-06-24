@@ -79,7 +79,10 @@ export default function MainHeader() {
                                 <div className='hidden items-center gap-6 justify-end md:flex'>
                                     <div>
                                         <div className='relative'>
-                                            <select className='w-full appearance-none rounded-lg bg-transparent py-3 pl-3 pr-5 text-sm font-medium text-body-color outline-none capitalize'>
+                                            <select
+                                                name='lang'
+                                                className='w-full appearance-none rounded-lg bg-transparent py-3 pl-3 pr-5 text-sm font-medium text-body-color outline-none capitalize'
+                                            >
                                                 <option>Tiếng việt</option>
                                                 <option>English</option>
                                             </select>
