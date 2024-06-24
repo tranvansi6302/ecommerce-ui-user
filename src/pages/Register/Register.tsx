@@ -1,12 +1,45 @@
-import { Button } from '@mui/material'
-import { Link } from 'react-router-dom'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation } from '@tanstack/react-query'
+import { omit } from 'lodash'
+import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
 import registerBanner from '~/assets/images/registerBanner.jpg'
 import { GoogleIcon } from '~/assets/svg'
 import InputAuth from '~/components/InputAuth'
+import MyButtonV2 from '~/components/MyButtonV2'
 import pathConfig from '~/configs/path.config'
 import AuthLayout from '~/layouts/AuthLayout'
+import { AuthSchemaType, authSchema } from '~/schemas/auth.schema'
+import authService from '~/services/auth.service'
+import { loginWithGoogle } from '~/utils/auth'
 
+type RegisterFormData = AuthSchemaType
 export default function Register() {
+    const navigate = useNavigate()
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<RegisterFormData>({
+        defaultValues: {
+            full_name: '',
+            email: '',
+            password: '',
+            confirm_password: ''
+        },
+        resolver: yupResolver(authSchema)
+    })
+
+    const registerMutation = useMutation({
+        mutationFn: (data: Omit<AuthSchemaType, 'confirm_password'>) => authService.register(data)
+    })
+
+    const onSubmit = handleSubmit((data) => {
+        registerMutation.mutate(omit(data, 'confirm_password'), {
+            onSuccess: () => navigate(pathConfig.login)
+        })
+    })
+
     return (
         <AuthLayout>
             <div className='hidden lg:flex flex-col items-center justify-center flex-1 bg-white text-black'>
@@ -23,24 +56,30 @@ export default function Register() {
                     </h1>
                     <div className='mt-4 flex flex-col lg:flex-row items-center justify-between'>
                         <div className='w-full lg:mb-0'>
-                            <Button sx={{ py: 1.5 }} type='button' fullWidth>
+                            <MyButtonV2 onClick={loginWithGoogle} variant='text' sx={{ py: 1.5 }} type='button'>
                                 <GoogleIcon />
                                 <p className='pl-2 mt-0.5'>Tiếp tục với google</p>
-                            </Button>
+                            </MyButtonV2>
                         </div>
                     </div>
                     <div className='my-5 text-sm text-gray-600 text-center'>
                         <p>hoặc với email</p>
                     </div>
-                    <form className='space-y-4'>
-                        <InputAuth name='fullname' label='Họ Tên' />
-                        <InputAuth name='email' label='Email' />
-                        <InputAuth name='password' label='Mật Khẩu' />
-                        <InputAuth name='confirm_password' label='Xác Nhận Mật Khẩu' />
+                    <form onSubmit={onSubmit} className='space-y-4'>
+                        <InputAuth register={register} errors={errors} name='full_name' label='Họ Tên' />
+                        <InputAuth register={register} errors={errors} name='email' label='Email' />
+                        <InputAuth register={register} errors={errors} name='password' label='Mật Khẩu' type='password' />
+                        <InputAuth
+                            register={register}
+                            errors={errors}
+                            name='confirm_password'
+                            label='Xác Nhận Mật Khẩu'
+                            type='password'
+                        />
 
-                        <Button fullWidth sx={{ py: 1.5 }} variant='contained'>
+                        <MyButtonV2 loading={registerMutation.isPending} type='submit' sx={{ py: 1.5 }}>
                             Đăng ký
-                        </Button>
+                        </MyButtonV2>
                     </form>
                     <div className='mt-4 text-sm text-gray-600 text-center'>
                         <p>

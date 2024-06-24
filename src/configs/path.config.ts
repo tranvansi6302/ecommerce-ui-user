@@ -3,6 +3,7 @@ const pathConfig = {
     login: '/login',
     home: '/',
     productDetail: ':id',
-    productFilter: '/filters'
+    productFilters: '/filters',
+    carts: '/carts'
 }
 export default pathConfig

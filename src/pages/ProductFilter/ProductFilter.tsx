@@ -3,7 +3,7 @@ import MyButton from '~/components/MyButton'
 import MySelect from '~/components/MySelect/MySelect'
 import ProductItem from '~/components/ProductItem'
 import AsidebarFilter from './components/AsidebarFilter/AsidebarFilter'
-export default function ProductFilter() {
+export default function productFilters() {
     return (
         <Container>
             <Grid alignItems='flex-start' container spacing={2}>

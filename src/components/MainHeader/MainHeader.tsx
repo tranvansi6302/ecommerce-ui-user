@@ -1,11 +1,54 @@
+import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { Container } from '@mui/system'
-import { Link } from 'react-router-dom'
-import { Fragment } from 'react/jsx-runtime'
-import { MyCartIcon, NeedHelpIcon, UserNoLoginIcon } from '~/assets/svg'
+import { MouseEvent, useContext, useState } from 'react'
 import { IoChevronDownSharp } from 'react-icons/io5'
+import { LuBadgeInfo } from 'react-icons/lu'
+import { Link, useNavigate } from 'react-router-dom'
+import { Fragment } from 'react/jsx-runtime'
+import { MyCartIcon, NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
+import { LuChevronDown } from 'react-icons/lu'
+import { AppContext } from '~/contexts/app.context'
+import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
+import avatarDefault from '~/assets/images/avatarDefault.png'
+import { toast } from 'react-toastify'
 
+const settings = [
+    {
+        id: 'account',
+        label: 'Tài khoản của tôi'
+    },
+    {
+        id: 'order',
+        label: 'Đơn mua'
+    },
+    {
+        id: 'logout',
+        label: 'Đăng xuất'
+    }
+]
 export default function MainHeader() {
+    const navigate = useNavigate()
+    const { profile, isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+
+    const [openSetting, setOpenSetting] = useState<null | HTMLElement>(null)
+
+    const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => setOpenSetting(event.currentTarget)
+
+    const handleSetting = (setting: string) => {
+        setOpenSetting(null)
+        switch (setting) {
+            case 'logout':
+                clearProfileFromLS()
+                clearTokenFromLS()
+                setIsAuthenticated(false)
+                navigate(pathConfig.login)
+                toast.success('Đăng xuất thành công')
+                break
+            default:
+        }
+    }
+
     return (
         <Fragment>
             <header className='w-full bg-white'>
@@ -33,26 +76,72 @@ export default function MainHeader() {
                                 </ul>
                             </div>
                             <div className='w-full px-4 md:w-1/3 lg:w-1/2'>
-                                <div className='hidden items-center justify-end md:flex'>
+                                <div className='hidden items-center gap-6 justify-end md:flex'>
                                     <div>
                                         <div className='relative'>
-                                            <select className='w-full appearance-none rounded-lg bg-transparent py-3 pl-3 pr-5 text-sm font-medium text-body-color outline-none'>
+                                            <select
+                                                name='lang'
+                                                className='w-full appearance-none rounded-lg bg-transparent py-3 pl-3 pr-5 text-sm font-medium text-body-color outline-none capitalize'
+                                            >
                                                 <option>Tiếng việt</option>
+                                                <option>English</option>
                                             </select>
                                             <span className='absolute right-0 top-1/2 -translate-y-1/2 text-body-color'>
-                                                <svg
-                                                    width={14}
-                                                    height={14}
-                                                    viewBox='0 0 14 14'
-                                                    fill='none'
-                                                    xmlns='http://www.w3.org/2000/svg'
-                                                    className='fill-current'
-                                                >
-                                                    <path d='M7.00001 9.97501C6.86876 9.97501 6.75938 9.93126 6.65001 9.84376L1.61876 4.90001C1.42188 4.70314 1.42188 4.39689 1.61876 4.20001C1.81563 4.00314 2.12188 4.00314 2.31876 4.20001L7.00001 8.77189L11.6813 4.15626C11.8781 3.95939 12.1844 3.95939 12.3813 4.15626C12.5781 4.35314 12.5781 4.65939 12.3813 4.85626L7.35001 9.80001C7.24063 9.90939 7.13126 9.97501 7.00001 9.97501Z' />
-                                                </svg>
+                                                <LuChevronDown />
                                             </span>
                                         </div>
                                     </div>
+                                    {isAuthenticated ? (
+                                        <Box sx={{ flexGrow: 0 }}>
+                                            <Tooltip title={profile?.full_name}>
+                                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                                    <Avatar
+                                                        sx={{ width: '32px', height: '32px' }}
+                                                        alt='avatar'
+                                                        src={profile?.avatar ? profile.avatar : avatarDefault}
+                                                    />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <Menu
+                                                sx={{ mt: '45px' }}
+                                                id='menu-appbar'
+                                                anchorEl={openSetting}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right'
+                                                }}
+                                                keepMounted
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right'
+                                                }}
+                                                open={Boolean(openSetting)}
+                                                onClose={() => setOpenSetting(null)}
+                                            >
+                                                {settings.map((setting) => (
+                                                    <MenuItem key={setting.id} onClick={() => handleSetting(setting.id)}>
+                                                        <Typography
+                                                            sx={{
+                                                                textTransform: 'capitalize'
+                                                            }}
+                                                            fontSize='14px'
+                                                            textAlign='center'
+                                                        >
+                                                            {setting.label}
+                                                        </Typography>
+                                                    </MenuItem>
+                                                ))}
+                                            </Menu>
+                                        </Box>
+                                    ) : (
+                                        <Link
+                                            to={pathConfig.login}
+                                            className='text-blue-600 text-[14px] capitalize flex items-center gap-1'
+                                        >
+                                            Chưa đăng nhập
+                                            <LuBadgeInfo fontSize='16px' />
+                                        </Link>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -107,13 +196,13 @@ export default function MainHeader() {
                                                                         Loại sản phẩm
                                                                     </h3>
                                                                     <Link
-                                                                        to={pathConfig.productFilter}
+                                                                        to={pathConfig.productFilters}
                                                                         className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
                                                                     >
                                                                         Áo thun nam
                                                                     </Link>
                                                                     <Link
-                                                                        to={pathConfig.productFilter}
+                                                                        to={pathConfig.productFilters}
                                                                         className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
                                                                     >
                                                                         Áo khoác nữ
@@ -126,7 +215,7 @@ export default function MainHeader() {
                                                                         Thương hiệu
                                                                     </h3>
                                                                     <Link
-                                                                        to={pathConfig.productFilter}
+                                                                        to={pathConfig.productFilters}
                                                                         className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
                                                                     >
                                                                         Adidas
@@ -140,7 +229,7 @@ export default function MainHeader() {
                                         </nav>
                                     </div>
                                 </div>
-                                <div className='hidden w-full items-center justify-end space-x-4 pr-[70px] sm:flex lg:pr-0'>
+                                <div className='hidden w-full items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-0'>
                                     <div className='hidden items-center pr-1 xl:flex'>
                                         <div className='mr-3 flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'>
                                             <NeedHelpIcon />
@@ -152,14 +241,6 @@ export default function MainHeader() {
                                                 +84 369060306
                                             </p>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <Link
-                                            to={pathConfig.login}
-                                            className='relative flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'
-                                        >
-                                            <UserNoLoginIcon />
-                                        </Link>
                                     </div>
 
                                     <div className='relative z-20'>
