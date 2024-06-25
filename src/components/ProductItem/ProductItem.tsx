@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { ProductSale } from '~/@types/productSales.type'
 import ProductRating from '~/components/ProductRating'
 import pathConfig from '~/configs/path.config'
-import { formatToVND, getPrices } from '~/utils/helpers'
+import { formatToVND, getMinMaxPromotionPrice, getMinMaxSalePrice } from '~/utils/helpers'
 
 type ProductItemProps = {
     maxItem?: number
@@ -19,7 +19,7 @@ export default function ProductItem({ maxItem, productSales }: ProductItemProps)
                 productSales?.map((product) => (
                     <Link
                         key={product.product_id}
-                        to={`${pathConfig.home}${1}`}
+                        to={`${pathConfig.home}${product.product_id}`}
                         className={`${maxItem == 4 ? 'grid-item-4' : 'grid-item'}`}
                     >
                         <Paper elevation={0} sx={{ borderRadius: '2px' }}>
@@ -46,11 +46,15 @@ export default function ProductItem({ maxItem, productSales }: ProductItemProps)
                                     }}
                                 >
                                     <span className='text-[#D70018] font-medium'>
-                                        {formatToVND(getPrices(productSales).minPromotionPrice)}
+                                        {formatToVND(
+                                            getMinMaxPromotionPrice(product as ProductSale).minPromotionPrice
+                                                ? getMinMaxPromotionPrice(product as ProductSale).minPromotionPrice
+                                                : getMinMaxSalePrice(product as ProductSale).minSalePrice
+                                        )}
                                     </span>
-                                    {getPrices(productSales).minPromotionPrice && (
+                                    {getMinMaxPromotionPrice(product as ProductSale).minPromotionPrice !== 0 && (
                                         <span className='ml-2 text-[13px] line-through text-gray-500'>
-                                            {formatToVND(getPrices(productSales).minSalePrice as number)}
+                                            {formatToVND(getMinMaxSalePrice(product as ProductSale).minSalePrice)}
                                         </span>
                                     )}
                                 </Box>

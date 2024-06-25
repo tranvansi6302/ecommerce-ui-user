@@ -1,6 +1,6 @@
 import { Brand } from './brands.type'
 import { Category } from './categories.type'
-import { PaginatedApiResponse } from './common.type'
+import { ApiResponse, PaginatedApiResponse } from './common.type'
 import { ProductImage } from './productImage.type'
 import { Variant } from './variants.type'
 
@@ -8,6 +8,7 @@ export type ProductSale = {
     id: number
     brand: Brand
     category: Category
+    description: string
     images: ProductImage[]
     variants: Variant[]
     product_id: number
@@ -21,3 +22,4 @@ export type ProductSale = {
 }
 
 export type ListProductSaleResponse = PaginatedApiResponse<ProductSale[]>
+export type ProductSaleResponse = ApiResponse<ProductSale>

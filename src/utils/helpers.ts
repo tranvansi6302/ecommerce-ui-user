@@ -1,45 +1,74 @@
 import { ProductSale } from '~/@types/productSales.type'
 
-export const getPrices = (productSales: ProductSale[]) => {
-    let minSalePrice = Number.MAX_VALUE
-    let minPromotionPrice = Number.MAX_VALUE
-    let maxSalePrice = 0
-    let maxPromotionPrice = 0
+export const getMinMaxSalePrice = (product: ProductSale) => {
+    let minSalePrice = Infinity
+    let maxSalePrice = -Infinity
 
-    productSales?.forEach((product) => {
-        product.variants.forEach((variant) => {
-            const pricePlan = variant.current_price_plan
-            if (pricePlan) {
-                const { sale_price, promotion_price } = pricePlan
-
-                // Update min prices
-                if (sale_price < minSalePrice) {
-                    minSalePrice = sale_price
-                }
-                if (promotion_price !== null && promotion_price < minPromotionPrice) {
-                    minPromotionPrice = promotion_price
-                }
-
-                // Update max prices
-                if (sale_price > maxSalePrice) {
-                    maxSalePrice = sale_price
-                }
-                if (promotion_price !== null && promotion_price > maxPromotionPrice) {
-                    maxPromotionPrice = promotion_price
-                }
-            }
-        })
+    product?.variants.forEach((variant) => {
+        const salePrice = variant.current_price_plan.sale_price
+        if (salePrice < minSalePrice) {
+            minSalePrice = salePrice
+        }
+        if (salePrice > maxSalePrice) {
+            maxSalePrice = salePrice
+        }
     })
 
-    // Adjust promotion prices if they are unset
-    minPromotionPrice = minPromotionPrice === Number.MAX_VALUE ? 0 : (minPromotionPrice as number)
-    maxPromotionPrice = maxPromotionPrice === 0 && minPromotionPrice !== null ? minPromotionPrice : maxPromotionPrice
+    return {
+        minSalePrice,
+        maxSalePrice
+    }
+}
+
+// Function to get the minimum and maximum promotion prices
+export const getMinMaxPromotionPrice = (product: ProductSale) => {
+    let minPromotionPrice = Infinity
+    let maxPromotionPrice = -Infinity
+
+    product?.variants.forEach((variant) => {
+        const promotionPrice = variant.current_price_plan.promotion_price
+        if (promotionPrice !== null) {
+            // Ensuring that the promotion price is not null
+            if (promotionPrice < minPromotionPrice) {
+                minPromotionPrice = promotionPrice
+            }
+            if (promotionPrice > maxPromotionPrice) {
+                maxPromotionPrice = promotionPrice
+            }
+        }
+    })
+
+    // If no promotion prices were found, set them to null
+    if (minPromotionPrice === Infinity) minPromotionPrice = 0
+    if (maxPromotionPrice === -Infinity) maxPromotionPrice = 0
 
     return {
-        minSalePrice: minSalePrice === Number.MAX_VALUE ? null : minSalePrice,
         minPromotionPrice,
-        maxSalePrice: maxSalePrice === 0 ? null : maxSalePrice,
-        maxPromotionPrice: maxPromotionPrice === 0 ? null : maxPromotionPrice
+        maxPromotionPrice
+    }
+}
+
+export const checkEqualSalePrice = (product: ProductSale) => {
+    const { minSalePrice, maxSalePrice } = getMinMaxSalePrice(product)
+    return minSalePrice === maxSalePrice
+}
+
+export const checkEqualPromotionPrice = (product: ProductSale) => {
+    const { minPromotionPrice, maxPromotionPrice } = getMinMaxPromotionPrice(product)
+    return minPromotionPrice === maxPromotionPrice
+}
+
+export const getUniqueSizeAndColor = (product: ProductSale) => {
+    const colors = new Set()
+    const sizes = new Set()
+
+    product?.variants?.forEach((variant) => {
+        colors.add(variant.color)
+        sizes.add(variant.size)
+    })
+    return {
+        colors: Array.from(colors),
+        sizes: Array.from(sizes)
     }
 }
 
