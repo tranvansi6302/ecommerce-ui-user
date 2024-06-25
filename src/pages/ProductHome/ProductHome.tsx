@@ -1,5 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { Fragment } from 'react/jsx-runtime'
 import ProductItem from '~/components/ProductItem'
 import productSalesService from '~/services/productSales.service'
@@ -10,12 +9,9 @@ import CategoryList from './components/CategoryList'
 export default function ProductHome() {
     const { data: productSales } = useQuery({
         queryKey: ['productSales'],
-        queryFn: () => productSalesService.getAllProductSales()
+        queryFn: () => productSalesService.getAllProductSales(),
+        placeholderData: keepPreviousData
     })
-
-    useEffect(() => {
-        console.log(productSales)
-    }, [productSales])
 
     return (
         <Fragment>

@@ -14,40 +14,52 @@
 }
 
 .grid-wrapper {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    display: grid;
+    gap: 10px 6px;
 }
 
 .grid-item {
-    flex: 1 0 calc(50% - 8px);
-    /* Cho xs={6}, chiếm 1/2 màn hình */
-    max-width: calc(50% - 8px);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 599px) {
+    .grid-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 8px;
+    }
+
+    .grid-item {
+        margin-top: 32px;
+    }
+    .grid-item img {
+        margin-bottom: 18px;
+    }
 }
 
 @media (min-width: 600px) and (max-width: 999px) {
+    .grid-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+    }
     .grid-item {
-        flex: 1 0 calc(33.333% - 8px);
-        max-width: calc(33.333% - 8px);
+        margin-top: 32px;
+    }
+    .grid-item img {
+        margin-bottom: 18px;
     }
 }
 
 @media (min-width: 1000px) {
-    .grid-item {
-        flex: 1 0 calc(20% - 8px);
-        max-width: calc(20% - 8px);
-    }
-    .grid-item-4 {
-        flex: 1 0 calc(25% - 8px);
-        max-width: calc(25% - 8px);
+    .grid-wrapper {
+        grid-template-columns: repeat(6, 1fr);
     }
 }
 
 .grid-item:hover,
 .grid-item-4:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     cursor: pointer;
-    transition: all linear 0.123s;
+    transition: all linear 0.111s;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .wrap-name {

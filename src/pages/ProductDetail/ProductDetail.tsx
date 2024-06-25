@@ -15,7 +15,7 @@ export default function ProductDetail() {
     }
     return (
         <Fragment>
-            <Container>
+            <Container style={{ padding: '0' }}>
                 <div className='py-6'>
                     <div className='bg-white p-4 shadow'>
                         <div className='container'>

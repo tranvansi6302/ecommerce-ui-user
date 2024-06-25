@@ -5,7 +5,7 @@ import ProductItem from '~/components/ProductItem'
 import AsidebarFilter from './components/AsidebarFilter/AsidebarFilter'
 export default function productFilters() {
     return (
-        <Container>
+        <Container style={{ padding: '0' }}>
             <Grid alignItems='flex-start' container spacing={2}>
                 <Grid sx={{ mt: 4 }} item md={12} lg={2.3}>
                     <Typography mb={4} fontSize='18px' textTransform='uppercase' fontWeight='600' component='p'>

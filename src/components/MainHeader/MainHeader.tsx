@@ -53,7 +53,7 @@ export default function MainHeader() {
         <Fragment>
             <header className='w-full bg-white'>
                 <div className='hidden border-b border-stroke sm:block'>
-                    <Container className='container mx-auto'>
+                    <Container style={{ padding: '0' }}>
                         <div className='-mx-4 flex flex-wrap items-center'>
                             <div className='w-full px-4 md:w-2/3 lg:w-1/2'>
                                 <ul className='-mx-3 flex items-center'>
@@ -147,7 +147,7 @@ export default function MainHeader() {
                         </div>
                     </Container>
                 </div>
-                <Container>
+                <Container style={{ padding: '0' }}>
                     <div className='container mx-auto'>
                         <div className='relative -mx-4 flex items-center justify-center sm:justify-between'>
                             <div className='w-60 max-w-full px-4 lg:w-48'>

@@ -4,7 +4,7 @@ import pathConfig from '~/configs/path.config'
 
 export default function CategoryList() {
     return (
-        <Container>
+        <Container style={{ padding: '0' }}>
             <div className='bg-white rounded-sm shadow'>
                 <h2 className='text-text-secondary uppercase text p-6'>Danh mục</h2>
                 <div className='flex flex-wrap category-list'>
