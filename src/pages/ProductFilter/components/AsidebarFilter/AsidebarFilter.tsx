@@ -1,38 +1,51 @@
+import classNames from 'classnames'
 import { FaCaretRight } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import { Link, createSearchParams } from 'react-router-dom'
+import { Brand } from '~/@types/brands.type'
+import { Category } from '~/@types/categories.type'
+import pathConfig from '~/configs/path.config'
+import { QueryConfig } from '~/hooks/useQueryProductSales'
 
-export default function AsidebarFilter() {
+type AsidebarFilterProps = {
+    title: string
+    filterData: Category[] | Brand[]
+    queryConfig: QueryConfig
+    filterType: 'category' | 'brand'
+}
+
+export default function AsidebarFilter({ title, filterData, queryConfig, filterType }: AsidebarFilterProps) {
     return (
         <div className='filter-wrap'>
             <h4>
-                <span className='text-text-primary capitalize'>Lọc theo danh mục</span>
+                <span className='text-text-primary capitalize'>{title}</span>
             </h4>
             <ul>
-                <li>
-                    <Link className='flex items-center gap-1 text-text-primary capitalize' to='/'>
-                        <FaCaretRight fontSize='12px' />
-                        <span className=''>Quần áo</span>
-                    </Link>
-                </li>
-                <li>
-                    <Link className='flex items-center gap-1 text-text-primary capitalize' to='/'>
-                        <FaCaretRight fontSize='12px' />
-                        <span className=''>Quần áo</span>
-                    </Link>
-                </li>
-                <li>
-                    <Link className='flex items-center gap-1 text-text-primary capitalize' to='/'>
-                        <FaCaretRight fontSize='12px' />
-
-                        <span className=''>Quần áo</span>
-                    </Link>
-                </li>
-                <li>
-                    <Link className='flex items-center gap-1 text-text-primary capitalize' to='/'>
-                        <FaCaretRight fontSize='12px' />
-                        <span className=''>Quần áo</span>
-                    </Link>
-                </li>
+                {filterData &&
+                    filterData.length > 0 &&
+                    filterData.map((item) => {
+                        const isActive = queryConfig[filterType] === item.slug
+                        return (
+                            <li key={item.id}>
+                                <Link
+                                    className={classNames('flex items-center gap-1 capitalize', {
+                                        'text-blue-600': isActive,
+                                        'text-text-primary ': !isActive
+                                    })}
+                                    to={{
+                                        pathname: pathConfig.productFilters,
+                                        search: createSearchParams({
+                                            ...queryConfig,
+                                            ...(filterType === 'category' && { category: item.slug }),
+                                            ...(filterType === 'brand' && { brand: item.slug })
+                                        }).toString()
+                                    }}
+                                >
+                                    <FaCaretRight fontSize='12px' />
+                                    <span>{item.name}</span>
+                                </Link>
+                            </li>
+                        )
+                    })}
             </ul>
         </div>
     )

@@ -21,5 +21,14 @@ export type ProductSale = {
     updated_at: string
 }
 
+export type ProductSaleFilters = {
+    page?: number
+    limit?: number
+    category?: string
+    brand?: string
+    sort_order?: 'asc' | 'desc'
+    sort_by?: 'price' | 'sold'
+}
+
 export type ListProductSaleResponse = PaginatedApiResponse<ProductSale[]>
 export type ProductSaleResponse = ApiResponse<ProductSale>

@@ -7,21 +7,16 @@ import pathConfig from '~/configs/path.config'
 import { formatToVND, getMinMaxPromotionPrice, getMinMaxSalePrice } from '~/utils/helpers'
 
 type ProductItemProps = {
-    maxItem?: number
     productSales?: ProductSale[]
 }
 
-export default function ProductItem({ maxItem, productSales }: ProductItemProps) {
+export default function ProductItem({ productSales }: ProductItemProps) {
     return (
         <Fragment>
             {productSales &&
                 productSales?.length > 0 &&
                 productSales?.map((product) => (
-                    <Link
-                        key={product.product_id}
-                        to={`${pathConfig.home}${product.product_id}`}
-                        className={`${maxItem == 4 ? 'grid-item-4' : 'grid-item'}`}
-                    >
+                    <Link key={product.product_id} to={`${pathConfig.home}${product.product_id}`} className='grid-item'>
                         <Paper elevation={0} sx={{ borderRadius: '2px' }}>
                             <Box
                                 sx={{

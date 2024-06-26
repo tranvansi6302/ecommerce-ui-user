@@ -7,8 +7,7 @@
     width: calc(100% / 7);
     font-size: 14px;
 }
-.category-item:hover,
-.grid-item-4:hover {
+.category-item:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     transition: all 0.123s;
 }
@@ -37,9 +36,7 @@
 }
 
 @media (min-width: 600px) and (max-width: 999px) {
-    .grid-wrapper {
-        grid-template-columns: repeat(4, 1fr);
-    }
+    .grid-wrapper,
     .grid-item {
         margin-top: 32px;
     }
@@ -52,10 +49,12 @@
     .grid-wrapper {
         grid-template-columns: repeat(6, 1fr);
     }
+    .max-5 {
+        grid-template-columns: repeat(5, 1fr);
+    }
 }
 
-.grid-item:hover,
-.grid-item-4:hover {
+.grid-item:hover {
     transform: translateY(-3px);
     cursor: pointer;
     transition: all linear 0.111s;
@@ -153,7 +152,7 @@
     height: 2.125rem;
     justify-content: space-between;
     line-height: 2.125rem;
-    min-width: 12.5rem;
+    min-width: 13.5rem;
     padding-left: 0.75rem;
     position: relative;
     text-align: left;

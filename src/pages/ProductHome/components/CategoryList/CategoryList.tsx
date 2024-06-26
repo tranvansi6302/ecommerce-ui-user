@@ -19,14 +19,14 @@ export default function CategoryList() {
     return (
         <Container style={{ padding: '0' }}>
             <div className='bg-white rounded-sm shadow'>
-                <h2 className='text-text-secondary uppercase text p-6'>Danh mục</h2>
+                <h2 className='text-text-secondary uppercase text p-6'>Danh mục sản phẩm</h2>
                 <div className='flex flex-wrap category-list'>
                     {categories?.data.result &&
                         categories?.data.result?.length > 0 &&
                         categories?.data.result.map((category) => (
                             <Link
                                 key={category.id}
-                                to={pathConfig.productFilters}
+                                to={`${pathConfig.productFilters}?category=${category.slug}`}
                                 className='p-4 category-item flex justify-center flex-col items-center'
                             >
                                 <div className='flex items-center justify-center w-16 h-16'>

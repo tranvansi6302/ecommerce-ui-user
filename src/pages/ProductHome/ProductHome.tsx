@@ -5,11 +5,14 @@ import productSalesService from '~/services/productSales.service'
 import ProductFeatured from '../../components/ProductFeatured'
 import Banner from './components/Banner'
 import CategoryList from './components/CategoryList'
+import useQueryProductSales from '~/hooks/useQueryProductSales'
+import { ProductSaleFilters } from '~/@types/productSales.type'
 
 export default function ProductHome() {
+    const queryConfig = useQueryProductSales()
     const { data: productSales } = useQuery({
-        queryKey: ['productSales'],
-        queryFn: () => productSalesService.getAllProductSales(),
+        queryKey: ['productSales', queryConfig],
+        queryFn: () => productSalesService.getAllProductSales(queryConfig as ProductSaleFilters),
         staleTime: 3 * 60 * 1000,
         placeholderData: keepPreviousData
     })
