@@ -1,7 +1,7 @@
 import { Container } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ProductSale } from '~/@types/productSales.type'
 import tickIcon from '~/assets/images/tickIcon.png'
@@ -11,6 +11,7 @@ import ProductFeatured from '~/components/ProductFeatured'
 import ProductRating from '~/components/ProductRating'
 import QuantityController from '~/components/QuantityController/QuantityController'
 import productSalesService from '~/services/productSales.service'
+import ImageViewer from 'react-simple-image-viewer'
 import {
     checkEqualPromotionPrice,
     checkEqualSalePrice,
@@ -23,6 +24,11 @@ import {
 export default function ProductDetail() {
     const { id: productId } = useParams<{ id: string }>()
     const [buyCount, setBuyCount] = useState<number>(1)
+    const imageRef = useRef<HTMLImageElement>(null)
+    const [currentImageView, setCurrentImageView] = useState<number>(0)
+    const [isViewerOpen, setIsViewerOpen] = useState<boolean>(false)
+    const [activeImage, setActiveImage] = useState('')
+    const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
     const handleBuyCount = (value: number) => {
         setBuyCount(value)
     }
@@ -37,6 +43,64 @@ export default function ProductDetail() {
     })
     const { colors, sizes } = getUniqueSizeAndColor(productSale?.data.result as ProductSale)
 
+    // const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    //     const rect = event.currentTarget.getBoundingClientRect()
+    //     const image = imageRef.current as HTMLImageElement
+    //     const { naturalHeight, naturalWidth } = image
+
+    //     const offsetX = event.pageX - (rect.x + window.scrollX)
+    //     const offsetY = event.pageY - (rect.y + window.scrollY)
+
+    //     const top = offsetY * (1 - naturalHeight / rect.height)
+    //     const left = offsetX * (1 - naturalWidth / rect.width)
+    //     image.style.width = naturalWidth + 'px'
+    //     image.style.height = naturalHeight + 'px'
+    //     image.style.maxWidth = 'unset'
+    //     image.style.top = top + 'px'
+    //     image.style.left = left + 'px'
+    // }
+    // const handleRemoveZoom = () => {
+    //     imageRef.current?.removeAttribute('style')
+    // }
+    useEffect(() => {
+        if (productSale && (productSale?.data.result as ProductSale).images.length > 0) {
+            setActiveImage((productSale?.data.result as ProductSale).images[0].url as string)
+        }
+    }, [productSale])
+
+    // Handle image
+    const currentImages = useMemo(
+        () => (productSale ? (productSale?.data.result as ProductSale).images.slice(...currentIndexImages) : []),
+        [productSale, currentIndexImages]
+    )
+    const next = () => {
+        if (currentIndexImages[1] < (productSale?.data.result as ProductSale).images.length) {
+            setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1])
+        }
+    }
+
+    const prev = () => {
+        if (currentIndexImages[0] > 0) {
+            setCurrentIndexImages((prev) => [prev[0] - 1, prev[1] - 1])
+        }
+    }
+
+    const chooseActive = (img: string) => {
+        setActiveImage(img)
+    }
+
+    const openImageViewer = useCallback((index: number) => {
+        setCurrentImageView(index)
+        setIsViewerOpen(true)
+    }, [])
+
+    const closeImageViewer = () => {
+        setIsViewerOpen(false)
+        setCurrentImageView(0)
+    }
+
+    const listImageViews = (productSale?.data.result as ProductSale)?.images.map((img) => img.url as string)
+
     return (
         <Fragment>
             <Container style={{ padding: '0' }}>
@@ -45,33 +109,61 @@ export default function ProductDetail() {
                         <div className='container'>
                             <div className='grid grid-cols-1 md:grid-cols-12 gap-9'>
                                 <div className='w-full md:col-span-5'>
-                                    <div className='w-full'>
-                                        <div className='relative w-full pt-[100%] shadow'>
-                                            <img
-                                                className='absolute top-0 left-0 h-full w-full bg-white object-cover'
-                                                srcSet={productSale?.data.result?.images[0].url as string}
-                                                alt='product'
-                                            />
-                                        </div>
-                                        <div className='relative mt-4 grid grid-cols-5 gap-1'>
-                                            <button className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'>
-                                                <PrevIcon />
-                                            </button>
-                                            {productSale?.data.result?.images.map((image) => (
-                                                <div key={image.id} className='relative w-full pt-[100%]'>
+                                    <div
+                                        onClick={() => openImageViewer(currentIndexImages[0])}
+                                        className='relative w-full  cursor-zoom-in overflow-hidden pt-[100%] shadow'
+                                    >
+                                        <img
+                                            className='absolute top-0 left-0 h-full w-full bg-white object-cover pointer-events-none'
+                                            srcSet={activeImage}
+                                            alt='product'
+                                            ref={imageRef}
+                                        />
+                                    </div>
+                                    {isViewerOpen && (
+                                        <ImageViewer
+                                            src={listImageViews}
+                                            currentIndex={currentImageView}
+                                            disableScroll={true}
+                                            onClose={closeImageViewer}
+                                            closeComponent={<div></div>}
+                                            backgroundStyle={{
+                                                backgroundColor: 'rgba(0,0,0,0.9)'
+                                            }}
+                                            closeOnClickOutside={true}
+                                        />
+                                    )}
+                                    <div className='relative mt-4 grid grid-cols-5 gap-1'>
+                                        <button
+                                            onClick={prev}
+                                            className='absolute z-1 left-0 top-1/2  h-9 w-5 -translate-y-1/2 bg-black/20 text-white'
+                                        >
+                                            <PrevIcon />
+                                        </button>
+                                        {currentImages.map((img) => {
+                                            const isActive = img.url === activeImage
+                                            return (
+                                                <div
+                                                    className='relative w-full pt-[100%]'
+                                                    key={img.id}
+                                                    onMouseEnter={() => chooseActive(img.url as string)}
+                                                >
                                                     <img
-                                                        className='absolute top-0 left-0 h-full w-full bg-white object-cover cursor-pointer'
-                                                        src={image.url}
-                                                        alt='product'
+                                                        src={img.url as string}
+                                                        alt={productSale?.data.result?.product_name as string}
+                                                        className='absolute top-0 left-0 h-full w-full cursor-pointer bg-white object-cover'
                                                     />
-                                                    <div className='absolute inset-0 border-2 border-blue-700'></div>
+                                                    {isActive && <div className='absolute inset-0 border-2 border-blue-600' />}
                                                 </div>
-                                            ))}
+                                            )
+                                        })}
 
-                                            <button className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'>
-                                                <NextIcon />
-                                            </button>
-                                        </div>
+                                        <button
+                                            onClick={next}
+                                            className='absolute right-0 top-1/2 z-1 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'
+                                        >
+                                            <NextIcon />
+                                        </button>
                                     </div>
                                 </div>
 
@@ -93,51 +185,86 @@ export default function ProductDetail() {
                                         </div>
                                     </div>
                                     <div className='mt-8 flex items-center bg-gray-50 px-5 py-4'>
-                                        <div className='text-gray-500 line-through text-xl'>
-                                            {checkEqualSalePrice(productSale?.data.result as ProductSale) ? (
-                                                <span>
-                                                    {formatToVND(
-                                                        getMinMaxSalePrice(productSale?.data.result as ProductSale).minSalePrice
-                                                    )}
-                                                </span>
-                                            ) : (
-                                                <span>
-                                                    {formatToVND(
-                                                        getMinMaxSalePrice(productSale?.data.result as ProductSale).minSalePrice
-                                                    )}
-                                                    {' - '}
-                                                    {formatToVND(
-                                                        getMinMaxSalePrice(productSale?.data.result as ProductSale).maxSalePrice
-                                                    )}
-                                                </span>
-                                            )}
-                                        </div>
+                                        {getMinMaxPromotionPrice(productSale?.data.result as ProductSale).minPromotionPrice !==
+                                            0 && (
+                                            <div className='text-gray-500 line-through text-xl'>
+                                                {checkEqualSalePrice(productSale?.data.result as ProductSale) ? (
+                                                    <span>
+                                                        {formatToVND(
+                                                            getMinMaxSalePrice(productSale?.data.result as ProductSale)
+                                                                .minSalePrice
+                                                        )}
+                                                    </span>
+                                                ) : (
+                                                    <span>
+                                                        {formatToVND(
+                                                            getMinMaxSalePrice(productSale?.data.result as ProductSale)
+                                                                .minSalePrice
+                                                        )}
+                                                        {' - '}
+                                                        {formatToVND(
+                                                            getMinMaxSalePrice(productSale?.data.result as ProductSale)
+                                                                .maxSalePrice
+                                                        )}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                        {getMinMaxPromotionPrice(productSale?.data.result as ProductSale).minPromotionPrice ===
+                                        0 ? (
+                                            <div className='ml-3 text-3xl font-medium text-blue-600'>
+                                                {checkEqualSalePrice(productSale?.data.result as ProductSale) ? (
+                                                    <span>
+                                                        {formatToVND(
+                                                            getMinMaxSalePrice(productSale?.data.result as ProductSale)
+                                                                .minSalePrice
+                                                        )}
+                                                    </span>
+                                                ) : (
+                                                    <span>
+                                                        {formatToVND(
+                                                            getMinMaxSalePrice(productSale?.data.result as ProductSale)
+                                                                .minSalePrice
+                                                        )}
+                                                        {' - '}
+                                                        {formatToVND(
+                                                            getMinMaxSalePrice(productSale?.data.result as ProductSale)
+                                                                .maxSalePrice
+                                                        )}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className='ml-3 text-3xl font-medium text-blue-600'>
+                                                {checkEqualPromotionPrice(productSale?.data.result as ProductSale) ? (
+                                                    <span>
+                                                        {formatToVND(
+                                                            getMinMaxPromotionPrice(productSale?.data.result as ProductSale)
+                                                                .minPromotionPrice
+                                                        )}
+                                                    </span>
+                                                ) : (
+                                                    <span>
+                                                        {formatToVND(
+                                                            getMinMaxPromotionPrice(productSale?.data.result as ProductSale)
+                                                                .minPromotionPrice
+                                                        )}
+                                                        {' - '}
+                                                        {formatToVND(
+                                                            getMinMaxPromotionPrice(productSale?.data.result as ProductSale)
+                                                                .maxPromotionPrice
+                                                        )}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
 
-                                        <div className='ml-3 text-3xl font-medium text-blue-600'>
-                                            {checkEqualPromotionPrice(productSale?.data.result as ProductSale) ? (
-                                                <span>
-                                                    {formatToVND(
-                                                        getMinMaxPromotionPrice(productSale?.data.result as ProductSale)
-                                                            .minPromotionPrice
-                                                    )}
-                                                </span>
-                                            ) : (
-                                                <span>
-                                                    {formatToVND(
-                                                        getMinMaxPromotionPrice(productSale?.data.result as ProductSale)
-                                                            .minPromotionPrice
-                                                    )}
-                                                    {' - '}
-                                                    {formatToVND(
-                                                        getMinMaxPromotionPrice(productSale?.data.result as ProductSale)
-                                                            .maxPromotionPrice
-                                                    )}
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className='ml-4 rounded-sm bg-blue-600 px-1 py-[2px] text-xs font-semibold uppercase text-white'>
-                                            20 giảm
-                                        </div>
+                                        {getMinMaxPromotionPrice(productSale?.data.result as ProductSale).minPromotionPrice !==
+                                            0 && (
+                                            <div className='ml-4 rounded-sm bg-blue-600 px-1 py-[2px] text-xs font-semibold uppercase text-white'>
+                                                20 giảm
+                                            </div>
+                                        )}
                                     </div>
                                     <div className='w-full h-[1px] bg-gray-200 mt-8'></div>
                                     <div className='mt-8 flex items-baseline'>

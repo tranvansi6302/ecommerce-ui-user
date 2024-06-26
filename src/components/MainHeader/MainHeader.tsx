@@ -243,7 +243,7 @@ export default function MainHeader() {
                                         </div>
                                     </div>
 
-                                    <div className='relative z-20'>
+                                    <div className='relative z-1'>
                                         <div className='flex max-w-[200px] justify-end'>
                                             <button className='relative flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'>
                                                 <MyCartIcon />
@@ -252,11 +252,8 @@ export default function MainHeader() {
                                                 </span>
                                             </button>
                                         </div>
-                                        <div
-                                            x-show='cartOpen'
-                                            className='absolute right-0 top-full mt-3 w-[330px]'
-                                            style={{ display: 'none' }}
-                                        >
+                                        {/* Cart Item */}
+                                        <div className='absolute right-0 top-full mt-3 w-[330px]' style={{ display: 'none' }}>
                                             <div className='overflow-hidden rounded-lg bg-white p-8 shadow-1'>
                                                 <div className='mb-5 border-b border-stroke pb-3'>
                                                     <div className='-mx-1 flex items-center justify-between pb-4'>
