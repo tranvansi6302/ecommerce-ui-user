@@ -1,15 +1,12 @@
 import { PricePlan } from './pricePlans.type'
+import { Warehouse } from './warehouses.type'
 
 export type Variant = {
     id: number
     sku: string
     color: string
     size: string
-    warehouse: {
-        id: number
-        available_quantity: number
-        purchase_price: number
-    }
+    warehouse: Warehouse
     variant_name: string
     product_name: string
     product_id: number

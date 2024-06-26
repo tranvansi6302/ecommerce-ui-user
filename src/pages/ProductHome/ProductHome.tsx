@@ -10,6 +10,7 @@ export default function ProductHome() {
     const { data: productSales } = useQuery({
         queryKey: ['productSales'],
         queryFn: () => productSalesService.getAllProductSales(),
+        staleTime: 3 * 60 * 1000,
         placeholderData: keepPreviousData
     })
 
