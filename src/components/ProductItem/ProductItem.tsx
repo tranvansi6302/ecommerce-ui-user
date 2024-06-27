@@ -4,37 +4,54 @@ import { Link } from 'react-router-dom'
 import { ProductSale } from '~/@types/productSales.type'
 import ProductRating from '~/components/ProductRating'
 import pathConfig from '~/configs/path.config'
+import { formatToVND, getMinMaxPromotionPrice, getMinMaxSalePrice } from '~/utils/helpers'
 
 type ProductItemProps = {
-    maxItem?: number
     productSales?: ProductSale[]
 }
 
-export default function ProductItem({ maxItem, productSales }: ProductItemProps) {
+export default function ProductItem({ productSales }: ProductItemProps) {
     return (
         <Fragment>
             {productSales &&
                 productSales?.length > 0 &&
                 productSales?.map((product) => (
-                    <Link
-                        key={product.product_id}
-                        to={`${pathConfig.home}${1}`}
-                        className={`${maxItem == 4 ? 'grid-item-4' : 'grid-item'}`}
-                    >
+                    <Link key={product.product_id} to={`${pathConfig.home}${product.product_id}`} className='grid-item'>
                         <Paper elevation={0} sx={{ borderRadius: '2px' }}>
-                            <Box sx={{ textAlign: 'center' }}>
-                                <img style={{ height: '222.5px' }} srcSet={product.images[0].url} alt='product' width='100%' />
+                            <Box
+                                sx={{
+                                    textAlign: 'center',
+                                    height: '186px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <img srcSet={product.images[0].url} alt='product' width='100%' />
                             </Box>
                             <Box sx={{ py: 2, px: 1 }}>
                                 <div className='wrap-name'>
                                     <h6 className='product-name'>{product.product_name}</h6>
                                 </div>
 
-                                <Box>
-                                    <Typography fontSize='15px' color='#D70018' fontWeight='500' height='65px' component='span'>
-                                        1.000.000₫
-                                    </Typography>
-                                    <Typography component='span'> 1.000.000₫</Typography>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                    }}
+                                >
+                                    <span className='text-[#D70018] font-medium'>
+                                        {formatToVND(
+                                            getMinMaxPromotionPrice(product as ProductSale).minPromotionPrice
+                                                ? getMinMaxPromotionPrice(product as ProductSale).minPromotionPrice
+                                                : getMinMaxSalePrice(product as ProductSale).minSalePrice
+                                        )}
+                                    </span>
+                                    {getMinMaxPromotionPrice(product as ProductSale).minPromotionPrice !== 0 && (
+                                        <span className='ml-2 text-[13px] line-through text-gray-500'>
+                                            {formatToVND(getMinMaxSalePrice(product as ProductSale).minSalePrice)}
+                                        </span>
+                                    )}
                                 </Box>
                                 <Box
                                     sx={{
@@ -51,9 +68,9 @@ export default function ProductItem({ maxItem, productSales }: ProductItemProps)
                                             alignItems: 'center'
                                         }}
                                     >
-                                        <ProductRating rating={5} />
+                                        <ProductRating rating={product.average_rating} />
                                         <Typography sx={{ ml: '5px', mt: 0.2 }} fontSize='13px' component='span'>
-                                            112 (lượt)
+                                            {product.total_reviews} (lượt)
                                         </Typography>
                                     </Box>
                                 </Box>
@@ -74,7 +91,7 @@ export default function ProductItem({ maxItem, productSales }: ProductItemProps)
                                         }}
                                     >
                                         <Typography sx={{ ml: '5px' }} fontSize='13px' component='span'>
-                                            Đã bán 111
+                                            Đã bán {product.total_sold}
                                         </Typography>
                                     </Box>
                                 </Box>

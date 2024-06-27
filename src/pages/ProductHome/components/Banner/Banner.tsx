@@ -3,7 +3,7 @@ import { Container } from '@mui/material'
 export default function Banner() {
     return (
         <section className='py-10 dark:bg-dark'>
-            <Container className='container mx-auto'>
+            <Container style={{ padding: '0' }}>
                 <div className='-mx-4 flex flex-wrap'>
                     <div className='w-full px-4 lg:w-8/12'>
                         <div className='relative mb-8 h-[370px] md:h-[480px]'>

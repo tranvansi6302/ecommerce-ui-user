@@ -3,5 +3,7 @@ export const API_URL = {
     REGISTER: '/auth/register',
     LOGIN: '/auth/login',
     LOGIN_GOOGLE: '/auth/oauth2/google',
-    PRODUCT_SALES: '/products/sales'
+    PRODUCT_SALES: '/products/sales',
+    CATEGORIES: '/categories',
+    BRANDS: '/brands'
 }

@@ -1,3 +1,5 @@
+import { PaginatedApiResponse } from './common.type'
+
 export type Brand = {
     id: number
     name: string
@@ -6,3 +8,5 @@ export type Brand = {
     created_at: string
     updated_at: string
 }
+
+export type ListBrandResponse = PaginatedApiResponse<Brand[]>

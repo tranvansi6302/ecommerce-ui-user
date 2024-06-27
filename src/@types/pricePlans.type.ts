@@ -1,7 +1,7 @@
 export type PricePlan = {
     id: number
     discount: number
-    status: 'INACTIVE'
+    status: string
     sale_price: number
     promotion_price: number
     start_date: string

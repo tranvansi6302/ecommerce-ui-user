@@ -1,6 +1,6 @@
 import { Brand } from './brands.type'
 import { Category } from './categories.type'
-import { PaginatedApiResponse } from './common.type'
+import { ApiResponse, PaginatedApiResponse } from './common.type'
 import { ProductImage } from './productImage.type'
 import { Variant } from './variants.type'
 
@@ -8,6 +8,7 @@ export type ProductSale = {
     id: number
     brand: Brand
     category: Category
+    description: string
     images: ProductImage[]
     variants: Variant[]
     product_id: number
@@ -20,4 +21,17 @@ export type ProductSale = {
     updated_at: string
 }
 
+export type ProductSaleFilters = {
+    page?: number
+    limit?: number
+    category?: string
+    brand?: string
+    sort_order?: 'asc' | 'desc'
+    sort_by?: 'price' | 'sold'
+    rating?: number
+    min_price?: number
+    max_price?: number
+}
+
 export type ListProductSaleResponse = PaginatedApiResponse<ProductSale[]>
+export type ProductSaleResponse = ApiResponse<ProductSale>

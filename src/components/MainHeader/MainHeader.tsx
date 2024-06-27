@@ -1,17 +1,19 @@
 import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { Container } from '@mui/system'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { MouseEvent, useContext, useState } from 'react'
 import { IoChevronDownSharp } from 'react-icons/io5'
-import { LuBadgeInfo } from 'react-icons/lu'
+import { LuBadgeInfo, LuChevronDown } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { Fragment } from 'react/jsx-runtime'
+import avatarDefault from '~/assets/images/avatarDefault.png'
 import { MyCartIcon, NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
-import { LuChevronDown } from 'react-icons/lu'
 import { AppContext } from '~/contexts/app.context'
+import brandsService from '~/services/brands.service'
+import categoriesService from '~/services/categories.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
-import avatarDefault from '~/assets/images/avatarDefault.png'
-import { toast } from 'react-toastify'
 
 const settings = [
     {
@@ -49,18 +51,31 @@ export default function MainHeader() {
         }
     }
 
+    const { data: categories } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => categoriesService.getAllCategories(),
+        staleTime: 3 * 60 * 1000,
+        placeholderData: keepPreviousData
+    })
+    const { data: brands } = useQuery({
+        queryKey: ['brands'],
+        queryFn: () => brandsService.getAllBrands(),
+        staleTime: 3 * 60 * 1000, // 3 minutes
+        placeholderData: keepPreviousData
+    })
+
     return (
         <Fragment>
             <header className='w-full bg-white'>
                 <div className='hidden border-b border-stroke sm:block'>
-                    <Container className='container mx-auto'>
+                    <Container style={{ padding: '0' }}>
                         <div className='-mx-4 flex flex-wrap items-center'>
                             <div className='w-full px-4 md:w-2/3 lg:w-1/2'>
                                 <ul className='-mx-3 flex items-center'>
                                     <li>
                                         <Link
                                             to={''}
-                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize'
+                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize hover:text-blue-600'
                                         >
                                             Về chúng tôi
                                         </Link>
@@ -68,7 +83,7 @@ export default function MainHeader() {
                                     <li>
                                         <Link
                                             to={''}
-                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize'
+                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize hover:text-blue-600'
                                         >
                                             Liên hệ
                                         </Link>
@@ -136,7 +151,7 @@ export default function MainHeader() {
                                     ) : (
                                         <Link
                                             to={pathConfig.login}
-                                            className='text-blue-600 text-[14px] capitalize flex items-center gap-1'
+                                            className='text-blue-600 text-[14px] capitalize flex items-center gap-1 hover:text-blue-500'
                                         >
                                             Chưa đăng nhập
                                             <LuBadgeInfo fontSize='16px' />
@@ -147,7 +162,7 @@ export default function MainHeader() {
                         </div>
                     </Container>
                 </div>
-                <Container>
+                <Container style={{ padding: '0' }}>
                     <div className='container mx-auto'>
                         <div className='relative -mx-4 flex items-center justify-center sm:justify-between'>
                             <div className='w-60 max-w-full px-4 lg:w-48'>
@@ -175,13 +190,13 @@ export default function MainHeader() {
                                                 <li>
                                                     <Link
                                                         to={pathConfig.home}
-                                                        className='flex justify-between py-2 text-base font-medium text-text-primary lg:mx-5 lg:inline-flex lg:py-6 2xl:mx-[18px] capitalize'
+                                                        className='flex justify-between py-2 text-base font-medium text-text-primary lg:mx-5 lg:inline-flex lg:py-6 2xl:mx-[18px] capitalize hover:text-blue-600'
                                                     >
                                                         Trang chủ
                                                     </Link>
                                                 </li>
                                                 <li className='group relative lg:py-4'>
-                                                    <div className='flex cursor-pointer items-center justify-between py-2 text-base font-medium text-text-primary group lg:mx-6 lg:inline-flex lg:py-2 2xl:mx-[18px] capitalize'>
+                                                    <div className='flex cursor-pointer items-center justify-between py-2 text-base font-medium text-text-primary group lg:mx-6 lg:inline-flex lg:py-2 2xl:mx-[18px] capitalize hover:text-blue-600'>
                                                         Sản phẩm
                                                         <span className='pl-[6px]'>
                                                             <IoChevronDownSharp />
@@ -195,18 +210,16 @@ export default function MainHeader() {
                                                                     <h3 className='mb-[14px] text-base font-semibold text-text-primary capitalize'>
                                                                         Loại sản phẩm
                                                                     </h3>
-                                                                    <Link
-                                                                        to={pathConfig.productFilters}
-                                                                        className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
-                                                                    >
-                                                                        Áo thun nam
-                                                                    </Link>
-                                                                    <Link
-                                                                        to={pathConfig.productFilters}
-                                                                        className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
-                                                                    >
-                                                                        Áo khoác nữ
-                                                                    </Link>
+                                                                    {categories?.data.result &&
+                                                                        categories.data.result.length > 0 &&
+                                                                        categories.data.result.map((category) => (
+                                                                            <Link
+                                                                                to={`${pathConfig.productFilters}?category=${category.slug}`}
+                                                                                className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
+                                                                            >
+                                                                                {category.name}
+                                                                            </Link>
+                                                                        ))}
                                                                 </div>
                                                             </div>
                                                             <div className='w-full px-4 lg:w-1/2'>
@@ -214,12 +227,16 @@ export default function MainHeader() {
                                                                     <h3 className='mb-[14px] text-base font-semibold text-text-primary capitalize'>
                                                                         Thương hiệu
                                                                     </h3>
-                                                                    <Link
-                                                                        to={pathConfig.productFilters}
-                                                                        className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
-                                                                    >
-                                                                        Adidas
-                                                                    </Link>
+                                                                    {categories?.data.result &&
+                                                                        categories.data.result.length > 0 &&
+                                                                        categories.data.result.map((brand) => (
+                                                                            <Link
+                                                                                to={`${pathConfig.productFilters}?brand=${brand.slug}`}
+                                                                                className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
+                                                                            >
+                                                                                {brand.name}
+                                                                            </Link>
+                                                                        ))}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -243,7 +260,7 @@ export default function MainHeader() {
                                         </div>
                                     </div>
 
-                                    <div className='relative z-20'>
+                                    <div className='relative z-1'>
                                         <div className='flex max-w-[200px] justify-end'>
                                             <button className='relative flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'>
                                                 <MyCartIcon />
@@ -252,11 +269,8 @@ export default function MainHeader() {
                                                 </span>
                                             </button>
                                         </div>
-                                        <div
-                                            x-show='cartOpen'
-                                            className='absolute right-0 top-full mt-3 w-[330px]'
-                                            style={{ display: 'none' }}
-                                        >
+                                        {/* Cart Item */}
+                                        <div className='absolute right-0 top-full mt-3 w-[330px]' style={{ display: 'none' }}>
                                             <div className='overflow-hidden rounded-lg bg-white p-8 shadow-1'>
                                                 <div className='mb-5 border-b border-stroke pb-3'>
                                                     <div className='-mx-1 flex items-center justify-between pb-4'>
