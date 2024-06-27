@@ -1,17 +1,19 @@
 import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { Container } from '@mui/system'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { MouseEvent, useContext, useState } from 'react'
 import { IoChevronDownSharp } from 'react-icons/io5'
-import { LuBadgeInfo } from 'react-icons/lu'
+import { LuBadgeInfo, LuChevronDown } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { Fragment } from 'react/jsx-runtime'
+import avatarDefault from '~/assets/images/avatarDefault.png'
 import { MyCartIcon, NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
-import { LuChevronDown } from 'react-icons/lu'
 import { AppContext } from '~/contexts/app.context'
+import brandsService from '~/services/brands.service'
+import categoriesService from '~/services/categories.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
-import avatarDefault from '~/assets/images/avatarDefault.png'
-import { toast } from 'react-toastify'
 
 const settings = [
     {
@@ -48,6 +50,19 @@ export default function MainHeader() {
             default:
         }
     }
+
+    const { data: categories } = useQuery({
+        queryKey: ['categories'],
+        queryFn: () => categoriesService.getAllCategories(),
+        staleTime: 3 * 60 * 1000,
+        placeholderData: keepPreviousData
+    })
+    const { data: brands } = useQuery({
+        queryKey: ['brands'],
+        queryFn: () => brandsService.getAllBrands(),
+        staleTime: 3 * 60 * 1000, // 3 minutes
+        placeholderData: keepPreviousData
+    })
 
     return (
         <Fragment>
@@ -195,18 +210,16 @@ export default function MainHeader() {
                                                                     <h3 className='mb-[14px] text-base font-semibold text-text-primary capitalize'>
                                                                         Loại sản phẩm
                                                                     </h3>
-                                                                    <Link
-                                                                        to={pathConfig.productFilters}
-                                                                        className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
-                                                                    >
-                                                                        Áo thun nam
-                                                                    </Link>
-                                                                    <Link
-                                                                        to={pathConfig.productFilters}
-                                                                        className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
-                                                                    >
-                                                                        Áo khoác nữ
-                                                                    </Link>
+                                                                    {categories?.data.result &&
+                                                                        categories.data.result.length > 0 &&
+                                                                        categories.data.result.map((category) => (
+                                                                            <Link
+                                                                                to={`${pathConfig.productFilters}?category=${category.slug}`}
+                                                                                className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
+                                                                            >
+                                                                                {category.name}
+                                                                            </Link>
+                                                                        ))}
                                                                 </div>
                                                             </div>
                                                             <div className='w-full px-4 lg:w-1/2'>
@@ -214,12 +227,16 @@ export default function MainHeader() {
                                                                     <h3 className='mb-[14px] text-base font-semibold text-text-primary capitalize'>
                                                                         Thương hiệu
                                                                     </h3>
-                                                                    <Link
-                                                                        to={pathConfig.productFilters}
-                                                                        className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
-                                                                    >
-                                                                        Adidas
-                                                                    </Link>
+                                                                    {categories?.data.result &&
+                                                                        categories.data.result.length > 0 &&
+                                                                        categories.data.result.map((brand) => (
+                                                                            <Link
+                                                                                to={`${pathConfig.productFilters}?brand=${brand.slug}`}
+                                                                                className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
+                                                                            >
+                                                                                {brand.name}
+                                                                            </Link>
+                                                                        ))}
                                                                 </div>
                                                             </div>
                                                         </div>
