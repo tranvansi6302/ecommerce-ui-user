@@ -214,6 +214,7 @@ export default function MainHeader() {
                                                                         categories.data.result.length > 0 &&
                                                                         categories.data.result.map((category) => (
                                                                             <Link
+                                                                                key={category.id}
                                                                                 to={`${pathConfig.productFilters}?category=${category.slug}`}
                                                                                 className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
                                                                             >
@@ -227,10 +228,11 @@ export default function MainHeader() {
                                                                     <h3 className='mb-[14px] text-base font-semibold text-text-primary capitalize'>
                                                                         Thương hiệu
                                                                     </h3>
-                                                                    {categories?.data.result &&
-                                                                        categories.data.result.length > 0 &&
-                                                                        categories.data.result.map((brand) => (
+                                                                    {brands?.data.result &&
+                                                                        brands.data.result.length > 0 &&
+                                                                        brands.data.result.map((brand) => (
                                                                             <Link
+                                                                                key={brand.id}
                                                                                 to={`${pathConfig.productFilters}?brand=${brand.slug}`}
                                                                                 className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
                                                                             >
