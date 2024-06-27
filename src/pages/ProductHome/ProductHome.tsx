@@ -7,6 +7,7 @@ import Banner from './components/Banner'
 import CategoryList from './components/CategoryList'
 import useQueryProductSales from '~/hooks/useQueryProductSales'
 import { ProductSaleFilters } from '~/@types/productSales.type'
+import { Pagination, Stack } from '@mui/material'
 
 export default function ProductHome() {
     const queryConfig = useQueryProductSales()
@@ -25,6 +26,11 @@ export default function ProductHome() {
                 <ProductFeatured title='Sản phẩm mới' className='mt-8'>
                     <ProductItem productSales={productSales?.data.result} />
                 </ProductFeatured>
+                <div className='mt-16 flex items-center justify-center'>
+                    <Stack spacing={2}>
+                        <Pagination count={10} color='primary' />
+                    </Stack>
+                </div>
             </div>
         </Fragment>
     )

@@ -60,7 +60,7 @@ export default function MainHeader() {
                                     <li>
                                         <Link
                                             to={''}
-                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize'
+                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize hover:text-blue-600'
                                         >
                                             Về chúng tôi
                                         </Link>
@@ -68,7 +68,7 @@ export default function MainHeader() {
                                     <li>
                                         <Link
                                             to={''}
-                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize'
+                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize hover:text-blue-600'
                                         >
                                             Liên hệ
                                         </Link>
@@ -136,7 +136,7 @@ export default function MainHeader() {
                                     ) : (
                                         <Link
                                             to={pathConfig.login}
-                                            className='text-blue-600 text-[14px] capitalize flex items-center gap-1'
+                                            className='text-blue-600 text-[14px] capitalize flex items-center gap-1 hover:text-blue-500'
                                         >
                                             Chưa đăng nhập
                                             <LuBadgeInfo fontSize='16px' />
@@ -175,13 +175,13 @@ export default function MainHeader() {
                                                 <li>
                                                     <Link
                                                         to={pathConfig.home}
-                                                        className='flex justify-between py-2 text-base font-medium text-text-primary lg:mx-5 lg:inline-flex lg:py-6 2xl:mx-[18px] capitalize'
+                                                        className='flex justify-between py-2 text-base font-medium text-text-primary lg:mx-5 lg:inline-flex lg:py-6 2xl:mx-[18px] capitalize hover:text-blue-600'
                                                     >
                                                         Trang chủ
                                                     </Link>
                                                 </li>
                                                 <li className='group relative lg:py-4'>
-                                                    <div className='flex cursor-pointer items-center justify-between py-2 text-base font-medium text-text-primary group lg:mx-6 lg:inline-flex lg:py-2 2xl:mx-[18px] capitalize'>
+                                                    <div className='flex cursor-pointer items-center justify-between py-2 text-base font-medium text-text-primary group lg:mx-6 lg:inline-flex lg:py-2 2xl:mx-[18px] capitalize hover:text-blue-600'>
                                                         Sản phẩm
                                                         <span className='pl-[6px]'>
                                                             <IoChevronDownSharp />

@@ -6,14 +6,14 @@ import { Category } from '~/@types/categories.type'
 import pathConfig from '~/configs/path.config'
 import { QueryConfig } from '~/hooks/useQueryProductSales'
 
-type AsidebarFilterProps = {
+type AsidebarFilterByDataProps = {
     title: string
     filterData: Category[] | Brand[]
     queryConfig: QueryConfig
     filterType: 'category' | 'brand'
 }
 
-export default function AsidebarFilter({ title, filterData, queryConfig, filterType }: AsidebarFilterProps) {
+export default function AsidebarFilterByData({ title, filterData, queryConfig, filterType }: AsidebarFilterByDataProps) {
     return (
         <div className='filter-wrap'>
             <h4>

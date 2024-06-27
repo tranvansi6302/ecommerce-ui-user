@@ -21,7 +21,8 @@ type MySelectSortPriceProps = {
 }
 export default function MySelectSortPrice({ queryConfig }: MySelectSortPriceProps) {
     const [openSelectPrice, setOpenSelectPrice] = useState<boolean>(false)
-    const sortPriceActive = dataSortPrice.find((item) => item.sort === queryConfig.sort_order && queryConfig.sort_by === 'price')
+    const { sort_order, sort_by } = queryConfig
+    const sortPriceActive = dataSortPrice.find((item) => item.sort === sort_order && sort_by === 'price')
 
     return (
         <section>

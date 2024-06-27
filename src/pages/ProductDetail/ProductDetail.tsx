@@ -190,7 +190,13 @@ export default function ProductDetail() {
                                             <span className='mr-1 border-b border-b-blue-600 text-blue-600'>
                                                 {productSale?.data.result?.average_rating}
                                             </span>
-                                            <ProductRating rating={productSale?.data.result?.average_rating as number} />
+                                            <ProductRating
+                                                className='gap-1'
+                                                size={16}
+                                                activeClassname='w-[16px] h-[16px] fill-red-500 text-red-500'
+                                                nonActiveClassname='w-[16px] h-[16px] fill-current text-gray-300'
+                                                rating={productSale?.data.result?.average_rating as number}
+                                            />
                                         </div>
                                         <div className='mx-4 h-4 w-[1px] bg-gray-300'></div>
                                         <div>

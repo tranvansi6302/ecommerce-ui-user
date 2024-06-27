@@ -28,6 +28,9 @@ export type ProductSaleFilters = {
     brand?: string
     sort_order?: 'asc' | 'desc'
     sort_by?: 'price' | 'sold'
+    rating?: number
+    min_price?: number
+    max_price?: number
 }
 
 export type ListProductSaleResponse = PaginatedApiResponse<ProductSale[]>
