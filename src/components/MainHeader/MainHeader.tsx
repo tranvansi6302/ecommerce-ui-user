@@ -69,7 +69,8 @@ export default function MainHeader() {
 
     const { data: productsInCart } = useQuery({
         queryKey: ['productsInCart'],
-        queryFn: () => cartsService.getAllProductFromCarts()
+        queryFn: () => cartsService.getAllProductFromCarts(),
+        enabled: isAuthenticated
     })
 
     return (
