@@ -2,21 +2,20 @@ import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@m
 import { Container } from '@mui/system'
 import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useContext, useState } from 'react'
-import { FiSearch } from 'react-icons/fi'
 import { LuBadgeInfo, LuChevronDown } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { Fragment } from 'react/jsx-runtime'
 import { Cart } from '~/@types/cart.type'
 import avatarDefault from '~/assets/images/avatarDefault.png'
+import vtiLogo from '~/assets/images/vtiLogo.png'
 import { NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import cartsService from '~/services/carts.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
-import MyButton from '../MyButton'
+import HeaderSearch from './components/HeaderSearch'
 import MiniCart from './components/MiniCart'
-import vtiLogo from '~/assets/images/vtiLogo.png'
 
 const settings = [
     {
@@ -169,28 +168,7 @@ export default function MainHeader() {
                             <div className='flex w-full items-center justify-end px-4 lg:justify-between'>
                                 <div className='flex w-[70%] items-center justify-between px-4'>
                                     <div className='w-full'>
-                                        <form className='mx-auto'>
-                                            <label
-                                                htmlFor='default-search'
-                                                className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'
-                                            >
-                                                Search
-                                            </label>
-                                            <div className='relative'>
-                                                <input
-                                                    type='search'
-                                                    id='default-search'
-                                                    className='block w-full px-4  py-3 ps-4 text-sm text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500 outline-none'
-                                                    placeholder='Tìm kiếm sản phẩm...'
-                                                />
-                                                <MyButton
-                                                    type='submit'
-                                                    className='text-white absolute right-[3px] top-1/2 -translate-y-1/2 bg-blue-700 hover:bg-blue-800 h-[85%] rounded-md '
-                                                >
-                                                    <FiSearch fontSize='20px' />
-                                                </MyButton>
-                                            </div>
-                                        </form>
+                                        <HeaderSearch />
                                     </div>
                                 </div>
                                 <div className='hidden w-[30%] items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-0'>

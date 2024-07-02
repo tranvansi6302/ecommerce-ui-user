@@ -21,7 +21,8 @@ export default function useQueryProductSales() {
                     sort_by: queryParams.sort_by,
                     rating: queryParams.rating,
                     min_price: queryParams.min_price,
-                    max_price: queryParams.max_price
+                    max_price: queryParams.max_price,
+                    search: queryParams.search
                 },
                 isUndefined
             ),
