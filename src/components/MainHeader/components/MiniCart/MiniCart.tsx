@@ -20,6 +20,8 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
                             {productsInCart &&
                                 productsInCart.length > 0 &&
                                 productsInCart.slice(0, 5).map((item) => {
+                                    const promotionPrice = item.variant?.current_price_plan?.promotion_price
+                                    const salePrice = item.variant?.current_price_plan?.sale_price
                                     return (
                                         <div key={item.id} className='mt-2 flex py-2 hover:bg-gray-100'>
                                             <div className='flex-shrink-0'>
@@ -34,9 +36,7 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
                                             </div>
                                             <div className='ml-2 flex-shrink-0'>
                                                 <span className='text-blue-600'>
-                                                    {item.variant?.current_price_plan?.sale_price
-                                                        ? formatToVND(item.variant?.current_price_plan?.sale_price)
-                                                        : formatToVND(item.variant?.current_price_plan?.promotion_price)}
+                                                    {salePrice ? formatToVND(salePrice) : formatToVND(promotionPrice)}
                                                 </span>
                                             </div>
                                         </div>

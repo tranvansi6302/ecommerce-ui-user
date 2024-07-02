@@ -118,6 +118,28 @@ export default function CartList() {
         }, 0)
     }, [checkedCarts])
 
+    // Handle delete
+    const deleteProductFromCartMutation = useMutation({
+        mutationFn: (body: { cart_detail_ids: number[] }) => cartsService.deleteProductFromCart(body),
+        onSuccess: () => {
+            refetch()
+        }
+    })
+
+    const handleDeleteProductFromCart = (index: number) => {
+        const cartDetail = extendedCart[index]
+        deleteProductFromCartMutation.mutate({
+            cart_detail_ids: [cartDetail.id]
+        })
+    }
+
+    const handleDeleteManyProductFromCart = () => {
+        const cartDetailIds = checkedCarts.map((item) => item.id)
+        deleteProductFromCartMutation.mutate({
+            cart_detail_ids: cartDetailIds
+        })
+    }
+
     return (
         <Container style={{ padding: '0' }}>
             <div className='bg-neutral-100 py-5'>
@@ -137,7 +159,9 @@ export default function CartList() {
                                                 />
                                             </div>
                                             <div className='flex-grow text-text-primary mt-[2px] w-[80%]'>Sản phẩm</div>
-                                            <div className='flex-grow text-text-primary mt-[2px] w-[20%]'>Phân loại</div>
+                                            <div className='flex-grow text-text-primary mt-[2px] w-[20%] text-center'>
+                                                Phân loại
+                                            </div>
                                         </div>
                                     </div>
                                     <div className='col-span-6'>
@@ -187,7 +211,7 @@ export default function CartList() {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div className='w-[20%] text-left text-[14px] text-blue-600 py-[4px]'>
+                                                        <div className='w-[20%] flex items-center justify-center text-[14px] text-blue-600 py-[4px]'>
                                                             <div className=''>
                                                                 {item.variant.size}, {item.variant.color}
                                                             </div>
@@ -254,7 +278,11 @@ export default function CartList() {
                                                                 </span>
                                                             </div>
                                                             <div className='col-span-1'>
-                                                                <MyButtonV2 color='error' variant='text'>
+                                                                <MyButtonV2
+                                                                    onClick={() => handleDeleteProductFromCart(index)}
+                                                                    color='error'
+                                                                    variant='text'
+                                                                >
                                                                     Xóa
                                                                 </MyButtonV2>
                                                             </div>
@@ -292,7 +320,12 @@ export default function CartList() {
                                         <MyButton className='mx-3 border-none bg-none text-text-primary text-base'>
                                             Chọn tất cả ({extendedCart.length})
                                         </MyButton>
-                                        <MyButtonV2 sx={{ width: '50px', marginTop: '3px' }} color='error' variant='text'>
+                                        <MyButtonV2
+                                            onClick={handleDeleteManyProductFromCart}
+                                            sx={{ width: '50px', marginTop: '3px' }}
+                                            color='error'
+                                            variant='text'
+                                        >
                                             Xóa
                                         </MyButtonV2>
                                     </div>
