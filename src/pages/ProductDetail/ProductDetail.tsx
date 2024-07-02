@@ -2,7 +2,7 @@ import { Container } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import ImageViewer from 'react-simple-image-viewer'
 import { ProductSale } from '~/@types/productSales.type'
 import { Variant } from '~/@types/variants.type'
@@ -12,7 +12,9 @@ import MyButton from '~/components/MyButton'
 import ProductFeatured from '~/components/ProductFeatured'
 import ProductRating from '~/components/ProductRating'
 import QuantityController from '~/components/QuantityController/QuantityController'
+import pathConfig from '~/configs/path.config'
 import useSetTitle from '~/hooks/useSetTitle'
+import { queryClient } from '~/main'
 import cartsService from '~/services/carts.service'
 import productSalesService from '~/services/productSales.service'
 import {
@@ -26,6 +28,7 @@ import {
 } from '~/utils/helpers'
 
 export default function ProductDetail() {
+    const navigate = useNavigate()
     const { nameId } = useParams()
     const productId = getIdFromNameId(nameId as string)
     const [buyCount, setBuyCount] = useState<number>(1)
@@ -125,7 +128,12 @@ export default function ProductDetail() {
 
     // Add To Cart
     const addToCartMutation = useMutation({
-        mutationFn: (body: { variant_id: number; quantity: number }) => cartsService.addProductToCart(body)
+        mutationFn: (body: { variant_id: number; quantity: number }) => cartsService.addProductToCart(body),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['productsInCart']
+            })
+        }
     })
 
     const handleAddToCart = () => {
@@ -135,6 +143,18 @@ export default function ProductDetail() {
                 quantity: buyCount
             })
         }
+    }
+
+    const handleByNow = async () => {
+        const res = await addToCartMutation.mutateAsync({
+            variant_id: (activeVariant as Variant).id,
+            quantity: buyCount
+        })
+        navigate(pathConfig.carts, {
+            state: {
+                cart_detail_id: res.data.result?.cart_detail.id
+            }
+        })
     }
     return (
         <Fragment>
@@ -394,7 +414,10 @@ export default function ProductDetail() {
                                             Thêm vào giỏ hàng
                                         </MyButton>
 
-                                        <MyButton className='ml-4 h-12  rounded-sm bg-blue-600 px-12 text-white shadow-sm outline-none hover:bg-blue-500 transition-all'>
+                                        <MyButton
+                                            onClick={handleByNow}
+                                            className='ml-4 h-12  rounded-sm bg-blue-600 px-12 text-white shadow-sm outline-none hover:bg-blue-500 transition-all'
+                                        >
                                             Mua ngay
                                         </MyButton>
                                     </div>

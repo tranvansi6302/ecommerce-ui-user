@@ -20,7 +20,6 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
                             {productsInCart &&
                                 productsInCart.length > 0 &&
                                 productsInCart.slice(0, 5).map((item) => {
-                                    console.log(item.variant?.current_price_plan?.sale_price)
                                     return (
                                         <div key={item.id} className='mt-2 flex py-2 hover:bg-gray-100'>
                                             <div className='flex-shrink-0'>
@@ -59,9 +58,11 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
             <Link to='/' className='relative'>
                 <IoCartOutline fontSize='28px' />
 
-                <span className='absolute top-[-5px] left-[17px] rounded-full bg-blue-600 w-5 h-5 flex items-center justify-center text-[10px] text-white '>
-                    8
-                </span>
+                {productsInCart?.length > 0 && (
+                    <span className='absolute top-[-5px] left-[17px] rounded-full bg-blue-600 w-5 h-5 flex items-center justify-center text-[10px] text-white '>
+                        {productsInCart?.length}
+                    </span>
+                )}
             </Link>
         </Popover>
     )

@@ -69,9 +69,7 @@ export default function MainHeader() {
 
     const { data: productsInCart } = useQuery({
         queryKey: ['productsInCart'],
-        queryFn: () => cartsService.getAllProductFromCarts(),
-        staleTime: 3 * 60 * 1000,
-        placeholderData: keepPreviousData
+        queryFn: () => cartsService.getAllProductFromCarts()
     })
 
     return (

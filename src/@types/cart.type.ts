@@ -21,5 +21,10 @@ type CartCreatedUpdated = {
     cart_detail: Cart
 }
 
+export type ExtendedCartType = Cart & {
+    disabled: boolean
+    checked: boolean
+}
+
 export type ListCartProductResponse = PaginatedApiResponse<Cart[]>
-export type AddToCartResponse = ApiResponse<CartCreatedUpdated>
+export type CartCreatedUpdatedResponse = ApiResponse<CartCreatedUpdated>
