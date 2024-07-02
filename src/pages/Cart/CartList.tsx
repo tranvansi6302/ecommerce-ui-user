@@ -1,12 +1,62 @@
+import React, { useEffect, useState } from 'react'
 import { Container } from '@mui/material'
+import { produce } from 'immer'
 import { Link } from 'react-router-dom'
 import MyButton from '~/components/MyButton'
 import MyButtonV2 from '~/components/MyButtonV2'
 import QuantityController from '~/components/QuantityController'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { formatToVND } from '~/utils/helpers'
+import useSetTitle from '~/hooks/useSetTitle'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import cartsService from '~/services/carts.service'
+import { Cart } from '~/@types/cart.type'
+
+type ExtendedCartType = Cart & {
+    disabled: boolean
+    checked: boolean
+}
 
 export default function CartList() {
+    useSetTitle('Giỏ hàng')
+    const [extendedCart, setExtendedCart] = useState<ExtendedCartType[]>([])
+    const { data: productsInCart } = useQuery({
+        queryKey: ['productsInCart'],
+        queryFn: () => cartsService.getAllProductFromCarts(),
+        staleTime: 3 * 60 * 1000,
+        placeholderData: keepPreviousData
+    })
+
+    useEffect(() => {
+        if (productsInCart?.data.result) {
+            setExtendedCart(
+                productsInCart?.data.result.map((item) => ({
+                    ...item,
+                    disabled: false,
+                    checked: false
+                })) || []
+            )
+        }
+    }, [productsInCart])
+
+    const handleChecked = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setExtendedCart(
+            produce((draft) => {
+                draft[index].checked = e.target.checked
+            })
+        )
+    }
+
+    const isAllChecked = extendedCart.every((item) => item.checked)
+
+    const handleCheckAll = () => {
+        setExtendedCart((prev) =>
+            prev.map((item) => ({
+                ...item,
+                checked: !isAllChecked
+            }))
+        )
+    }
     return (
         <Container style={{ padding: '0' }}>
             <div className='bg-neutral-100 py-5'>
@@ -18,7 +68,12 @@ export default function CartList() {
                                     <div className='col-span-6'>
                                         <div className='flex items-center'>
                                             <div className='flex flex-shrink-0 items-center justify-center pr-3'>
-                                                <input type='checkbox' className='h-4 w-4 accent-blue-600' />
+                                                <input
+                                                    onChange={handleCheckAll}
+                                                    checked={isAllChecked}
+                                                    type='checkbox'
+                                                    className='h-4 w-4 accent-blue-600'
+                                                />
                                             </div>
                                             <div className='flex-grow text-text-primary mt-[2px] w-[80%]'>Sản phẩm</div>
                                             <div className='flex-grow text-text-primary mt-[2px] w-[20%]'>Phân loại</div>
@@ -35,246 +90,89 @@ export default function CartList() {
                                 </div>
 
                                 <div className='my-3 rounded-sm bg-white p-5 shadow'>
-                                    <div className='mb-5 grid grid-cols-12 items-center rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0'>
-                                        <div className='col-span-6 flex'>
-                                            <div className='flex w-[80%]'>
-                                                <div className='flex flex-shrink-0 items-center justify-center pr-6'>
-                                                    <input type='checkbox' className='h-4 w-4 accent-blue-600' />
-                                                </div>
-                                                <div className='flex-grow'>
-                                                    <div className='flex'>
-                                                        <Link className='h-20 w-20 flex-shrink-0' to={`123`}>
-                                                            <img
-                                                                alt='product_image'
-                                                                src='https://down-vn.img.susercontent.com/file/vn-11134201-7r98o-luyjph9odt1759'
+                                    {extendedCart &&
+                                        extendedCart.length > 0 &&
+                                        extendedCart.map((item, index) => (
+                                            <div
+                                                key={item.id}
+                                                className='mb-5 grid grid-cols-12 items-center rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0'
+                                            >
+                                                <div className='col-span-6 flex'>
+                                                    <div className='flex w-[80%]'>
+                                                        <div className='flex flex-shrink-0 items-center justify-center pr-6'>
+                                                            <input
+                                                                checked={item.checked}
+                                                                onChange={handleChecked(index)}
+                                                                type='checkbox'
+                                                                className='h-4 w-4 accent-blue-600'
                                                             />
-                                                        </Link>
-                                                        <div className='flex-grow px-2 pt-1 pb-2 text-left'>
-                                                            <Link to={`123`} className='text-left line-clamp-2'>
-                                                                Áo Thun GUCCl Tia Sét In Chuyển Nhiệt Chất Liệu Cotton Cao Cấp
-                                                            </Link>
+                                                        </div>
+                                                        <div className='flex-grow'>
+                                                            <div className='flex'>
+                                                                <Link className='h-20 w-20 flex-shrink-0' to={`123`}>
+                                                                    <img
+                                                                        alt={item?.variant.product_name}
+                                                                        src={item?.variant.product_images[0]?.url}
+                                                                    />
+                                                                </Link>
+                                                                <div className='flex-grow px-2 pt-1 pb-2 text-left'>
+                                                                    <Link to={`123`} className='text-left line-clamp-2'>
+                                                                        {item?.variant.product_name}
+                                                                    </Link>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className='w-[20%] text-left text-[14px] text-blue-600 py-[4px]'>
+                                                        <div className=''>
+                                                            {item.variant.size}, {item.variant.color}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className='col-span-6'>
+                                                    <div className='grid grid-cols-5 items-center'>
+                                                        <div className='col-span-2'>
+                                                            <div className='flex items-center justify-center'>
+                                                                <span className='ml-3'>
+                                                                    {item.variant?.current_price_plan?.sale_price
+                                                                        ? formatToVND(
+                                                                              item.variant?.current_price_plan?.sale_price
+                                                                          )
+                                                                        : formatToVND(
+                                                                              item.variant?.current_price_plan?.promotion_price
+                                                                          )}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div className='col-span-1'>
+                                                            <QuantityController
+                                                                max={10}
+                                                                value={item.quantity}
+                                                                classNameWrapper='flex items-center'
+                                                            />
+                                                        </div>
+                                                        <div className='col-span-1'>
+                                                            <span className='text-orange'>
+                                                                {item.variant?.current_price_plan?.sale_price
+                                                                    ? formatToVND(
+                                                                          item.quantity *
+                                                                              item.variant?.current_price_plan?.sale_price
+                                                                      )
+                                                                    : formatToVND(
+                                                                          item.quantity *
+                                                                              item.variant?.current_price_plan?.promotion_price
+                                                                      )}
+                                                            </span>
+                                                        </div>
+                                                        <div className='col-span-1'>
+                                                            <MyButtonV2 color='error' variant='text'>
+                                                                Xóa
+                                                            </MyButtonV2>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className='w-[20%] text-left text-[14px] text-blue-600 py-[4px]'>
-                                                <div className=''>XL, Xanh đen</div>
-                                            </div>
-                                        </div>
-                                        <div className='col-span-6'>
-                                            <div className='grid grid-cols-5 items-center'>
-                                                <div className='col-span-2'>
-                                                    <div className='flex items-center justify-center'>
-                                                        <span className='text-gray-300 line-through'>{formatToVND(100000)}</span>
-                                                        <span className='ml-3'> {formatToVND(300000)}</span>
-                                                    </div>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <QuantityController max={10} value={1} classNameWrapper='flex items-center' />
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <span className='text-orange'>{formatToVND(300000)}</span>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <MyButtonV2 color='error' variant='text'>
-                                                        Xóa
-                                                    </MyButtonV2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='mb-5 grid grid-cols-12 items-center rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0'>
-                                        <div className='col-span-6 flex'>
-                                            <div className='flex w-[80%]'>
-                                                <div className='flex flex-shrink-0 items-center justify-center pr-6'>
-                                                    <input type='checkbox' className='h-4 w-4 accent-blue-600' />
-                                                </div>
-                                                <div className='flex-grow'>
-                                                    <div className='flex'>
-                                                        <Link className='h-20 w-20 flex-shrink-0' to={`123`}>
-                                                            <img
-                                                                alt='product_image'
-                                                                src='https://down-vn.img.susercontent.com/file/vn-11134201-7r98o-luyjph9odt1759'
-                                                            />
-                                                        </Link>
-                                                        <div className='flex-grow px-2 pt-1 pb-2 text-left'>
-                                                            <Link to={`123`} className='text-left line-clamp-2'>
-                                                                Áo Thun GUCCl Tia Sét In Chuyển Nhiệt Chất Liệu Cotton Cao Cấp
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='w-[20%] text-left text-[14px] text-blue-600 py-[4px]'>
-                                                <div className=''>XL, Xanh đen</div>
-                                            </div>
-                                        </div>
-                                        <div className='col-span-6'>
-                                            <div className='grid grid-cols-5 items-center'>
-                                                <div className='col-span-2'>
-                                                    <div className='flex items-center justify-center'>
-                                                        <span className='text-gray-300 line-through'>{formatToVND(100000)}</span>
-                                                        <span className='ml-3'> {formatToVND(300000)}</span>
-                                                    </div>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <QuantityController max={10} value={1} classNameWrapper='flex items-center' />
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <span className='text-orange'>{formatToVND(300000)}</span>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <MyButtonV2 color='error' variant='text'>
-                                                        Xóa
-                                                    </MyButtonV2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='mb-5 grid grid-cols-12 items-center rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0'>
-                                        <div className='col-span-6 flex'>
-                                            <div className='flex w-[80%]'>
-                                                <div className='flex flex-shrink-0 items-center justify-center pr-6'>
-                                                    <input type='checkbox' className='h-4 w-4 accent-blue-600' />
-                                                </div>
-                                                <div className='flex-grow'>
-                                                    <div className='flex'>
-                                                        <Link className='h-20 w-20 flex-shrink-0' to={`123`}>
-                                                            <img
-                                                                alt='product_image'
-                                                                src='https://down-vn.img.susercontent.com/file/vn-11134201-7r98o-luyjph9odt1759'
-                                                            />
-                                                        </Link>
-                                                        <div className='flex-grow px-2 pt-1 pb-2 text-left'>
-                                                            <Link to={`123`} className='text-left line-clamp-2'>
-                                                                Áo Thun GUCCl Tia Sét In Chuyển Nhiệt Chất Liệu Cotton Cao Cấp
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='w-[20%] text-left text-[14px] text-blue-600 py-[4px]'>
-                                                <div className=''>XL, Xanh đen</div>
-                                            </div>
-                                        </div>
-                                        <div className='col-span-6'>
-                                            <div className='grid grid-cols-5 items-center'>
-                                                <div className='col-span-2'>
-                                                    <div className='flex items-center justify-center'>
-                                                        <span className='text-gray-300 line-through'>{formatToVND(100000)}</span>
-                                                        <span className='ml-3'> {formatToVND(300000)}</span>
-                                                    </div>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <QuantityController max={10} value={1} classNameWrapper='flex items-center' />
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <span className='text-orange'>{formatToVND(300000)}</span>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <MyButtonV2 color='error' variant='text'>
-                                                        Xóa
-                                                    </MyButtonV2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='mb-5 grid grid-cols-12 items-center rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0'>
-                                        <div className='col-span-6 flex'>
-                                            <div className='flex w-[80%]'>
-                                                <div className='flex flex-shrink-0 items-center justify-center pr-6'>
-                                                    <input type='checkbox' className='h-4 w-4 accent-blue-600' />
-                                                </div>
-                                                <div className='flex-grow'>
-                                                    <div className='flex'>
-                                                        <Link className='h-20 w-20 flex-shrink-0' to={`123`}>
-                                                            <img
-                                                                alt='product_image'
-                                                                src='https://down-vn.img.susercontent.com/file/vn-11134201-7r98o-luyjph9odt1759'
-                                                            />
-                                                        </Link>
-                                                        <div className='flex-grow px-2 pt-1 pb-2 text-left'>
-                                                            <Link to={`123`} className='text-left line-clamp-2'>
-                                                                Áo Thun GUCCl Tia Sét In Chuyển Nhiệt Chất Liệu Cotton Cao Cấp
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='w-[20%] text-left text-[14px] text-blue-600 py-[4px]'>
-                                                <div className=''>XL, Xanh đen</div>
-                                            </div>
-                                        </div>
-                                        <div className='col-span-6'>
-                                            <div className='grid grid-cols-5 items-center'>
-                                                <div className='col-span-2'>
-                                                    <div className='flex items-center justify-center'>
-                                                        <span className='text-gray-300 line-through'>{formatToVND(100000)}</span>
-                                                        <span className='ml-3'> {formatToVND(300000)}</span>
-                                                    </div>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <QuantityController max={10} value={1} classNameWrapper='flex items-center' />
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <span className='text-orange'>{formatToVND(300000)}</span>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <MyButtonV2 color='error' variant='text'>
-                                                        Xóa
-                                                    </MyButtonV2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className='mb-5 grid grid-cols-12 items-center rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0'>
-                                        <div className='col-span-6 flex'>
-                                            <div className='flex w-[80%]'>
-                                                <div className='flex flex-shrink-0 items-center justify-center pr-6'>
-                                                    <input type='checkbox' className='h-4 w-4 accent-blue-600' />
-                                                </div>
-                                                <div className='flex-grow'>
-                                                    <div className='flex'>
-                                                        <Link className='h-20 w-20 flex-shrink-0' to={`123`}>
-                                                            <img
-                                                                alt='product_image'
-                                                                src='https://down-vn.img.susercontent.com/file/vn-11134201-7r98o-luyjph9odt1759'
-                                                            />
-                                                        </Link>
-                                                        <div className='flex-grow px-2 pt-1 pb-2 text-left'>
-                                                            <Link to={`123`} className='text-left line-clamp-2'>
-                                                                Áo Thun GUCCl Tia Sét In Chuyển Nhiệt Chất Liệu Cotton Cao Cấp
-                                                            </Link>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className='w-[20%] text-left text-[14px] text-blue-600 py-[4px]'>
-                                                <div className=''>XL, Xanh đen</div>
-                                            </div>
-                                        </div>
-                                        <div className='col-span-6'>
-                                            <div className='grid grid-cols-5 items-center'>
-                                                <div className='col-span-2'>
-                                                    <div className='flex items-center justify-center'>
-                                                        <span className='text-gray-300 line-through'>{formatToVND(100000)}</span>
-                                                        <span className='ml-3'> {formatToVND(300000)}</span>
-                                                    </div>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <QuantityController max={10} value={1} classNameWrapper='flex items-center' />
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <span className='text-orange'>{formatToVND(300000)}</span>
-                                                </div>
-                                                <div className='col-span-1'>
-                                                    <MyButtonV2 color='error' variant='text'>
-                                                        Xóa
-                                                    </MyButtonV2>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        ))}
                                 </div>
                             </div>
                         </div>
@@ -293,11 +191,16 @@ export default function CartList() {
                             <div className='flex items-center justify-between w-full'>
                                 <div className='flex items-center'>
                                     <div className='flex flex-shrink-0 items-center justify-center pr-3'>
-                                        <input type='checkbox' className='h-4 w-4 accent-blue-600' />
+                                        <input
+                                            onChange={handleCheckAll}
+                                            checked={isAllChecked}
+                                            type='checkbox'
+                                            className='h-4 w-4 accent-blue-600'
+                                        />
                                     </div>
                                     <div className='mt-[2px] flex items-center'>
                                         <MyButton className='mx-3 border-none bg-none text-text-primary text-base'>
-                                            Chọn tất cả (2)
+                                            Chọn tất cả ({extendedCart.length})
                                         </MyButton>
                                         <MyButtonV2 sx={{ width: '50px', marginTop: '3px' }} color='error' variant='text'>
                                             Xóa

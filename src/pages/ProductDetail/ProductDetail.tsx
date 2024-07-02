@@ -1,5 +1,5 @@
 import { Container } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -12,18 +12,22 @@ import MyButton from '~/components/MyButton'
 import ProductFeatured from '~/components/ProductFeatured'
 import ProductRating from '~/components/ProductRating'
 import QuantityController from '~/components/QuantityController/QuantityController'
+import useSetTitle from '~/hooks/useSetTitle'
+import cartsService from '~/services/carts.service'
 import productSalesService from '~/services/productSales.service'
 import {
     checkEqualPromotionPrice,
     checkEqualSalePrice,
     formatToVND,
+    getIdFromNameId,
     getMinMaxPromotionPrice,
     getMinMaxSalePrice,
     getUniqueSizeAndColor
 } from '~/utils/helpers'
 
 export default function ProductDetail() {
-    const { id: productId } = useParams<{ id: string }>()
+    const { nameId } = useParams()
+    const productId = getIdFromNameId(nameId as string)
     const [buyCount, setBuyCount] = useState<number>(1)
     const imageRef = useRef<HTMLImageElement>(null)
     const [currentImageView, setCurrentImageView] = useState<number>(0)
@@ -46,6 +50,9 @@ export default function ProductDetail() {
         queryFn: () => productSalesService.getProductSale(Number(productId)),
         enabled: !!productId
     })
+
+    useSetTitle((productSale?.data.result as ProductSale)?.product_name as string)
+
     const { colors, sizes } = getUniqueSizeAndColor(productSale?.data.result as ProductSale)
 
     // const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -115,6 +122,20 @@ export default function ProductDetail() {
             setActiveVariant(variant as Variant)
         }
     }, [productSale?.data.result, selectedColor, selectedSize])
+
+    // Add To Cart
+    const addToCartMutation = useMutation({
+        mutationFn: (body: { variant_id: number; quantity: number }) => cartsService.addProductToCart(body)
+    })
+
+    const handleAddToCart = () => {
+        if (activeVariant) {
+            addToCartMutation.mutate({
+                variant_id: activeVariant.id,
+                quantity: buyCount
+            })
+        }
+    }
     return (
         <Fragment>
             <Container style={{ padding: '0' }}>
@@ -365,7 +386,10 @@ export default function ProductDetail() {
                                         )}
                                     </div>
                                     <div className='mt-8 flex items-center'>
-                                        <MyButton className='h-12 rounded-sm border border-blue-600 bg-blue-50 px-5 shadow-sm hover:bg-blue-50'>
+                                        <MyButton
+                                            onClick={handleAddToCart}
+                                            className='h-12 rounded-sm border border-blue-600 bg-blue-50 px-5 shadow-sm hover:bg-blue-50'
+                                        >
                                             <AddToCartIcon />
                                             Thêm vào giỏ hàng
                                         </MyButton>

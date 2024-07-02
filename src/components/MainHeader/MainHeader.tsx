@@ -7,13 +7,16 @@ import { LuBadgeInfo, LuChevronDown } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { Fragment } from 'react/jsx-runtime'
+import { Cart } from '~/@types/cart.type'
 import avatarDefault from '~/assets/images/avatarDefault.png'
-import { MyCartIcon, NeedHelpIcon } from '~/assets/svg'
+import { NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import brandsService from '~/services/brands.service'
+import cartsService from '~/services/carts.service'
 import categoriesService from '~/services/categories.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
+import MiniCart from './components/MiniCart'
 
 const settings = [
     {
@@ -61,6 +64,13 @@ export default function MainHeader() {
         queryKey: ['brands'],
         queryFn: () => brandsService.getAllBrands(),
         staleTime: 3 * 60 * 1000, // 3 minutes
+        placeholderData: keepPreviousData
+    })
+
+    const { data: productsInCart } = useQuery({
+        queryKey: ['productsInCart'],
+        queryFn: () => cartsService.getAllProductFromCarts(),
+        staleTime: 3 * 60 * 1000,
         placeholderData: keepPreviousData
     })
 
@@ -263,104 +273,7 @@ export default function MainHeader() {
                                     </div>
 
                                     <div className='relative z-1'>
-                                        <div className='flex max-w-[200px] justify-end'>
-                                            <button className='relative flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'>
-                                                <MyCartIcon />
-                                                <span className='absolute -right-1 -top-1 h-[18px] w-[18px] rounded-full bg-primary text-[10px] font-semibold leading-[18px] text-white'>
-                                                    1
-                                                </span>
-                                            </button>
-                                        </div>
-                                        {/* Cart Item */}
-                                        <div className='absolute right-0 top-full mt-3 w-[330px]' style={{ display: 'none' }}>
-                                            <div className='overflow-hidden rounded-lg bg-white p-8 shadow-1'>
-                                                <div className='mb-5 border-b border-stroke pb-3'>
-                                                    <div className='-mx-1 flex items-center justify-between pb-4'>
-                                                        <div className='flex items-center px-1'>
-                                                            <div className='mr-3 h-10 w-full max-w-[40px] overflow-hidden rounded'>
-                                                                <img
-                                                                    src='src/assets/ecom-images/checkout/checkout-02/image-02.jpg'
-                                                                    alt='product image'
-                                                                    className='w-full'
-                                                                />
-                                                            </div>
-                                                            <div>
-                                                                <a href='"' className='text-sm font-medium text-text-primary'>
-                                                                    Circular Sienna
-                                                                </a>
-                                                                <p className='truncate text-xs font-medium text-body-color'>
-                                                                    Awesome white shirt
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div className='px-1'>
-                                                            <p className='text-base font-semibold text-text-primary'>$36.00</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className='-mx-1 flex items-center justify-between py-4'>
-                                                        <div className='flex items-center px-1'>
-                                                            <div className='mr-3 h-10 w-full max-w-[40px] overflow-hidden rounded'>
-                                                                <img
-                                                                    src='src/assets/ecom-images/checkout/checkout-02/image-03.jpg'
-                                                                    alt='product image'
-                                                                    className='w-full'
-                                                                />
-                                                            </div>
-                                                            <div>
-                                                                <a href='"' className='text-sm font-medium text-text-primary'>
-                                                                    Black T-shirt
-                                                                </a>
-                                                                <p className='truncate text-xs font-medium text-body-color'>
-                                                                    It's a nice black t-shirt
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div className='px-1'>
-                                                            <p className='text-base font-semibold text-text-primary'>$36.00</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='-mx-1 border-b border-stroke pb-5'>
-                                                    <div className='mb-3 flex items-center justify-between'>
-                                                        <div className='px-1'>
-                                                            <p className='text-base text-text-primary'>Subtotal</p>
-                                                        </div>
-                                                        <div className='px-1'>
-                                                            <p className='text-base font-medium text-text-primary'>$108</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className='mb-3 flex items-center justify-between'>
-                                                        <div className='px-1'>
-                                                            <p className='text-base text-text-primary'>Shipping Cost (+)</p>
-                                                        </div>
-                                                        <div className='px-1'>
-                                                            <p className='text-base font-medium text-text-primary'>$10.85</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className='flex items-center justify-between'>
-                                                        <div className='px-1'>
-                                                            <p className='text-base text-text-primary'>Discount (-)</p>
-                                                        </div>
-                                                        <div className='px-1'>
-                                                            <p className='text-base font-medium text-text-primary'>$9.00</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className='-mx-1 flex items-center justify-between pb-6 pt-5'>
-                                                    <div className='px-1'>
-                                                        <p className='text-base text-text-primary'>Total Payable</p>
-                                                    </div>
-                                                    <div className='px-1'>
-                                                        <p className='text-base font-medium text-text-primary'>$88.15</p>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <button className='flex w-full items-center justify-center rounded-md bg-primary px-10 py-[13px] text-center text-base font-medium text-white hover:bg-blue-dark'>
-                                                        Place Order
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <MiniCart productsInCart={productsInCart?.data.result as Cart[]} />
                                     </div>
                                 </div>
                             </div>
