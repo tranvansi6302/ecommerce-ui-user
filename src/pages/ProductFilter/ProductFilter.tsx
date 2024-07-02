@@ -18,11 +18,18 @@ import productSalesService from '~/services/productSales.service'
 import AsidebarFilterByData from './components/AsidebarFilterByData'
 import FilterMinMaxPrice from './components/SortMinMaxPrice/FilterMinMaxPrice'
 import FilterRating from './components/FilterRating'
+import { useEffect } from 'react'
+import useSetTitle from '~/hooks/useSetTitle'
 
 export default function ProductFilters() {
+    useSetTitle('Bộ lọc tìm kiếm sản phẩm')
     const queryConfig = useQueryProductSales()
     const navigate = useNavigate()
     const { sort_order, sort_by } = queryConfig
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [queryConfig])
+
     const { data: productSales } = useQuery({
         queryKey: ['productSales', queryConfig],
         queryFn: () => productSalesService.getAllProductSales(queryConfig as ProductSaleFilters),

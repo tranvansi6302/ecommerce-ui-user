@@ -2,7 +2,7 @@ const pathConfig = {
     register: '/register',
     login: '/login',
     home: '/',
-    productDetail: ':id',
+    productDetail: ':nameId',
     productFilters: '/filters',
     carts: '/carts'
 }

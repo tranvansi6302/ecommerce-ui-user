@@ -18,6 +18,13 @@ class Http {
                 'Content-Type': 'application/json'
             }
         })
+        this.instance.interceptors.request.use((config) => {
+            if (this.token) {
+                config.headers.authorization = `Bearer ${this.token}`
+                return config
+            }
+            return config
+        })
         this.instance.interceptors.response.use(
             (response) => {
                 const message = (response.data as ErrorMessage).message

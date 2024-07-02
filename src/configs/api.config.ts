@@ -5,5 +5,6 @@ export const API_URL = {
     LOGIN_GOOGLE: '/auth/oauth2/google',
     PRODUCT_SALES: '/products/sales',
     CATEGORIES: '/categories',
-    BRANDS: '/brands'
+    BRANDS: '/brands',
+    CARTS: '/carts'
 }

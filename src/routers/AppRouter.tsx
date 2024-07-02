@@ -74,7 +74,11 @@ export default function AppRouter() {
             children: [
                 {
                     path: pathConfig.carts,
-                    element: <CartList />
+                    element: (
+                        <MainLayout>
+                            <CartList />
+                        </MainLayout>
+                    )
                 }
             ]
         }

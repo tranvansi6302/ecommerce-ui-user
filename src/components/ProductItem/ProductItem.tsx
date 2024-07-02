@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { ProductSale } from '~/@types/productSales.type'
 import ProductRating from '~/components/ProductRating'
 import pathConfig from '~/configs/path.config'
-import { formatToVND, getMinMaxPromotionPrice, getMinMaxSalePrice } from '~/utils/helpers'
+import { formatToVND, generateNameId, getMinMaxPromotionPrice, getMinMaxSalePrice } from '~/utils/helpers'
 
 type ProductItemProps = {
     productSales?: ProductSale[]
@@ -16,7 +16,11 @@ export default function ProductItem({ productSales }: ProductItemProps) {
             {productSales &&
                 productSales?.length > 0 &&
                 productSales?.map((product) => (
-                    <Link key={product.product_id} to={`${pathConfig.home}${product.product_id}`} className='grid-item'>
+                    <Link
+                        key={product.product_id}
+                        to={`${pathConfig.home}${generateNameId({ name: product.product_name, id: product.product_id.toString() })}`}
+                        className='grid-item'
+                    >
                         <Paper elevation={0} sx={{ borderRadius: '2px' }}>
                             <Box
                                 sx={{
