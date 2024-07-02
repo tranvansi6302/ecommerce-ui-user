@@ -1,8 +1,8 @@
 import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { Container } from '@mui/system'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useContext, useState } from 'react'
-import { IoChevronDownSharp } from 'react-icons/io5'
+import { FiSearch } from 'react-icons/fi'
 import { LuBadgeInfo, LuChevronDown } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -12,11 +12,11 @@ import avatarDefault from '~/assets/images/avatarDefault.png'
 import { NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
-import brandsService from '~/services/brands.service'
 import cartsService from '~/services/carts.service'
-import categoriesService from '~/services/categories.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
+import MyButton from '../MyButton'
 import MiniCart from './components/MiniCart'
+import vtiLogo from '~/assets/images/vtiLogo.png'
 
 const settings = [
     {
@@ -53,19 +53,6 @@ export default function MainHeader() {
             default:
         }
     }
-
-    const { data: categories } = useQuery({
-        queryKey: ['categories'],
-        queryFn: () => categoriesService.getAllCategories(),
-        staleTime: 3 * 60 * 1000,
-        placeholderData: keepPreviousData
-    })
-    const { data: brands } = useQuery({
-        queryKey: ['brands'],
-        queryFn: () => brandsService.getAllBrands(),
-        staleTime: 3 * 60 * 1000, // 3 minutes
-        placeholderData: keepPreviousData
-    })
 
     const { data: productsInCart } = useQuery({
         queryKey: ['productsInCart'],
@@ -172,92 +159,41 @@ export default function MainHeader() {
                     </Container>
                 </div>
                 <Container style={{ padding: '0' }}>
-                    <div className='container mx-auto'>
+                    <div className=' mx-auto'>
                         <div className='relative -mx-4 flex items-center justify-center sm:justify-between'>
                             <div className='w-60 max-w-full px-4 lg:w-48'>
-                                <a href='index.html' className='block w-full py-5 lg:py-3'>
-                                    <img
-                                        src='https://demo.tailgrids.com/templates/planet/build/src/assets/images/logo/logo-primary.svg'
-                                        alt='logo'
-                                        className='w-full'
-                                    />
-                                </a>
+                                <Link to={pathConfig.home} className='w-[60px] py-5 lg:py-3 flex items-center gap-2'>
+                                    <img src={vtiLogo} alt='logo' className='w-full' />
+                                </Link>
                             </div>
                             <div className='flex w-full items-center justify-end px-4 lg:justify-between'>
-                                <div className='flex w-full items-center justify-between px-4'>
+                                <div className='flex w-[70%] items-center justify-between px-4'>
                                     <div className='w-full'>
-                                        <button
-                                            id='navbarToggler'
-                                            className='absolute right-4 top-1/2 block -translate-y-1/2 rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden'
-                                        >
-                                            <span className='relative my-[6px] block h-[2px] w-[30px] bg-body-color' />
-                                            <span className='relative my-[6px] block h-[2px] w-[30px] bg-body-color' />
-                                            <span className='relative my-[6px] block h-[2px] w-[30px] bg-body-color' />
-                                        </button>
-                                        <nav className='absolute right-4 top-full w-full max-w-[250px] justify-center rounded-lg bg-white px-6 py-5 shadow lg:static lg:flex lg:w-full lg:max-w-full lg:justify-start lg:bg-transparent lg:px-0 lg:py-0 lg:shadow-none hidden'>
-                                            <ul className='block items-center lg:flex'>
-                                                <li>
-                                                    <Link
-                                                        to={pathConfig.home}
-                                                        className='flex justify-between py-2 text-base font-medium text-text-primary lg:mx-5 lg:inline-flex lg:py-6 2xl:mx-[18px] capitalize hover:text-blue-600'
-                                                    >
-                                                        Trang chủ
-                                                    </Link>
-                                                </li>
-                                                <li className='group relative lg:py-4'>
-                                                    <div className='flex cursor-pointer items-center justify-between py-2 text-base font-medium text-text-primary group lg:mx-6 lg:inline-flex lg:py-2 2xl:mx-[18px] capitalize hover:text-blue-600'>
-                                                        Sản phẩm
-                                                        <span className='pl-[6px]'>
-                                                            <IoChevronDownSharp />
-                                                        </span>
-                                                    </div>
-                                                    <div className='relative z-50 left-0 top-full  rounded-[5px] bg-white px-2 transition-all group-hover:opacity-100 lg:invisible lg:absolute lg:top-[115%] lg:w-[500px] lg:border-[.5px] lg:border-stroke lg:px-[50px] lg:pb-7 lg:pt-9 lg:opacity-0 lg:group-hover:visible lg:group-hover:top-full xl:w-[500px] hidden lg:block'>
-                                                        <span className='absolute -top-[6px] left-8 -z-10 hidden h-3 w-3 rotate-45 rounded-sm border-[.5px] border-b-0 border-r-0 border-stroke bg-white lg:block xl:left-10' />
-                                                        <div className='-mx-4 flex'>
-                                                            <div className='w-full px-4 lg:w-1/2'>
-                                                                <div>
-                                                                    <h3 className='mb-[14px] text-base font-semibold text-text-primary capitalize'>
-                                                                        Loại sản phẩm
-                                                                    </h3>
-                                                                    {categories?.data.result &&
-                                                                        categories.data.result.length > 0 &&
-                                                                        categories.data.result.map((category) => (
-                                                                            <Link
-                                                                                key={category.id}
-                                                                                to={`${pathConfig.productFilters}?category=${category.slug}`}
-                                                                                className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
-                                                                            >
-                                                                                {category.name}
-                                                                            </Link>
-                                                                        ))}
-                                                                </div>
-                                                            </div>
-                                                            <div className='w-full px-4 lg:w-1/2'>
-                                                                <div>
-                                                                    <h3 className='mb-[14px] text-base font-semibold text-text-primary capitalize'>
-                                                                        Thương hiệu
-                                                                    </h3>
-                                                                    {brands?.data.result &&
-                                                                        brands.data.result.length > 0 &&
-                                                                        brands.data.result.map((brand) => (
-                                                                            <Link
-                                                                                key={brand.id}
-                                                                                to={`${pathConfig.productFilters}?brand=${brand.slug}`}
-                                                                                className='block py-[6px] hover:text-blue-600 text-base text-body-color capitalize'
-                                                                            >
-                                                                                {brand.name}
-                                                                            </Link>
-                                                                        ))}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </nav>
+                                        <form className='mx-auto'>
+                                            <label
+                                                htmlFor='default-search'
+                                                className='mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white'
+                                            >
+                                                Search
+                                            </label>
+                                            <div className='relative'>
+                                                <input
+                                                    type='search'
+                                                    id='default-search'
+                                                    className='block w-full px-4  py-3 ps-4 text-sm text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500 outline-none'
+                                                    placeholder='Tìm kiếm sản phẩm...'
+                                                />
+                                                <MyButton
+                                                    type='submit'
+                                                    className='text-white absolute right-[3px] top-1/2 -translate-y-1/2 bg-blue-700 hover:bg-blue-800 h-[85%] rounded-md '
+                                                >
+                                                    <FiSearch fontSize='20px' />
+                                                </MyButton>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
-                                <div className='hidden w-full items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-0'>
+                                <div className='hidden w-[30%] items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-0'>
                                     <div className='hidden items-center pr-1 xl:flex'>
                                         <div className='mr-3 flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'>
                                             <NeedHelpIcon />

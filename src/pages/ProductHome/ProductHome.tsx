@@ -24,6 +24,7 @@ export default function ProductHome() {
         <Fragment>
             <Banner />
             <CategoryList />
+
             <div className='pb-20'>
                 <ProductFeatured title='Tất cả sản phẩm' className='mt-8'>
                     <ProductItem productSales={productSales?.data.result} />
