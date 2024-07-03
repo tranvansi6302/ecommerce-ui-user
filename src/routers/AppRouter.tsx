@@ -3,9 +3,11 @@ import { Navigate, Outlet, useRoutes } from 'react-router-dom'
 import Authenticate from '~/components/Authenticate'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
+import AccountLayout from '~/layouts/AccountLayout'
 import MainLayout from '~/layouts/MainLayout'
 import CartList from '~/pages/Cart/CartList'
 import Login from '~/pages/Login'
+import Profile from '~/pages/MyAccount/components/Profile'
 import ProductDetail from '~/pages/ProductDetail'
 import ProductFilter from '~/pages/ProductFilter'
 import ProductHome from '~/pages/ProductHome'
@@ -78,6 +80,14 @@ export default function AppRouter() {
                         <MainLayout>
                             <CartList />
                         </MainLayout>
+                    )
+                },
+                {
+                    path: pathConfig.profile,
+                    element: (
+                        <AccountLayout>
+                            <Profile />
+                        </AccountLayout>
                     )
                 }
             ]

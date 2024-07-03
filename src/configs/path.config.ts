@@ -4,6 +4,7 @@ const pathConfig = {
     home: '/',
     productDetail: ':nameId',
     productFilters: '/filters',
-    carts: '/carts'
+    carts: '/carts',
+    profile: '/account/profile'
 }
 export default pathConfig

@@ -2,7 +2,7 @@ import { TextField } from '@mui/material'
 import { UseFormRegister } from 'react-hook-form'
 
 type InputAuthProps = {
-    label: string
+    label?: string
     name: string
     variant?: 'standard' | 'outlined' | 'filled'
     register?: UseFormRegister<any>

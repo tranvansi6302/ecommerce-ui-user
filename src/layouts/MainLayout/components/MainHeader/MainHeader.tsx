@@ -14,13 +14,14 @@ import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import cartsService from '~/services/carts.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
-import HeaderSearch from './components/HeaderSearch'
-import MiniCart from './components/MiniCart'
+import HeaderSearch from '../HeaderSearch'
+import MiniCart from '../MiniCart'
 
 const settings = [
     {
         id: 'account',
-        label: 'Tài khoản của tôi'
+        label: 'Tài khoản của tôi',
+        link: pathConfig.profile
     },
     {
         id: 'order',
@@ -61,7 +62,7 @@ export default function MainHeader() {
 
     return (
         <Fragment>
-            <header className='w-full bg-white'>
+            <header className='w-full bg-white shadow-sm'>
                 <div className='hidden border-b border-stroke sm:block'>
                     <Container style={{ padding: '0' }}>
                         <div className='-mx-4 flex flex-wrap items-center'>
@@ -113,7 +114,7 @@ export default function MainHeader() {
                                                 </IconButton>
                                             </Tooltip>
                                             <Menu
-                                                sx={{ mt: '45px' }}
+                                                sx={{ mt: '35px' }}
                                                 id='menu-appbar'
                                                 anchorEl={openSetting}
                                                 anchorOrigin={{
@@ -129,17 +130,27 @@ export default function MainHeader() {
                                                 onClose={() => setOpenSetting(null)}
                                             >
                                                 {settings.map((setting) => (
-                                                    <MenuItem key={setting.id} onClick={() => handleSetting(setting.id)}>
-                                                        <Typography
+                                                    <Link key={setting.id} to={setting.link || pathConfig.home}>
+                                                        <MenuItem
                                                             sx={{
-                                                                textTransform: 'capitalize'
+                                                                '&:hover': {
+                                                                    color: '#2563eb',
+                                                                    backgroundColor: 'transparent'
+                                                                }
                                                             }}
-                                                            fontSize='14px'
-                                                            textAlign='center'
+                                                            onClick={() => handleSetting(setting.id)}
                                                         >
-                                                            {setting.label}
-                                                        </Typography>
-                                                    </MenuItem>
+                                                            <Typography
+                                                                sx={{
+                                                                    textTransform: 'capitalize'
+                                                                }}
+                                                                fontSize='14px'
+                                                                textAlign='center'
+                                                            >
+                                                                {setting.label}
+                                                            </Typography>
+                                                        </MenuItem>
+                                                    </Link>
                                                 ))}
                                             </Menu>
                                         </Box>
