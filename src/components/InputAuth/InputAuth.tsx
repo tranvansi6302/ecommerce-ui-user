@@ -9,6 +9,8 @@ type InputAuthProps = {
     className?: string
     type?: React.HTMLInputTypeAttribute
     errors?: any
+    disable?: boolean
+    defaultValue?: string
     rest?: any
 }
 
@@ -19,6 +21,8 @@ export default function InputAuth({
     register,
     className,
     errors,
+    defaultValue,
+    disable = false,
     variant = 'outlined',
     rest
 }: InputAuthProps) {
@@ -32,10 +36,12 @@ export default function InputAuth({
             className={className}
             fullWidth
             type={type}
+            defaultValue={defaultValue}
             autoComplete='on'
             id={name}
             label={label}
             variant={variant}
+            disabled={disable}
             {...rest}
         />
     )

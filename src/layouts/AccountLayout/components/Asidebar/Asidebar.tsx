@@ -29,6 +29,7 @@ const asideBarItems = [
 
 export default function Asidebar() {
     const { profile } = useContext(AppContext)
+
     return (
         <div>
             <div className='flex items-center border-b border-b-gray-200 py-4'>
@@ -36,7 +37,11 @@ export default function Asidebar() {
                     to={pathConfig.profile}
                     className='h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-black/10'
                 >
-                    <img src={profile?.avatar ?? avatarDefault} alt='avatar' className='h-full w-full object-cover' />
+                    <img
+                        src={!profile?.avatar || profile.avatar === '' ? avatarDefault : profile.avatar}
+                        alt='avatar'
+                        className='h-full w-full object-cover'
+                    />
                 </Link>
                 <div className='flex-grow pl-4'>
                     <div className='mb-1 truncate font-semibold text-text-primary'>{profile?.full_name}</div>

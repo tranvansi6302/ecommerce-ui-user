@@ -1,5 +1,4 @@
 import { ProductSale } from '~/@types/productSales.type'
-
 export const getMinMaxSalePrice = (product: ProductSale) => {
     let minSalePrice = Infinity
     let maxSalePrice = -Infinity
