@@ -5,8 +5,8 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import registerBanner from '~/assets/images/registerBanner.jpg'
 import { GoogleIcon } from '~/assets/svg'
-import InputAuth from '~/components/InputAuth'
-import MyButtonV2 from '~/components/MyButtonV2'
+import InputMUI from '~/components/InputMUI'
+import MyButtonMUI from '~/components/MyButtonMUI'
 import pathConfig from '~/configs/path.config'
 import AuthLayout from '~/layouts/AuthLayout'
 import { AuthSchemaType, authSchema } from '~/schemas/auth.schema'
@@ -56,20 +56,20 @@ export default function Register() {
                     </h1>
                     <div className='mt-4 flex flex-col lg:flex-row items-center justify-between'>
                         <div className='w-full lg:mb-0'>
-                            <MyButtonV2 onClick={loginWithGoogle} variant='text' sx={{ py: 1.5 }} type='button'>
+                            <MyButtonMUI onClick={loginWithGoogle} variant='text' sx={{ py: 1.5 }} type='button'>
                                 <GoogleIcon />
                                 <p className='pl-2 mt-0.5'>Tiếp tục với google</p>
-                            </MyButtonV2>
+                            </MyButtonMUI>
                         </div>
                     </div>
                     <div className='my-5 text-sm text-gray-600 text-center'>
                         <p>hoặc với email</p>
                     </div>
                     <form onSubmit={onSubmit} className='space-y-4'>
-                        <InputAuth register={register} errors={errors} name='full_name' label='Họ Tên' />
-                        <InputAuth register={register} errors={errors} name='email' label='Email' />
-                        <InputAuth register={register} errors={errors} name='password' label='Mật Khẩu' type='password' />
-                        <InputAuth
+                        <InputMUI register={register} errors={errors} name='full_name' label='Họ Tên' />
+                        <InputMUI register={register} errors={errors} name='email' label='Email' />
+                        <InputMUI register={register} errors={errors} name='password' label='Mật Khẩu' type='password' />
+                        <InputMUI
                             register={register}
                             errors={errors}
                             name='confirm_password'
@@ -77,9 +77,9 @@ export default function Register() {
                             type='password'
                         />
 
-                        <MyButtonV2 loading={registerMutation.isPending} type='submit' sx={{ py: 1.5 }}>
+                        <MyButtonMUI isLoading={registerMutation.isPending} type='submit' sx={{ py: 1.5 }}>
                             Đăng ký
-                        </MyButtonV2>
+                        </MyButtonMUI>
                     </form>
                     <div className='mt-4 text-sm text-gray-600 text-center'>
                         <p>

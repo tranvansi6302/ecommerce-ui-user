@@ -1,7 +1,7 @@
 import { TextField } from '@mui/material'
 import { UseFormRegister } from 'react-hook-form'
 
-type InputAuthProps = {
+type InputMUIProps = {
     label?: string
     name: string
     variant?: 'standard' | 'outlined' | 'filled'
@@ -14,7 +14,7 @@ type InputAuthProps = {
     rest?: any
 }
 
-export default function InputAuth({
+export default function InputMUI({
     label,
     name,
     type = 'text',
@@ -25,7 +25,7 @@ export default function InputAuth({
     disable = false,
     variant = 'outlined',
     rest
-}: InputAuthProps) {
+}: InputMUIProps) {
     const registerResult = register && name ? register(name) : null
     const errorResult = errors && name ? Boolean(errors[name]) : false
     return (

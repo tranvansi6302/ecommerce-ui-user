@@ -1,27 +1,27 @@
 import { Button, SxProps, Theme } from '@mui/material'
 import Spinner from '../Spinner'
 
-type MyButtonV2Props = {
+type MyButtonMUIProps = {
     children?: React.ReactNode
     sx?: SxProps<Theme> | undefined
     type?: 'button' | 'submit' | 'reset' | undefined
     variant?: 'text' | 'outlined' | 'contained' | undefined
     color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | undefined
     onClick?: () => void
-    loading?: boolean
+    isLoading?: boolean
 }
-export default function MyButtonV2({
+export default function MyButtonMUI({
     children,
     sx,
     type = 'button',
     variant = 'contained',
     color = 'primary',
     onClick,
-    loading
-}: MyButtonV2Props) {
+    isLoading
+}: MyButtonMUIProps) {
     return (
         <Button onClick={onClick} type={type} fullWidth sx={sx} variant={variant} color={color}>
-            {loading ? <Spinner /> : children}
+            {isLoading ? <Spinner /> : children}
         </Button>
     )
 }

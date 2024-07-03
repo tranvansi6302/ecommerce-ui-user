@@ -4,9 +4,10 @@ import MyButton from '../MyButton'
 
 interface Props {
     onChange?: (file?: File) => void
+    isPending?: boolean
 }
 
-export default function UploadAvatar({ onChange }: Props) {
+export default function UploadAvatar({ onChange, isPending }: Props) {
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +36,12 @@ export default function UploadAvatar({ onChange }: Props) {
                     ;(event.target as any).value = null
                 }}
             />
-            <MyButton className='w-[120px] rounded-sm border border-gray-300 h-[40px]' onClick={handleUpload} type='button'>
+            <MyButton
+                isLoading={isPending}
+                className='w-[120px] rounded-sm border border-gray-300 h-[40px]'
+                onClick={handleUpload}
+                type='button'
+            >
                 Chọn ảnh
             </MyButton>
         </Fragment>

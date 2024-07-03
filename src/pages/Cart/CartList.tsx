@@ -7,7 +7,7 @@ import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { Link, useLocation } from 'react-router-dom'
 import { Cart } from '~/@types/cart.type'
 import MyButton from '~/components/MyButton'
-import MyButtonV2 from '~/components/MyButtonV2'
+import MyButtonMUI from '~/components/MyButtonMUI'
 import QuantityController from '~/components/QuantityController'
 import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
@@ -278,13 +278,13 @@ export default function CartList() {
                                                                 </span>
                                                             </div>
                                                             <div className='col-span-1'>
-                                                                <MyButtonV2
+                                                                <MyButtonMUI
                                                                     onClick={() => handleDeleteProductFromCart(index)}
                                                                     color='error'
                                                                     variant='text'
                                                                 >
                                                                     Xóa
-                                                                </MyButtonV2>
+                                                                </MyButtonMUI>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -320,14 +320,14 @@ export default function CartList() {
                                         <MyButton className='mx-3 border-none bg-none text-text-primary text-base'>
                                             Chọn tất cả ({extendedCart.length})
                                         </MyButton>
-                                        <MyButtonV2
+                                        <MyButtonMUI
                                             onClick={handleDeleteManyProductFromCart}
                                             sx={{ width: '50px', marginTop: '3px' }}
                                             color='error'
                                             variant='text'
                                         >
                                             Xóa
-                                        </MyButtonV2>
+                                        </MyButtonMUI>
                                     </div>
                                 </div>
 

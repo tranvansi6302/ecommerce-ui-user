@@ -1,12 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import DatePicker from 'react-datepicker'
 import { useForm } from 'react-hook-form'
 import { User } from '~/@types/users.type'
 import avatarDefault from '~/assets/images/avatarDefault.png'
-import InputAuth from '~/components/InputAuth'
-import MyButtonV2 from '~/components/MyButtonV2'
+import InputMUI from '~/components/InputMUI'
+import MyButtonMUI from '~/components/MyButtonMUI'
 import UploadAvatar from '~/components/UploadAvatar'
 import { AppContext } from '~/contexts/app.context'
 import { UserSchemaType, userSchema } from '~/schemas/user.schema'
@@ -96,19 +96,19 @@ export default function Profile() {
                         <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='full_name'>
                             Họ tên
                         </label>
-                        <InputAuth register={register} errors={errors} name='full_name' />
+                        <InputMUI register={register} errors={errors} name='full_name' />
                     </div>
                     <div>
                         <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='phone_number'>
                             Email
                         </label>
-                        <InputAuth disable defaultValue={profileLS?.email} register={register} errors={errors} name='email' />
+                        <InputMUI disable defaultValue={profileLS?.email} register={register} errors={errors} name='email' />
                     </div>
                     <div>
                         <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='phone_number'>
                             Số điện thoại
                         </label>
-                        <InputAuth register={register} errors={errors} name='phone_number' />
+                        <InputMUI register={register} errors={errors} name='phone_number' />
                     </div>
                     <div className=''>
                         <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='phone_number'>
@@ -122,9 +122,13 @@ export default function Profile() {
                         />
                     </div>
 
-                    <MyButtonV2 type='submit' sx={{ py: 1, width: '30%', borderRadius: '2px' }}>
+                    <MyButtonMUI
+                        isLoading={updateProfileMutation.isPending}
+                        type='submit'
+                        sx={{ py: 1, width: '30%', borderRadius: '2px' }}
+                    >
                         Xác nhận
-                    </MyButtonV2>
+                    </MyButtonMUI>
                 </div>
 
                 <div className='mt-6 md:w-[35%] flex flex-col items-center md:border-l-[1px] border-gray-100'>
@@ -137,7 +141,7 @@ export default function Profile() {
                             </div>
                         )}
                     </div>
-                    <UploadAvatar onChange={handleChangeFile} />
+                    <UploadAvatar isPending={uploadProfileAvatarMutation.isPending} onChange={handleChangeFile} />
                     <div className='mt-3 text-gray-400 text-[13.8px]'>
                         <div>Dụng lượng file tối đa 5 MB</div>
                         <div>Định dạng:.JPEG, .PNG</div>
