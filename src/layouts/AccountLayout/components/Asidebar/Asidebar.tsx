@@ -1,13 +1,12 @@
 import classNames from 'classnames'
 import { useContext } from 'react'
 import { LuUser2 } from 'react-icons/lu'
-import { MdOutlineEventNote } from 'react-icons/md'
+import { MdEdit, MdOutlineEventNote, MdOutlineMyLocation } from 'react-icons/md'
 import { RiLockPasswordLine } from 'react-icons/ri'
-import { MdEdit } from 'react-icons/md'
-import { AppContext } from '~/contexts/app.context'
 import { Link, NavLink } from 'react-router-dom'
 import avatarDefault from '~/assets/images/avatarDefault.png'
 import pathConfig from '~/configs/path.config'
+import { AppContext } from '~/contexts/app.context'
 
 const asideBarItems = [
     {
@@ -19,6 +18,11 @@ const asideBarItems = [
         icon: <RiLockPasswordLine fontSize='20px' className='text-[#1849a9]' />,
         title: 'Đổi mật khẩu',
         to: pathConfig.changePassword
+    },
+    {
+        icon: <MdOutlineMyLocation fontSize='20px' className='text-[#1849a9]' />,
+        title: 'Địa chỉ',
+        to: pathConfig.address
     },
     {
         icon: <MdOutlineEventNote fontSize='20px' className='text-[#1849a9]' />,

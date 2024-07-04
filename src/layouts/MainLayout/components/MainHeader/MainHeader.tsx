@@ -57,7 +57,7 @@ export default function MainHeader() {
     const { data: productsInCart } = useQuery({
         queryKey: ['productsInCart'],
         queryFn: () => cartsService.getAllProductFromCarts(),
-        enabled: isAuthenticated
+        enabled: isAuthenticated == true
     })
 
     return (
@@ -135,7 +135,7 @@ export default function MainHeader() {
                                                             sx={{
                                                                 '&:hover': {
                                                                     color: '#2563eb',
-                                                                    backgroundColor: 'transparent'
+                                                                    backgroundColor: '#fcfbfb'
                                                                 }
                                                             }}
                                                             onClick={() => handleSetting(setting.id)}

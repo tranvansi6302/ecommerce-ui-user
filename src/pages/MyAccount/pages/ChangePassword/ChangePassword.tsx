@@ -49,27 +49,30 @@ export default function ChangePassword() {
             <form onSubmit={onSubmit} className='flex'>
                 <div className='mt-6 w-full md:w-[65%] flex flex-col gap-5 md:pr-12'>
                     <div>
-                        <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='full_name'>
+                        <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='current_password'>
                             Mật khẩu hiện tại
                         </label>
                         <InputMUI register={register} errors={errors} name='current_password' />
                     </div>
                     <div>
-                        <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='full_name'>
+                        <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='new_password'>
                             Mật khẩu mới
                         </label>
                         <InputMUI register={register} errors={errors} name='new_password' />
                     </div>
 
                     <div>
-                        <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='full_name'>
+                        <label
+                            className='text-text-primary text-[14px] inline-block mb-2 capitalize'
+                            htmlFor='confirm_new_password'
+                        >
                             Xác nhận mật khẩu mới
                         </label>
                         <InputMUI register={register} errors={errors} name='confirm_new_password' />
                     </div>
 
                     <MyButtonMUI
-                        // isLoading={updateProfileMutation.isPending}
+                        isLoading={changePasswordMutation.isPending}
                         type='submit'
                         sx={{ py: 1, width: '30%', borderRadius: '2px' }}
                     >

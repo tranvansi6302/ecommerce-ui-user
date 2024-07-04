@@ -111,11 +111,12 @@ export default function Profile() {
                         <InputMUI register={register} errors={errors} name='phone_number' />
                     </div>
                     <div className=''>
-                        <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='phone_number'>
+                        <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='date_of_birth'>
                             Ngày sinh
                         </label>
                         <br />
                         <DatePicker
+                            id='date_of_birth'
                             dateFormat='dd/MM/yyyy'
                             selected={dateOfBirth}
                             onChange={(date) => setDateOfBirth(date as Date)}
