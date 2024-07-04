@@ -8,14 +8,16 @@ export type UpdateProfileRequest = Pick<UserSchemaType, 'full_name' | 'phone_num
 }
 const usersService = {
     getProfile: () => http.get<ProfileResponse>(API_URL.PROFILE),
-    updateProfile: (data: UpdateProfileRequest) => http.patch<ProfileResponse>(API_URL.PROFILE, data),
+    updateProfile: (body: UpdateProfileRequest) => http.patch<ProfileResponse>(API_URL.PROFILE, body),
     uploadProfileAvatar: (body: FormData) => {
         return http.patch<ProfileResponse>(API_URL.PROFILE_UPLOAD, body, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         })
-    }
+    },
+
+    changePassword: (body: { current_password: string; new_password: string }) => http.patch(API_URL.CHANGE_PASSWORD, body)
 }
 
 export default usersService

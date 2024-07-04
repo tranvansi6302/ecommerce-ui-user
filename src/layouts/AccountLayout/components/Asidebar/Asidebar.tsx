@@ -18,7 +18,7 @@ const asideBarItems = [
     {
         icon: <RiLockPasswordLine fontSize='20px' className='text-[#1849a9]' />,
         title: 'Đổi mật khẩu',
-        to: pathConfig.home
+        to: pathConfig.changePassword
     },
     {
         icon: <MdOutlineEventNote fontSize='20px' className='text-[#1849a9]' />,

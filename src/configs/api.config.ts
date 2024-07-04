@@ -8,5 +8,6 @@ export const API_URL = {
     BRANDS: '/brands',
     CARTS: '/carts',
     PROFILE: '/users/profile',
-    PROFILE_UPLOAD: '/users/profile/upload'
+    PROFILE_UPLOAD: '/users/profile/upload',
+    CHANGE_PASSWORD: '/users/change-password'
 }

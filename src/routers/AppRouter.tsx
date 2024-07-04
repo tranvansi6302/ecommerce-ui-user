@@ -7,7 +7,8 @@ import AccountLayout from '~/layouts/AccountLayout'
 import MainLayout from '~/layouts/MainLayout'
 import CartList from '~/pages/Cart/CartList'
 import Login from '~/pages/Login'
-import Profile from '~/pages/MyAccount/components/Profile'
+import ChangePassword from '~/pages/MyAccount/pages/ChangePassword'
+import Profile from '~/pages/MyAccount/pages/Profile'
 import ProductDetail from '~/pages/ProductDetail'
 import ProductFilter from '~/pages/ProductFilter'
 import ProductHome from '~/pages/ProductHome'
@@ -87,6 +88,14 @@ export default function AppRouter() {
                     element: (
                         <AccountLayout>
                             <Profile />
+                        </AccountLayout>
+                    )
+                },
+                {
+                    path: pathConfig.changePassword,
+                    element: (
+                        <AccountLayout>
+                            <ChangePassword />
                         </AccountLayout>
                     )
                 }
