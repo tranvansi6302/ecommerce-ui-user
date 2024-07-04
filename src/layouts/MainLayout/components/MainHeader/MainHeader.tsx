@@ -197,7 +197,7 @@ export default function MainHeader() {
                                     </div>
 
                                     <div className='relative z-1'>
-                                        <MiniCart productsInCart={productsInCart?.data.result as Cart[]} />
+                                        <MiniCart productsInCart={(productsInCart?.data.result as Cart[]) || []} />
                                     </div>
                                 </div>
                             </div>
