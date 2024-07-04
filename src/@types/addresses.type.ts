@@ -1,4 +1,4 @@
-import { ApiResponse } from './common.type'
+import { ApiResponse, PaginatedApiResponse } from './common.type'
 
 export type Address = {
     id: number
@@ -19,3 +19,4 @@ export type CreateAddressRequest = {
     ward: string
 }
 export type CreateAddressResponse = ApiResponse<Address>
+export type ListAddressResponse = PaginatedApiResponse<Address[]>

@@ -153,7 +153,11 @@ export default function CreateAddress() {
                         <p className='text-[12px] ml-[14px] mt-[3px] text-[#d32f2f]'>{errors.description.message}</p>
                     )}
                 </div>
-                <MyButton type='submit' className='w-[160px] h-[40px] bg-blue-600 text-white rounded-sm mt-6'>
+                <MyButton
+                    isLoading={createAddressMutation.isPending}
+                    type='submit'
+                    className='w-[160px] h-[40px] bg-blue-600 text-white rounded-sm mt-6'
+                >
                     Lưu lại
                 </MyButton>
             </form>

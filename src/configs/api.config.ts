@@ -14,5 +14,6 @@ export const API_URL = {
     GET_PROVINCE: '/province',
     GET_DISTRICT: '/district',
     GET_WARD: '/ward',
+    ADDRESS: '/users/addresses',
     CREATE_ADDRESS: '/users/addresses'
 }
