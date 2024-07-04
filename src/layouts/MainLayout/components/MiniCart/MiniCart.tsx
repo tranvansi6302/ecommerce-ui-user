@@ -4,12 +4,15 @@ import Popover from '~/components/Popover'
 import { formatToVND } from '~/utils/helpers'
 import { IoCartOutline } from 'react-icons/io5'
 import pathConfig from '~/configs/path.config'
+import { useContext } from 'react'
+import { AppContext } from '~/contexts/app.context'
 
 type MiniCartProps = {
     productsInCart: Cart[]
 }
 
 export default function MiniCart({ productsInCart }: MiniCartProps) {
+    const { isAuthenticated } = useContext(AppContext)
     return (
         <Popover
             renderPopover={
@@ -58,9 +61,9 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
             <Link to='/' className='relative'>
                 <IoCartOutline fontSize='28px' />
 
-                {productsInCart?.length > 0 && (
+                {isAuthenticated && (
                     <span className='absolute top-[-5px] left-[17px] rounded-full bg-blue-600 w-5 h-5 flex items-center justify-center text-[10px] text-white '>
-                        {productsInCart?.length}
+                        {productsInCart && productsInCart.length > 0 ? productsInCart?.length : 0}
                     </span>
                 )}
             </Link>

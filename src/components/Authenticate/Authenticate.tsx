@@ -16,7 +16,7 @@ export default function Authenticate() {
         if (isMatch) {
             const authCode = isMatch[1]
 
-            fetch(`${API_URL.BASE}${API_URL.LOGIN_GOOGLE}?code=${authCode}`, {
+            fetch(`${API_URL.BASE_API_URL}${API_URL.LOGIN_GOOGLE}?code=${authCode}`, {
                 method: 'POST'
             })
                 .then((response) => {

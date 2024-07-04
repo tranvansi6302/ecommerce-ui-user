@@ -1,6 +1,6 @@
 export const API_URL = {
-    BASE: 'http://localhost:8080/api/v1',
-    BASE_THIRD_PARTY: 'https://dev-online-gateway.ghn.vn/shiip/public-api/master-data',
+    BASE_API_URL: import.meta.env.VITE_API_URL,
+    BASE_API_GHN_URL: import.meta.env.VITE_API_GHN_URL,
     REGISTER: '/auth/register',
     LOGIN: '/auth/login',
     LOGIN_GOOGLE: '/auth/oauth2/google',
