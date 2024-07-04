@@ -1,16 +1,20 @@
 import { GoPlus } from 'react-icons/go'
+import { Link } from 'react-router-dom'
 import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
+import pathConfig from '~/configs/path.config'
 
 export default function Address() {
     return (
         <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
             <div className='border-b border-b-gray-200 py-6 flex items-center justify-between'>
                 <h1 className='text-lg font-medium capitalize text-gray-900'>Địa chỉ của tôi</h1>
-                <MyButton className='rounded-sm bg-blue-600 text-white h-[40px] px-6 flex items-center gap-1'>
-                    <GoPlus fontSize='22px' />
-                    Thêm địa chỉ mới
-                </MyButton>
+                <Link to={pathConfig.createAddress}>
+                    <MyButton className='rounded-sm bg-blue-600 text-white h-[40px] px-6 flex items-center gap-1'>
+                        <GoPlus fontSize='22px' />
+                        Thêm địa chỉ mới
+                    </MyButton>
+                </Link>
             </div>
             <div className='flex justify-between py-6 border-b-[1px]'>
                 <div className='w-[60%]'>

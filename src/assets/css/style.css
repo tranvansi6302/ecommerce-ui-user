@@ -190,3 +190,19 @@
     outline: #2563eb;
     border: 1px solid #3871ed;
 }
+
+.textarea-address:hover {
+    border-color: #000;
+}
+
+.textarea-address:focus {
+    outline: #2563eb;
+    border: 2px solid #3871ed;
+}
+.textarea-address.invalid {
+    outline: #d32f2f;
+    border: 1px solid #d32f2f;
+}
+.textarea-address.invalid:focus {
+    border: 2px solid #d32f2f;
+}

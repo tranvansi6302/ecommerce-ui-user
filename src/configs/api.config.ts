@@ -13,5 +13,6 @@ export const API_URL = {
     CHANGE_PASSWORD: '/users/change-password',
     GET_PROVINCE: '/province',
     GET_DISTRICT: '/district',
-    GET_WARD: '/ward'
+    GET_WARD: '/ward',
+    CREATE_ADDRESS: '/users/addresses'
 }

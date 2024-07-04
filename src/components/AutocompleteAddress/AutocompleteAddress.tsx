@@ -1,5 +1,6 @@
 import { Autocomplete, TextField } from '@mui/material'
 import { Control, Controller, FieldValues } from 'react-hook-form'
+import { Fragment } from 'react/jsx-runtime'
 import { District, Province, Ward } from '~/@types/ghn.type'
 
 type AutocompleteAddressProps = {
@@ -12,6 +13,7 @@ type AutocompleteAddressProps = {
     label?: string
     chooseProvince?: any
     chooseDistrict?: any
+    placeholder?: string
 }
 
 export default function AutocompleteAddress({
@@ -22,6 +24,7 @@ export default function AutocompleteAddress({
     onChange,
     displayLabel,
     label,
+    placeholder,
     chooseProvince,
     chooseDistrict
 }: AutocompleteAddressProps) {
@@ -32,6 +35,8 @@ export default function AutocompleteAddress({
             control={control}
             render={({ field }) => (
                 <Autocomplete
+                    id={name}
+                    sx={{ fontSize: '14px' }}
                     {...field}
                     options={
                         displayLabel === 'DistrictName'
@@ -47,7 +52,18 @@ export default function AutocompleteAddress({
                     getOptionLabel={(option) => option[displayLabel]}
                     fullWidth
                     renderInput={(params) => (
-                        <TextField {...params} label={label} error={errorResult} helperText={errors[name]?.message} />
+                        <Fragment>
+                            <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor={name}>
+                                {label}
+                            </label>
+                            <TextField
+                                {...params}
+                                id={name}
+                                error={errorResult}
+                                helperText={errors[name]?.message}
+                                placeholder={placeholder}
+                            />
+                        </Fragment>
                     )}
                     onChange={(_, value) => {
                         field.onChange(value)

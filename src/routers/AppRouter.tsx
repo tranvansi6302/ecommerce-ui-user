@@ -9,6 +9,7 @@ import CartList from '~/pages/Cart/CartList'
 import Login from '~/pages/Login'
 import Address from '~/pages/MyAccount/pages/Address'
 import ChangePassword from '~/pages/MyAccount/pages/ChangePassword'
+import CreateAddress from '~/pages/MyAccount/pages/CreateAddress'
 import Profile from '~/pages/MyAccount/pages/Profile'
 import ProductDetail from '~/pages/ProductDetail'
 import ProductFilter from '~/pages/ProductFilter'
@@ -105,6 +106,14 @@ export default function AppRouter() {
                     element: (
                         <AccountLayout>
                             <Address />
+                        </AccountLayout>
+                    )
+                },
+                {
+                    path: pathConfig.createAddress,
+                    element: (
+                        <AccountLayout>
+                            <CreateAddress />
                         </AccountLayout>
                     )
                 }

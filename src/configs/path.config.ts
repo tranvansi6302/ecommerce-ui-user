@@ -7,6 +7,7 @@ const pathConfig = {
     carts: '/carts',
     profile: '/account/profile',
     changePassword: '/account/change-password',
-    address: '/account/address'
+    address: '/account/address',
+    createAddress: '/account/address/create'
 }
 export default pathConfig
