@@ -15,5 +15,6 @@ export const API_URL = {
     GET_DISTRICT: '/district',
     GET_WARD: '/ward',
     ADDRESS: '/users/addresses',
-    CREATE_ADDRESS: '/users/addresses'
+    CREATE_ADDRESS: '/users/addresses',
+    ORDER: '/orders'
 }

@@ -206,3 +206,46 @@
 .textarea-address.invalid:focus {
     border: 2px solid #d32f2f;
 }
+
+#x-taborder-0 > div {
+    padding: 0 !important;
+}
+#x-taborder-1 > div {
+    padding: 0 !important;
+}
+#x-taborder-2 > div {
+    padding: 0 !important;
+}
+
+#x-taborder-3 > div {
+    padding: 0 !important;
+}
+
+#x-taborder-4 > div {
+    padding: 0 !important;
+}
+#x-taborder-5 > div {
+    padding: 0 !important;
+}
+
+[aria-label='tabs-order'] {
+    justify-content: space-between;
+}
+
+.line-order {
+    background-image: repeating-linear-gradient(
+        45deg,
+        #6fa6d6,
+        #6fa6d6 33px,
+        transparent 0,
+        transparent 41px,
+        #f18d9b 0,
+        #f18d9b 74px,
+        transparent 0,
+        transparent 82px
+    );
+    background-position-x: -1.875rem;
+    background-size: 7.25rem 0.1875rem;
+    height: 0.1875rem;
+    width: 100%;
+}

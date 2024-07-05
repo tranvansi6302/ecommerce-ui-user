@@ -57,7 +57,7 @@ export default function CreateAddress() {
             ward: (data.ward as Ward).WardName as string
         }
         createAddressMutation.mutate(finalData, {
-            onSuccess: () => navigate(pathConfig.address)
+            onSuccess: () => navigate(pathConfig.accountAddress)
         })
     })
 

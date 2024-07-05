@@ -15,7 +15,7 @@ export type User = {
     updated_at: string
 }
 
-type Profile = Omit<User, 'roles'> & {
+export type Profile = Omit<User, 'roles'> & {
     address: Address[]
 }
 

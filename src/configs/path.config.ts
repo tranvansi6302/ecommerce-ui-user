@@ -6,8 +6,9 @@ const pathConfig = {
     productFilters: '/filters',
     carts: '/carts',
     profile: '/account/profile',
-    changePassword: '/account/change-password',
-    address: '/account/address',
-    createAddress: '/account/address/create'
+    accountChangePassword: '/account/change-password',
+    accountAddress: '/account/address',
+    accountCreateAddress: '/account/address/create',
+    accountOrders: '/account/orders'
 }
 export default pathConfig

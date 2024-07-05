@@ -7,9 +7,10 @@ import AccountLayout from '~/layouts/AccountLayout'
 import MainLayout from '~/layouts/MainLayout'
 import CartList from '~/pages/Cart/CartList'
 import Login from '~/pages/Login'
-import Address from '~/pages/MyAccount/pages/Address'
 import ChangePassword from '~/pages/MyAccount/pages/ChangePassword'
 import CreateAddress from '~/pages/MyAccount/pages/CreateAddress'
+import MyAddress from '~/pages/MyAccount/pages/MyAddress'
+import MyOrder from '~/pages/MyAccount/pages/MyOrder'
 import Profile from '~/pages/MyAccount/pages/Profile'
 import ProductDetail from '~/pages/ProductDetail'
 import ProductFilter from '~/pages/ProductFilter'
@@ -94,7 +95,7 @@ export default function AppRouter() {
                     )
                 },
                 {
-                    path: pathConfig.changePassword,
+                    path: pathConfig.accountChangePassword,
                     element: (
                         <AccountLayout>
                             <ChangePassword />
@@ -102,18 +103,26 @@ export default function AppRouter() {
                     )
                 },
                 {
-                    path: pathConfig.address,
+                    path: pathConfig.accountAddress,
                     element: (
                         <AccountLayout>
-                            <Address />
+                            <MyAddress />
                         </AccountLayout>
                     )
                 },
                 {
-                    path: pathConfig.createAddress,
+                    path: pathConfig.accountCreateAddress,
                     element: (
                         <AccountLayout>
                             <CreateAddress />
+                        </AccountLayout>
+                    )
+                },
+                {
+                    path: pathConfig.accountOrders,
+                    element: (
+                        <AccountLayout>
+                            <MyOrder />
                         </AccountLayout>
                     )
                 }

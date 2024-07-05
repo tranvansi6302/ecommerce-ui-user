@@ -17,17 +17,17 @@ const asideBarItems = [
     {
         icon: <RiLockPasswordLine fontSize='20px' className='text-[#1849a9]' />,
         title: 'Đổi mật khẩu',
-        to: pathConfig.changePassword
+        to: pathConfig.accountChangePassword
     },
     {
         icon: <MdOutlineMyLocation fontSize='20px' className='text-[#1849a9]' />,
         title: 'Địa chỉ',
-        to: pathConfig.address
+        to: pathConfig.accountAddress
     },
     {
         icon: <MdOutlineEventNote fontSize='20px' className='text-[#1849a9]' />,
         title: 'Đơn mua',
-        to: pathConfig.home
+        to: pathConfig.accountOrders
     }
 ]
 

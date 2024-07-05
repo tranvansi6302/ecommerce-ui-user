@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Cart } from '~/@types/cart.type'
+import { Cart } from '~/@types/carts.type'
 import Popover from '~/components/Popover'
 import { formatToVND } from '~/utils/helpers'
 import { IoCartOutline } from 'react-icons/io5'
