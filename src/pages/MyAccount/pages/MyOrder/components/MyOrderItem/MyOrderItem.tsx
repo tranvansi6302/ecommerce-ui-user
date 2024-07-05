@@ -18,6 +18,7 @@ import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
 import ordersService from '~/services/orders.service'
 import { convertOrderStatus, formatDate, formatToVND } from '~/utils/helpers'
 import DialogReason from '../DialogReason'
+import pathConfig from '~/configs/path.config'
 
 type MyOrderItemProps = {
     orders: Order[]
@@ -133,8 +134,11 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                         <div className='text-[14px] flex justify-between w-full'>
                                             <div className='flex flex-col gap-2'>
                                                 <div className='flex items-center'>
-                                                    <div className='w-[120px]'>Mã Đơn Hàng:</div>
-                                                    <Link className='text-blue-600 flex items-center gap-1' to={''}>
+                                                    <div className='w-[120px] capitalize'>Mã đơn hàng:</div>
+                                                    <Link
+                                                        className='text-blue-600 flex items-center gap-1'
+                                                        to={`${pathConfig.accountOrders}/${order.id}`}
+                                                    >
                                                         {order.order_code}
                                                         <IoMdOpen fontSize='18px' className='mb-0.5' />
                                                     </Link>

@@ -9,6 +9,7 @@ const pathConfig = {
     accountChangePassword: '/account/change-password',
     accountAddress: '/account/address',
     accountCreateAddress: '/account/address/create',
-    accountOrders: '/account/orders'
+    accountOrders: '/account/orders',
+    accountOrderDetails: '/account/orders/:id'
 }
 export default pathConfig
