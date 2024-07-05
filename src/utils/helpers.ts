@@ -1,4 +1,5 @@
 import { ProductSale } from '~/@types/productSales.type'
+import { OrderStatus } from '~/enums/OrderStatus'
 export const getMinMaxSalePrice = (product: ProductSale) => {
     let minSalePrice = Infinity
     let maxSalePrice = -Infinity
@@ -94,4 +95,21 @@ export const formatDate = (dateString: string) => {
     const month = String(date.getMonth() + 1).padStart(2, '0')
     const year = date.getFullYear()
     return `${day}/${month}/${year}`
+}
+
+export const convertOrderStatus = (status: OrderStatus) => {
+    switch (status) {
+        case OrderStatus.PENDING:
+            return 'Chờ xác nhận'
+        case OrderStatus.CONFIRMED:
+            return 'Đã xác nhận'
+        case OrderStatus.DELIVERING:
+            return 'Đang giao hàng'
+        case OrderStatus.DELIVERED:
+            return 'Hoàn thành'
+        case OrderStatus.CANCELLED:
+            return 'Đã hủy'
+        default:
+            return 'Không xác định'
+    }
 }
