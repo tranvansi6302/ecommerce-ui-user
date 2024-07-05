@@ -1,7 +1,7 @@
 import { Profile } from './users.type'
 import { ProductImage } from './productImage.type'
 import { PricePlan } from './pricePlans.type'
-import { PaginatedApiResponse } from './common.type'
+import { ApiResponse, PaginatedApiResponse } from './common.type'
 import { Variant } from './variants.type'
 import { OrderStatus } from '~/enums/OrderStatus'
 
@@ -33,3 +33,4 @@ export type OrderFilters = {
 }
 
 export type ListOrderResponse = PaginatedApiResponse<Order[]>
+export type OrderResponse = ApiResponse<Order>

@@ -1,17 +1,36 @@
-import { IoChevronBack } from 'react-icons/io5'
-import { MdOutlinePendingActions } from 'react-icons/md'
-import { GiConfirmed } from 'react-icons/gi'
-import { MdOutlineLocalShipping } from 'react-icons/md'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { FiGift } from 'react-icons/fi'
-import { GiAlliedStar } from 'react-icons/gi'
-import { Link } from 'react-router-dom'
+import { GiAlliedStar, GiConfirmed } from 'react-icons/gi'
+import { IoChevronBack } from 'react-icons/io5'
+import { MdOutlineLocalShipping, MdOutlinePendingActions } from 'react-icons/md'
 import { RiSecurePaymentLine } from 'react-icons/ri'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Order } from '~/@types/orders.type'
+import ordersService from '~/services/orders.service'
 import { formatToVND } from '~/utils/helpers'
 export default function OrderDetail() {
+    const navigate = useNavigate()
+    const { id: orderId } = useParams<{ id: string }>()
+    const { data } = useQuery({
+        queryKey: ['order', orderId],
+        queryFn: () => ordersService.getOrderById(orderId as string),
+        enabled: !!orderId
+    })
+
+    const order = data?.data.result as Order
+    const totalMoney = useMemo(() => {
+        return order?.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+    }, [order])
+
+    const handleBack = () => {
+        navigate(-1)
+    }
+
     return (
         <div className='rounded-sm  pb-10  min-h-[100vh] md:pb-20'>
             <div className='border-b border-b-gray-200 py-6 flex items-center justify-between px-2 md:px-7 bg-white'>
-                <button className='flex items-center gap-1 uppercase text-gray-500'>
+                <button onClick={handleBack} className='flex items-center gap-1 uppercase text-gray-500'>
                     <IoChevronBack />
                     Trở lại
                 </button>
@@ -89,50 +108,34 @@ export default function OrderDetail() {
 
             <div className='p-7 bg-white mt-4'>
                 <div className='border-t-[1px]'>
-                    <div className='my-6 flex justify-between'>
-                        <div className='w-[70%] flex gap-1'>
-                            <div className='w-20 h-20 flex-shrink-0'>
-                                <img
-                                    className='w-full h-full object-cover'
-                                    src='https://down-vn.img.susercontent.com/file/vn-11134201-23030-nc1rkxszphov53'
-                                    alt='product'
-                                />
+                    {order &&
+                        order.order_details.map((orderDetail) => (
+                            <div key={orderDetail.variant.id} className='border-t-[1px]'>
+                                <div className='my-6 flex justify-between'>
+                                    <div className='w-[70%] flex gap-1'>
+                                        <div className='w-20 h-20 flex-shrink-0'>
+                                            <img
+                                                className='w-full h-full object-cover'
+                                                src={orderDetail?.variant?.product_images[0].url}
+                                                alt='product'
+                                            />
+                                        </div>
+                                        <div className='flex-grow px-2 pt-1 pb-2 text-left text-[14px] flex flex-col gap-1'>
+                                            <Link to={`123`} className='text-left line-clamp-1'>
+                                                {orderDetail.variant.product_name}
+                                            </Link>
+                                            <p className='text-[14px] text-gray-500'>
+                                                Phân loại: {orderDetail.variant.color} - {orderDetail.variant.size}
+                                            </p>
+                                            <span>x{orderDetail.quantity}</span>
+                                        </div>
+                                    </div>
+                                    <div className='w-[30%] flex items-center justify-end text-[15px] gap-2 px-6'>
+                                        <span className='text-blue-600'>{formatToVND(orderDetail.price)}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className='flex-grow px-2 pt-1 pb-2 text-left text-[14px] flex flex-col gap-1'>
-                                <Link to={`123`} className='text-left line-clamp-1'>
-                                    Áo sweater trơn nam nữ form rộng, áo tay dài trơn unisex, áo sweater basic nỉ bông dày mềm mịn
-                                </Link>
-                                <p className='text-[14px] text-gray-500'>Phân loại: Red - XXL</p>
-                                <span>x2</span>
-                            </div>
-                        </div>
-                        <div className='w-[30%] flex items-center justify-end text-[15px] gap-2 px-6'>
-                            <span className='text-blue-600'>{formatToVND(168162)}</span>
-                        </div>
-                    </div>
-                </div>
-                <div className='border-t-[1px]'>
-                    <div className='my-6 flex justify-between'>
-                        <div className='w-[70%] flex gap-1'>
-                            <div className='w-20 h-20 flex-shrink-0'>
-                                <img
-                                    className='w-full h-full object-cover'
-                                    src='https://down-vn.img.susercontent.com/file/vn-11134201-23030-nc1rkxszphov53'
-                                    alt='product'
-                                />
-                            </div>
-                            <div className='flex-grow px-2 pt-1 pb-2 text-left text-[14px] flex flex-col gap-1'>
-                                <Link to={`123`} className='text-left line-clamp-1'>
-                                    Áo sweater trơn nam nữ form rộng, áo tay dài trơn unisex, áo sweater basic nỉ bông dày mềm mịn
-                                </Link>
-                                <p className='text-[14px] text-gray-500'>Phân loại: Red - XXL</p>
-                                <span>x2</span>
-                            </div>
-                        </div>
-                        <div className='w-[30%] flex items-center justify-end text-[15px] gap-2 px-6'>
-                            <span className='text-blue-600'>{formatToVND(168162)}</span>
-                        </div>
-                    </div>
+                        ))}
                 </div>
             </div>
 
@@ -142,19 +145,19 @@ export default function OrderDetail() {
                         <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                             Tổng tiền hàng
                         </h2>
-                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>336.324đ</h2>
+                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
                     </div>
                     <div className='flex justify-end h-[48px] items-center px-6  border-t'>
                         <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                             Phí vận chuyển
                         </h2>
-                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>336.324đ</h2>
+                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>Miễn phí</h2>
                     </div>
                     <div className='flex justify-end h-[48px] items-center px-6  border-t'>
                         <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                             Thành tiền
                         </h2>
-                        <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>336.324đ</h2>
+                        <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
                     </div>
                     <div className='flex justify-end h-[48px] items-center px-6  border-t'>
                         <h2 className='text-[12px] text-gray-400 w-[25%] border-r justify-end px-4 h-full flex items-center gap-1'>

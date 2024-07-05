@@ -72,7 +72,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
             {orders &&
                 orders.length > 0 &&
                 orders.map((order) => {
-                    const totalMoney = order.order_details.reduce((acc, cur) => acc + cur.price, 0)
+                    const totalMoney = order.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
                     let statusColorClass = ''
                     switch (order.status) {
                         case OrderStatus.PENDING:

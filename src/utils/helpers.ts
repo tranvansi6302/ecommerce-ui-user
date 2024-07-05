@@ -73,7 +73,8 @@ export const getUniqueSizeAndColor = (product: ProductSale) => {
 }
 
 export const formatToVND = (price: number) => {
-    return '₫' + price.toLocaleString('vi-VN') || '₫0'
+    if (price === undefined) return '0 VND'
+    return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
 }
 
 const removeSpecialCharacter = (str: string) =>
