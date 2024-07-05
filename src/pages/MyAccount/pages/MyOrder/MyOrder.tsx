@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { SyntheticEvent, useEffect, useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import { createSearchParams, useLocation, useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ import useQueryOrders from '~/hooks/useQueryOrders'
 import ordersService from '~/services/orders.service'
 import MyOrderItem from './components/MyOrderItem'
 import { OrderStatus } from '~/enums/OrderStatus'
+import { useForm } from 'react-hook-form'
 
 interface TabPanelProps {
     children?: React.ReactNode
@@ -39,6 +40,7 @@ export default function MyOrder() {
     const location = useLocation()
     const queryConfig = useQueryOrders()
     const [value, setValue] = useState<number>(0)
+    const { register, handleSubmit } = useForm<{ search: string }>()
 
     const orderStatusValues: OrderStatus[] = Object.values(OrderStatus)
 
@@ -55,7 +57,9 @@ export default function MyOrder() {
 
     const { data } = useQuery({
         queryKey: ['orders', queryConfig],
-        queryFn: () => ordersService.getAllOrders(queryConfig as OrderFilters)
+        queryFn: () => ordersService.getAllOrders(queryConfig as OrderFilters),
+        staleTime: 3 * 60 * 1000, // 3 minutes
+        placeholderData: keepPreviousData
     })
 
     const handleChange = (_: SyntheticEvent, value: number) => {
@@ -69,15 +73,22 @@ export default function MyOrder() {
             navigate({
                 pathname: pathConfig.accountOrders,
                 search: createSearchParams({
-                    ...queryConfig,
                     status: orderStatusValues[value - 1]
                 }).toString()
             })
         }
     }
 
+    // Handle search
+    const onSubmit = handleSubmit((data) => {
+        navigate({
+            pathname: pathConfig.accountOrders,
+            search: createSearchParams({ ...queryConfig, search: data.search }).toString()
+        })
+    })
+
     return (
-        <div className='rounded-sm  px-2 pb-10 shadow md:px-7 md:pb-20'>
+        <div className='rounded-sm  px-2 pb-10'>
             <div className='bg-white'>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Tabs
@@ -97,16 +108,17 @@ export default function MyOrder() {
             </div>
             <div className='min-h-[100vh] mt-3'>
                 <TabStatusOrder value={value} index={0}>
-                    <div className='w-full relative'>
+                    <form onSubmit={onSubmit} className='w-full relative'>
                         <button className='absolute left-0 top-1/2 -translate-y-1/2 px-4 text-gray-400'>
                             <FiSearch fontSize='18px' />
                         </button>
                         <input
+                            {...register('search')}
                             type='text'
                             placeholder='Tìm kiếm theo mã đơn hàng'
                             className='w-full h-[44px]  border border-gray-200 rounded-sm bg-[#eaeaea] outline-none pl-10 pr-4 text-[14px] text-gray-400'
                         />
-                    </div>
+                    </form>
                     <div className='py-3'>
                         <MyOrderItem orders={data?.data.result as Order[]} />
                     </div>

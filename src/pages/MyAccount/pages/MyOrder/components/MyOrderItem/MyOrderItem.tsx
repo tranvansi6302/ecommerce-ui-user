@@ -5,6 +5,7 @@ import { formatDate, formatToVND } from '~/utils/helpers'
 import { MdSecurity } from 'react-icons/md'
 import { Order } from '~/@types/orders.type'
 import { Fragment } from 'react/jsx-runtime'
+import noOrder from '~/assets/images/noOrder.png'
 
 type MyOrderItemProps = {
     orders: Order[]
@@ -13,6 +14,14 @@ type MyOrderItemProps = {
 export default function MyOrderItem({ orders }: MyOrderItemProps) {
     return (
         <Fragment>
+            {orders && orders.length === 0 && (
+                <div className='min-h-[100vh] bg-white flex items-center justify-center'>
+                    <div className='flex flex-col items-center justify-center mb-20'>
+                        <img className='w-[100px] h-[100px] object-cover' src={noOrder} alt='noOrder' />
+                        <p className='mt-3 text-text-primary capitalize'>Chưa có đơn hàng</p>
+                    </div>
+                </div>
+            )}
             {orders &&
                 orders.length > 0 &&
                 orders.map((order) => {
@@ -20,11 +29,13 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                     return (
                         <Accordion
                             key={order.id}
+                            className='rounded-sm border border-gray-200 bg-white w-full'
                             style={{
                                 borderRadius: '0',
                                 boxShadow: '1px 0 1px 0 rgba(0,0,0,0.1)',
-                                padding: '10px 0',
-                                marginBottom: '10px'
+                                padding: '16px',
+                                marginBottom: '8px',
+                                borderRight: '4px solid #2563eb'
                             }}
                         >
                             <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1-content' id='panel1-header'>
