@@ -25,7 +25,8 @@ const settings = [
     },
     {
         id: 'order',
-        label: 'Đơn mua'
+        label: 'Đơn mua',
+        link: pathConfig.accountOrders
     },
     {
         id: 'logout',

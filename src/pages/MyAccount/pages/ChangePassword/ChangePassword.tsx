@@ -52,13 +52,13 @@ export default function ChangePassword() {
                         <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='current_password'>
                             Mật khẩu hiện tại
                         </label>
-                        <InputMUI register={register} errors={errors} name='current_password' />
+                        <InputMUI type='password' register={register} errors={errors} name='current_password' />
                     </div>
                     <div>
                         <label className='text-text-primary text-[14px] inline-block mb-2 capitalize' htmlFor='new_password'>
                             Mật khẩu mới
                         </label>
-                        <InputMUI register={register} errors={errors} name='new_password' />
+                        <InputMUI type='password' register={register} errors={errors} name='new_password' />
                     </div>
 
                     <div>
@@ -68,7 +68,7 @@ export default function ChangePassword() {
                         >
                             Xác nhận mật khẩu mới
                         </label>
-                        <InputMUI register={register} errors={errors} name='confirm_new_password' />
+                        <InputMUI type='password' register={register} errors={errors} name='confirm_new_password' />
                     </div>
 
                     <MyButtonMUI
