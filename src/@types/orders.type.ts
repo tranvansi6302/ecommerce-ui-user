@@ -12,6 +12,12 @@ export type Order = {
     status: string
     user: Profile
     phone_number: string
+    canceled_date: string
+    canceled_reason: string
+    confirmed_date: string
+    delivered_date: string
+    delivering_date: string
+    pending_date: string
     order_code: string
     order_date: string
     order_details: OrderDetail[]

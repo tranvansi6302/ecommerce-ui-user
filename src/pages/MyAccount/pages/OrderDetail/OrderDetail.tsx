@@ -1,14 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { FiGift } from 'react-icons/fi'
-import { GiAlliedStar, GiConfirmed } from 'react-icons/gi'
+import { Fragment, useMemo } from 'react'
+import { FaStarHalfStroke } from 'react-icons/fa6'
 import { IoChevronBack } from 'react-icons/io5'
-import { MdOutlineLocalShipping, MdOutlinePendingActions } from 'react-icons/md'
 import { RiSecurePaymentLine } from 'react-icons/ri'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Order } from '~/@types/orders.type'
+import MyButton from '~/components/MyButton'
+import { OrderStatus } from '~/enums/OrderStatus'
 import ordersService from '~/services/orders.service'
-import { formatToVND } from '~/utils/helpers'
+import { convertOrderStatus, formatDate, formatToVND } from '~/utils/helpers'
+import OrderStep from './components/OrderStep'
 export default function OrderDetail() {
     const navigate = useNavigate()
     const { id: orderId } = useParams<{ id: string }>()
@@ -26,6 +27,7 @@ export default function OrderDetail() {
     const handleBack = () => {
         navigate(-1)
     }
+    console.log(order)
 
     return (
         <div className='rounded-sm  pb-10  min-h-[100vh] md:pb-20'>
@@ -35,54 +37,30 @@ export default function OrderDetail() {
                     Trở lại
                 </button>
                 <div className='flex items-center text-[14px]'>
-                    <div className='uppercase text-text-primary'>Mã đơn hàng: YIDYI27272</div>
+                    <div className='uppercase text-text-primary'>Mã đơn hàng: {order?.order_code}</div>
                     <div className='w-[1px] h-[15px] bg-gray-400 mx-4'></div>
-                    <div className='uppercase text-blue-600'>Đơn hàng đã hoàn thành</div>
+                    <div className='uppercase text-blue-600'>Đơn hàng {convertOrderStatus(order?.status as OrderStatus)}</div>
                 </div>
             </div>
-            <div className='pt-12 pb-24 bg-white'>
-                <div className='flex items-center justify-center md:px-7'>
-                    <div className='text-[14px] w-20 h-20 text-center'>
-                        <div className='mb-2 w-full h-full rounded-full  border-green-400 border-[4px] flex items-center justify-center text-green-400'>
-                            <MdOutlinePendingActions fontSize='30px' />
-                        </div>
-                        <p>Chờ xác nhận</p>
+            {order?.status !== OrderStatus.CANCELLED ? (
+                <OrderStep order={order} />
+            ) : (
+                <div className=''>
+                    <div className='py-12 bg-red-50 px-6'>
+                        <p className='text-red-600 capitalize text-[20px]'>Đã hủy đơn hàng</p>
+                        <p className='mt-2'>vào lúc {formatDate(order.canceled_date)}</p>
                     </div>
-                    <div className='w-24 h-[4px] bg-green-400'></div>
-                    <div className='text-[14px] w-20 h-20 text-center'>
-                        <div className='mb-2 w-full h-full rounded-full  border-green-400 border-[4px] flex items-center justify-center text-green-400'>
-                            <GiConfirmed fontSize='30px' />
-                        </div>
-                        <p>Đã xác nhận</p>
-                    </div>
-                    <div className='w-24 h-[4px] bg-green-400'></div>
-
-                    <div className='text-[14px] w-20 h-20 text-center'>
-                        <div className='mb-2 w-full h-full rounded-full  border-green-400 border-[4px] flex items-center justify-center text-green-400'>
-                            <MdOutlineLocalShipping fontSize='30px' />
-                        </div>
-                        <p>Đang giao hàng</p>
-                    </div>
-                    <div className='w-24 h-[4px] bg-green-400'></div>
-
-                    <div className='text-[14px] w-20 h-20 text-center'>
-                        <div className='mb-2 w-full h-full rounded-full  border-green-400 border-[4px] flex items-center justify-center text-green-400'>
-                            <FiGift fontSize='30px' />
-                        </div>
-                        <p>Đã nhận hàng</p>
-                    </div>
-                    <div className='w-24 h-[4px] bg-green-400'></div>
-
-                    <div className='text-[14px] w-20 h-20 text-center'>
-                        <div className='mb-2 w-full h-full rounded-full  border-green-400 border-[4px] flex items-center justify-center text-green-400'>
-                            <GiAlliedStar fontSize='30px' />
-                        </div>
-                        <p>Đánh giá</p>
+                    <div className='px-6 bg-white'>
+                        <p className='text-[14px] text-gray-500 my-2 py-6 text-text-primary'>
+                            Lý do hủy đơn hàng: {order.canceled_reason}
+                        </p>
                     </div>
                 </div>
-            </div>
+            )}
+
             <div className='line-order'></div>
-            <div className='px-7 pt-8 flex gap-14  bg-white py-6'>
+            {/* Info order */}
+            <div className='px-7 pt-12 flex gap-14  bg-white py-6'>
                 <div className='w-1/2'>
                     <h2 className='capitalize text-lg'>Địa chỉ nhận hàng</h2>
                     <div className='mt-4'>
@@ -106,6 +84,7 @@ export default function OrderDetail() {
                 </div>
             </div>
 
+            {/* Order Detail Product */}
             <div className='p-7 bg-white mt-4'>
                 <div className='border-t-[1px]'>
                     {order &&
@@ -130,8 +109,16 @@ export default function OrderDetail() {
                                             <span>x{orderDetail.quantity}</span>
                                         </div>
                                     </div>
-                                    <div className='w-[30%] flex items-center justify-end text-[15px] gap-2 px-6'>
-                                        <span className='text-blue-600'>{formatToVND(orderDetail.price)}</span>
+                                    <div className='w-[30%] flex flex-col justify-end text-[15px] gap-2 px-6'>
+                                        <span className='text-blue-600 text-end inline-block'>
+                                            {formatToVND(orderDetail.price)}
+                                        </span>
+                                        <div className='flex justify-end mt-3'>
+                                            <button className='flex justify-center capitalize bg-white border border-blue-600 px-4 py-2 w-[50%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85'>
+                                                <FaStarHalfStroke />
+                                                Đánh giá
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -139,6 +126,7 @@ export default function OrderDetail() {
                 </div>
             </div>
 
+            {/* Total */}
             <div className=' bg-white'>
                 <div className='px-7 bg-white'>
                     <div className='flex justify-end h-[48px] items-center px-6 border-t'>
@@ -147,18 +135,22 @@ export default function OrderDetail() {
                         </h2>
                         <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
                     </div>
-                    <div className='flex justify-end h-[48px] items-center px-6  border-t'>
-                        <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
-                            Phí vận chuyển
-                        </h2>
-                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>Miễn phí</h2>
-                    </div>
-                    <div className='flex justify-end h-[48px] items-center px-6  border-t'>
-                        <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
-                            Thành tiền
-                        </h2>
-                        <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
-                    </div>
+                    {order?.status !== OrderStatus.CANCELLED && (
+                        <Fragment>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Phí vận chuyển
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>Miễn phí</h2>
+                            </div>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Thành tiền
+                                </h2>
+                                <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
+                            </div>
+                        </Fragment>
+                    )}
                     <div className='flex justify-end h-[48px] items-center px-6  border-t'>
                         <h2 className='text-[12px] text-gray-400 w-[25%] border-r justify-end px-4 h-full flex items-center gap-1'>
                             <RiSecurePaymentLine fontSize='20px' className='text-blue-600' />
@@ -168,6 +160,13 @@ export default function OrderDetail() {
                     </div>
                 </div>
             </div>
+
+            {/* Repurchase */}
+            {order?.status === OrderStatus.DELIVERED && (
+                <div className='px-6 py-10 bg-blue-50 flex justify-end'>
+                    <MyButton className='h-[40px] px-6 bg-blue-600 text-white'>Mua lại đơn hàng</MyButton>
+                </div>
+            )}
         </div>
     )
 }

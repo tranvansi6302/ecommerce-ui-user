@@ -43,19 +43,19 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
     }
 
     const updateOrderMutation = useMutation({
-        mutationFn: (body: { id: string; status: string; cancel_reason: string }) => ordersService.updateOrder(body)
+        mutationFn: (body: { id: string; status: string; canceled_reason: string }) => ordersService.updateOrder(body)
     })
 
     const onSubmit = handleSubmit((data) => {
         const body = {
             id: orderId.toString(),
             status: OrderStatus.CANCELLED as string,
-            cancel_reason: data.cancel_reason as string
+            canceled_reason: data.canceled_reason as string
         }
         updateOrderMutation.mutate(body, {
             onSuccess: () => queryClient.invalidateQueries({ queryKey: ['orders'] })
         })
-        setValue('cancel_reason', '')
+        setValue('canceled_reason', '')
         setOpen(false)
         setOrderId(0)
     })
@@ -98,7 +98,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                             <DialogReason open={open} setOpen={setOpen}>
                                 <form onSubmit={onSubmit} className='px-6 pb-6'>
                                     <div>
-                                        <InputMUI register={register} errors={errors} name='cancel_reason' label='Lý do hủy' />
+                                        <InputMUI register={register} errors={errors} name='canceled_reason' label='Lý do hủy' />
                                         <div className='flex items-center justify-end mt-6 gap-3'>
                                             <MyButtonMUI
                                                 onClick={() => setOpen(false)}
@@ -107,7 +107,12 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                             >
                                                 Đóng
                                             </MyButtonMUI>
-                                            <MyButtonMUI type='submit' color='error' sx={{ width: '120px' }}>
+                                            <MyButtonMUI
+                                                isLoading={updateOrderMutation.isPending}
+                                                type='submit'
+                                                color='error'
+                                                sx={{ width: '120px' }}
+                                            >
                                                 Hủy đơn
                                             </MyButtonMUI>
                                         </div>
