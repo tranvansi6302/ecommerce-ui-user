@@ -150,6 +150,7 @@ export default function ProductDetail() {
             variant_id: (activeVariant as Variant).id,
             quantity: buyCount
         })
+        console.log(res.data.result)
         navigate(pathConfig.carts, {
             state: {
                 cart_detail_id: res.data.result?.cart_detail.id

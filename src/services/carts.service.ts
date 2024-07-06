@@ -1,4 +1,4 @@
-import { CartCreatedUpdatedResponse, ListCartProductResponse } from '~/@types/cart.type'
+import { CartCreatedUpdatedResponse, ListCartProductResponse } from '~/@types/carts.type'
 import { API_URL } from '~/configs/api.config'
 import http from '~/utils/http'
 

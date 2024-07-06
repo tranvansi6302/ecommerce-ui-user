@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, createContext, useState } from 'react'
-import { ExtendedCartType } from '~/@types/cart.type'
+import { ExtendedCartType } from '~/@types/carts.type'
 import { User } from '~/@types/users.type'
 
 import { getProfileFromLS, getTokenFromLS } from '~/utils/auth'

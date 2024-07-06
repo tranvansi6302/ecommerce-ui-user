@@ -163,3 +163,92 @@
     transition: all linear 0.123s;
     cursor: pointer;
 }
+
+/* Overide datepicker */
+
+.react-datepicker-wrapper {
+    border: 1px solid #aeaeae;
+    height: 56px;
+    width: 100%;
+    border-radius: 4px;
+}
+.react-datepicker-wrapper:hover {
+    border-color: #000;
+}
+.react-datepicker__input-container {
+    height: 100%;
+    border-radius: 4px;
+}
+
+.react-datepicker__input-container > input {
+    height: 100%;
+    width: 100%;
+    padding: 0 14px;
+    border-radius: 4px;
+}
+.react-datepicker__input-container > input:focus {
+    outline: #2563eb;
+    border: 1px solid #3871ed;
+}
+
+.textarea-address:hover {
+    border-color: #000;
+}
+
+.textarea-address:focus {
+    outline: #2563eb;
+    border: 2px solid #3871ed;
+}
+.textarea-address.invalid {
+    outline: #d32f2f;
+    border: 1px solid #d32f2f;
+}
+.textarea-address.invalid:focus {
+    border: 2px solid #d32f2f;
+}
+
+#x-taborder-0 > div {
+    padding: 0 !important;
+}
+#x-taborder-1 > div {
+    padding: 0 !important;
+}
+#x-taborder-2 > div {
+    padding: 0 !important;
+}
+
+#x-taborder-3 > div {
+    padding: 0 !important;
+}
+
+#x-taborder-4 > div {
+    padding: 0 !important;
+}
+#x-taborder-5 > div {
+    padding: 0 !important;
+}
+
+[aria-label='tabs-order'] {
+    justify-content: space-between;
+}
+
+.line-order {
+    background-image: repeating-linear-gradient(
+        45deg,
+        #6fa6d6,
+        #6fa6d6 33px,
+        transparent 0,
+        transparent 41px,
+        #f18d9b 0,
+        #f18d9b 74px,
+        transparent 0,
+        transparent 82px
+    );
+    background-position-x: -1.875rem;
+    background-size: 7.25rem 0.1875rem;
+    height: 0.1875rem;
+    width: 100%;
+}
+.MuiPaper-elevation::before {
+    position: unset !important;
+}

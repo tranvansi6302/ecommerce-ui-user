@@ -26,6 +26,7 @@ export type ProductSaleFilters = {
     limit?: number
     category?: string
     brand?: string
+    search?: string
     sort_order?: 'asc' | 'desc'
     sort_by?: 'price' | 'sold'
     rating?: number

@@ -3,7 +3,7 @@ import MyButton from '~/components/MyButton'
 
 export default function Banner() {
     return (
-        <section className='py-10'>
+        <section className='py-5'>
             <Container style={{ padding: '0' }}>
                 <div className='-mx-4 flex flex-wrap'>
                     <div className='w-full px-4 lg:w-8/12'>

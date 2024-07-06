@@ -6,8 +6,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { User } from '~/@types/users.type'
 import loginBanner from '~/assets/images/loginBanner.jpg'
 import { GoogleIcon } from '~/assets/svg'
-import InputAuth from '~/components/InputAuth'
-import MyButtonV2 from '~/components/MyButtonV2'
+import InputMUI from '~/components/InputMUI'
+import MyButtonMUI from '~/components/MyButtonMUI'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import AuthLayout from '~/layouts/AuthLayout'
@@ -62,23 +62,23 @@ export default function Login() {
                     </h1>
                     <div className='mt-4 flex flex-col lg:flex-row items-center justify-between'>
                         <div className='w-full lg:mb-0'>
-                            <MyButtonV2 onClick={loginWithGoogle} variant='text' sx={{ py: 1.5 }} type='button'>
+                            <MyButtonMUI onClick={loginWithGoogle} variant='text' sx={{ py: 1.5 }} type='button'>
                                 <GoogleIcon />
                                 <p className='pl-2 mt-0.5'>Tiếp tục với google</p>
-                            </MyButtonV2>
+                            </MyButtonMUI>
                         </div>
                     </div>
                     <div className='my-5 text-sm text-gray-600 text-center'>
                         <p>hoặc với email</p>
                     </div>
                     <form onSubmit={onSubmit} className='space-y-4'>
-                        <InputAuth register={register} errors={errors} name='email' label='Email' />
+                        <InputMUI register={register} errors={errors} name='email' label='Email' />
 
-                        <InputAuth register={register} errors={errors} name='password' label='Mật khẩu' />
+                        <InputMUI register={register} errors={errors} name='password' label='Mật khẩu' />
 
-                        <MyButtonV2 loading={loginMutation.isPending} type='submit' sx={{ py: 1.5 }}>
+                        <MyButtonMUI isLoading={loginMutation.isPending} type='submit' sx={{ py: 1.5 }}>
                             Đăng nhập
-                        </MyButtonV2>
+                        </MyButtonMUI>
                     </form>
                     <div className='mt-4 text-sm text-gray-600 text-center'>
                         <p>

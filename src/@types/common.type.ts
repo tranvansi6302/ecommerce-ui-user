@@ -9,6 +9,12 @@ export type ApiResponse<T> = {
     result?: T
 }
 
+export type ApiGHNResponse<T> = {
+    code: number
+    message?: string
+    data?: T
+}
+
 export type PaginatedApiResponse<T> = ApiResponse<T> & {
     pagination: Pagination
 }

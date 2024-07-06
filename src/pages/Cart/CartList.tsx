@@ -5,9 +5,9 @@ import { keyBy } from 'lodash'
 import React, { useContext, useEffect, useMemo } from 'react'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { Link, useLocation } from 'react-router-dom'
-import { Cart } from '~/@types/cart.type'
+import { Cart } from '~/@types/carts.type'
 import MyButton from '~/components/MyButton'
-import MyButtonV2 from '~/components/MyButtonV2'
+import MyButtonMUI from '~/components/MyButtonMUI'
 import QuantityController from '~/components/QuantityController'
 import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
@@ -21,6 +21,7 @@ export default function CartList() {
 
     // Handle by now get id
     const chooseCartDetailIdFromLocation = (location.state as { cart_detail_id: number })?.cart_detail_id
+    console.log(chooseCartDetailIdFromLocation)
     const { data: productsInCart, refetch } = useQuery({
         queryKey: ['productsInCart'],
         queryFn: () => cartsService.getAllProductFromCarts()
@@ -278,13 +279,13 @@ export default function CartList() {
                                                                 </span>
                                                             </div>
                                                             <div className='col-span-1'>
-                                                                <MyButtonV2
+                                                                <MyButtonMUI
                                                                     onClick={() => handleDeleteProductFromCart(index)}
                                                                     color='error'
                                                                     variant='text'
                                                                 >
                                                                     Xóa
-                                                                </MyButtonV2>
+                                                                </MyButtonMUI>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -320,14 +321,14 @@ export default function CartList() {
                                         <MyButton className='mx-3 border-none bg-none text-text-primary text-base'>
                                             Chọn tất cả ({extendedCart.length})
                                         </MyButton>
-                                        <MyButtonV2
+                                        <MyButtonMUI
                                             onClick={handleDeleteManyProductFromCart}
                                             sx={{ width: '50px', marginTop: '3px' }}
                                             color='error'
                                             variant='text'
                                         >
                                             Xóa
-                                        </MyButtonV2>
+                                        </MyButtonMUI>
                                     </div>
                                 </div>
 

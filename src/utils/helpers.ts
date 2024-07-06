@@ -1,5 +1,5 @@
 import { ProductSale } from '~/@types/productSales.type'
-
+import { OrderStatus } from '~/enums/OrderStatus'
 export const getMinMaxSalePrice = (product: ProductSale) => {
     let minSalePrice = Infinity
     let maxSalePrice = -Infinity
@@ -73,7 +73,8 @@ export const getUniqueSizeAndColor = (product: ProductSale) => {
 }
 
 export const formatToVND = (price: number) => {
-    return '₫' + price.toLocaleString('vi-VN') || '₫0'
+    if (price === undefined) return '0 VND'
+    return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
 }
 
 const removeSpecialCharacter = (str: string) =>
@@ -87,4 +88,40 @@ export const generateNameId = ({ name, id }: { name: string; id: string }) => {
 export const getIdFromNameId = (nameId: string) => {
     const arr = nameId?.split('-i-')
     return arr[arr.length - 1]
+}
+
+export const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+}
+
+export const formatDateFull = (dateString: string) => {
+    const date = new Date(dateString)
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const year = date.getFullYear()
+    return `${hours}:${minutes} ${day}/${month}/${year}`
+}
+
+export const convertOrderStatus = (status: OrderStatus) => {
+    switch (status) {
+        case OrderStatus.PENDING:
+            return 'Chờ xác nhận'
+        case OrderStatus.CONFIRMED:
+            return 'Đã xác nhận'
+        case OrderStatus.DELIVERING:
+            return 'Đang giao hàng'
+        case OrderStatus.DELIVERED:
+            return 'Hoàn thành'
+        case OrderStatus.CANCELLED:
+            return 'Đã hủy'
+        default:
+            return 'Không xác định'
+    }
 }
