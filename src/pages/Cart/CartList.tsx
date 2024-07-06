@@ -21,6 +21,7 @@ export default function CartList() {
 
     // Handle by now get id
     const chooseCartDetailIdFromLocation = (location.state as { cart_detail_id: number })?.cart_detail_id
+    console.log(chooseCartDetailIdFromLocation)
     const { data: productsInCart, refetch } = useQuery({
         queryKey: ['productsInCart'],
         queryFn: () => cartsService.getAllProductFromCarts()

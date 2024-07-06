@@ -1,5 +1,5 @@
 import { FiGift } from 'react-icons/fi'
-import { GiAlliedStar, GiConfirmed } from 'react-icons/gi'
+import { GiConfirmed } from 'react-icons/gi'
 import { MdOutlineLocalShipping, MdOutlinePendingActions } from 'react-icons/md'
 import { Fragment } from 'react/jsx-runtime'
 

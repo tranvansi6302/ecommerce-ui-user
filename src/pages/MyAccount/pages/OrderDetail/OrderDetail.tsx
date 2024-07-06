@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Fragment, useMemo } from 'react'
 import { FaStarHalfStroke } from 'react-icons/fa6'
 import { IoChevronBack } from 'react-icons/io5'
@@ -6,7 +6,10 @@ import { RiSecurePaymentLine } from 'react-icons/ri'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Order } from '~/@types/orders.type'
 import MyButton from '~/components/MyButton'
+import pathConfig from '~/configs/path.config'
 import { OrderStatus } from '~/enums/OrderStatus'
+import { queryClient } from '~/main'
+import cartsService from '~/services/carts.service'
 import ordersService from '~/services/orders.service'
 import { convertOrderStatus, formatDate, formatToVND } from '~/utils/helpers'
 import OrderStep from './components/OrderStep'
@@ -27,7 +30,28 @@ export default function OrderDetail() {
     const handleBack = () => {
         navigate(-1)
     }
-    console.log(order)
+
+    // Handle Repurchase
+    const addToCartMutation = useMutation({
+        mutationFn: (body: { variant_id: number; quantity: number }) => cartsService.addProductToCart(body),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['productsInCart']
+            })
+        }
+    })
+    const handleRepurchase = async (variantId: number, quantity: number) => {
+        const res = await addToCartMutation.mutateAsync({
+            variant_id: variantId,
+            quantity
+        })
+
+        navigate(pathConfig.carts, {
+            state: {
+                cart_detail_id: res.data.result?.cart_detail.id
+            }
+        })
+    }
 
     return (
         <div className='rounded-sm  pb-10  min-h-[100vh] md:pb-20'>
@@ -109,15 +133,24 @@ export default function OrderDetail() {
                                             <span>x{orderDetail.quantity}</span>
                                         </div>
                                     </div>
-                                    <div className='w-[30%] flex flex-col justify-end text-[15px] gap-2 px-6'>
+                                    <div className='w-[30%] flex flex-col  text-[15px] gap-2 px-6'>
                                         <span className='text-blue-600 text-end inline-block'>
                                             {formatToVND(orderDetail.price)}
                                         </span>
-                                        <div className='flex justify-end mt-3'>
+                                        <div className='flex justify-start items-start gap-2 w-full mt-4'>
                                             <button className='flex justify-center capitalize bg-white border border-blue-600 px-4 py-2 w-[50%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85'>
                                                 <FaStarHalfStroke />
                                                 Đánh giá
                                             </button>
+                                            {/* Repurchase */}
+                                            {order?.status === OrderStatus.DELIVERED && (
+                                                <MyButton
+                                                    onClick={() => handleRepurchase(orderDetail.variant.id, orderDetail.quantity)}
+                                                    className='py-2 w-[50%] rounded-sm px-4 bg-blue-600 text-white'
+                                                >
+                                                    Mua lại
+                                                </MyButton>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -160,13 +193,6 @@ export default function OrderDetail() {
                     </div>
                 </div>
             </div>
-
-            {/* Repurchase */}
-            {order?.status === OrderStatus.DELIVERED && (
-                <div className='px-6 py-10 bg-blue-50 flex justify-end'>
-                    <MyButton className='h-[40px] px-6 bg-blue-600 text-white'>Mua lại đơn hàng</MyButton>
-                </div>
-            )}
         </div>
     )
 }
