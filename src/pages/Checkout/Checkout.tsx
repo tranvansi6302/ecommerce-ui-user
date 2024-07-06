@@ -1,13 +1,15 @@
 import { Container } from '@mui/material'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
 import { FaLocationDot } from 'react-icons/fa6'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
+import { MdOutlineNoteAlt } from 'react-icons/md'
 import { Link } from 'react-router-dom'
+import tickIcon from '~/assets/images/tickIcon.png'
+import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import useSetTitle from '~/hooks/useSetTitle'
 import { formatToVND } from '~/utils/helpers'
-import tickIcon from '~/assets/images/tickIcon.png'
-import { useState } from 'react'
-import MyButton from '~/components/MyButton'
 
 type PaymentType = {
     id: string
@@ -27,6 +29,7 @@ const payment: PaymentType[] = [
 
 export default function Checkout() {
     useSetTitle('Thanh toán')
+    const { register } = useForm<{ note: string }>()
     const [selectedPayment, setSelectedPayment] = useState<string>('')
     return (
         <Container style={{ padding: '0' }}>
@@ -217,7 +220,21 @@ export default function Checkout() {
                         </div>
                     </div>
 
-                    <div className='bg-white p-6 border-t flex justify-end'>
+                    <div className='bg-white p-6 border-t flex justify-between items-center'>
+                        <div className='w-3/6'>
+                            <form className='w-full relative'>
+                                <button className='absolute left-0 top-1/2 -translate-y-1/2 px-4 text-gray-400'>
+                                    <MdOutlineNoteAlt fontSize='18px' />
+                                </button>
+                                <input
+                                    {...register('note')}
+                                    type='text'
+                                    placeholder='Ghi chú nếu có'
+                                    autoComplete='off'
+                                    className='w-full h-[44px]  border border-gray-200 rounded-sm bg-[#f8f8f8] outline-none pl-10 pr-4 text-[14px] text-gray-400'
+                                />
+                            </form>
+                        </div>
                         <MyButton className='h-[40px] w-[240px] hover:opacity-90 bg-blue-600 text-white rounded-sm'>
                             Đặt hàng
                         </MyButton>
