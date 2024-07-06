@@ -1,5 +1,5 @@
 import 'react-datepicker/dist/react-datepicker.css'
-import { ToastContainer } from 'react-toastify'
+import { Flip, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Fragment } from 'react/jsx-runtime'
 
@@ -11,7 +11,7 @@ export default function App() {
     return (
         <Fragment>
             {appRouter}
-            <ToastContainer autoClose={1500} position='top-center' />
+            <ToastContainer autoClose={1200} position='top-center' transition={Flip} hideProgressBar={true} />
         </Fragment>
     )
 }

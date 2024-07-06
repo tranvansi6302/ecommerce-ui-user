@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
 import { API_URL } from '~/configs/api.config'
 import { ErrorMessage } from './../@types/common.type'
-import { toast } from 'react-toastify'
 import { getTokenFromLS, saveProfileToLS, saveTokenToLS } from './auth'
 import { LoginResponse } from '~/@types/auth.type'
 import { User } from '~/@types/users.type'
+import { toast } from 'react-toastify'
 
 class Http {
     instance: AxiosInstance
@@ -44,7 +44,7 @@ class Http {
             },
             (error) => {
                 const errorResponse = (error as AxiosError<ErrorMessage>).response?.data.message
-                toast.error(errorResponse)
+                toast.error(errorResponse as string)
                 return Promise.reject(error)
             }
         )

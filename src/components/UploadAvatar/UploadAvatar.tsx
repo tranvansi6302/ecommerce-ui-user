@@ -1,6 +1,6 @@
 import { Fragment, useRef } from 'react'
-import { toast } from 'react-toastify'
 import MyButton from '../MyButton'
+import { toast } from 'react-toastify'
 
 interface Props {
     onChange?: (file?: File) => void

@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useContext, useState } from 'react'
 import { LuBadgeInfo, LuChevronDown } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
 import { Fragment } from 'react/jsx-runtime'
 import { Cart } from '~/@types/carts.type'
 import avatarDefault from '~/assets/images/avatarDefault.png'
@@ -16,6 +15,7 @@ import cartsService from '~/services/carts.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
 import HeaderSearch from '../HeaderSearch'
 import MiniCart from '../MiniCart'
+import { toast } from 'react-toastify'
 
 const settings = [
     {
