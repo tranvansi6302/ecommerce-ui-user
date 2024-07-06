@@ -69,7 +69,7 @@ export default function CreateAddress() {
 
     return (
         <CustomDialog open={globalOpenAddessDialog} setOpen={setGlobalOpenAddessDialog}>
-            <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20 w-[800px]'>
+            <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-5 w-[800px]'>
                 <div className='border-b border-b-gray-200 py-6 flex items-center justify-between'>
                     <h1 className='text-lg font-medium capitalize text-gray-900'>Thêm mới địa chỉ</h1>
                 </div>
@@ -163,7 +163,7 @@ export default function CreateAddress() {
                             <p className='text-[12px] ml-[14px] mt-[3px] text-[#d32f2f]'>{errors.description.message}</p>
                         )}
                     </div>
-                    <div className='flex justify-end sticky bottom-0 bg-white pb-10'>
+                    <div className='flex justify-end sticky bottom-0 bg-white pb-5 border-t mt-6'>
                         <MyButton
                             isLoading={createAddressMutation.isPending}
                             type='submit'

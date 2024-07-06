@@ -49,26 +49,10 @@ export default function Checkout() {
     const [open, setOpen] = useState<boolean>(false)
     const getCartFromLS = getCartsFromLS() as ExtendedCartType[]
 
-    const onSubmit = handleSubmit((data) => {
-        const variantIds = getCartFromLS.map((item) => {
-            return {
-                variant_id: item.variant.id
-            }
-        })
-
-        const body = {
-            ...data,
-            order_details: variantIds
-        }
-        console.log(body)
-    })
-
     const { data } = useQuery({
         queryKey: ['addresses'],
         queryFn: () => addressesService.getMyAddresses()
     })
-
-    console.log(data)
 
     const addresses = data?.data.result as Address[]
     const [extendedAddress, setExtendedAddress] = useState<ExtendedAddressType[]>([])
@@ -100,6 +84,36 @@ export default function Checkout() {
     const addressChecked = useMemo(() => {
         return extendedAddress.find((address) => address.checked) ?? extendedAddress.find((address) => address.is_default)
     }, [extendedAddress])
+
+    // Total
+    const totalCheckoutProduct = useMemo(() => {
+        return getCartFromLS.reduce((acc, item) => {
+            // Ensure we have a valid price, defaulting to 0 if not available
+            const price = item.variant?.current_price_plan?.sale_price
+                ? item.variant.current_price_plan.sale_price
+                : item.variant?.current_price_plan?.promotion_price ?? 0
+            const quantity = typeof item.quantity === 'number' ? item.quantity : 0
+            return acc + price * quantity
+        }, 0)
+    }, [getCartFromLS])
+
+    // Handle checkout
+    const onSubmit = handleSubmit((data) => {
+        const variantIds = getCartFromLS.map((item) => {
+            return {
+                variant_id: item.variant.id
+            }
+        })
+
+        const body = {
+            ...data,
+            full_name: addressChecked?.full_name,
+            phone_number: addressChecked?.phone_number,
+            address: `${addressChecked?.description}, ${addressChecked?.ward}, ${addressChecked?.district}, ${addressChecked?.province}`,
+            order_details: variantIds
+        }
+        console.log(body)
+    })
 
     return (
         <Container style={{ padding: '0' }}>
@@ -144,6 +158,11 @@ export default function Checkout() {
                                             <p className='text-[14px] text-gray-500 mt-2 leading-5'>
                                                 {address?.description}, {address?.ward}, {address?.district}, {address?.province}
                                             </p>
+                                            {address.is_default === 1 && (
+                                                <span className='px-3 text-[12px] capitalize py-1 border border-red-600 inline-block mt-2 rounded-sm text-red-600 bg-red-50'>
+                                                    Mặc định
+                                                </span>
+                                            )}
                                         </label>
                                     </div>
                                     <div className='w-[20%]'></div>
@@ -320,7 +339,7 @@ export default function Checkout() {
                     <div className='p-6 border-t bg-blue-50 flex items-end flex-col gap-4'>
                         <div className='flex items-center w-[25%] justify-between text-[14px] '>
                             <h4 className='text-gray-500'>Tổng tiền hàng</h4>
-                            <span className='text-text-primary'>{formatToVND(1200000)}</span>
+                            <span className='text-text-primary'>{formatToVND(totalCheckoutProduct)}</span>
                         </div>
                         <div className='flex items-center w-[25%] justify-between text-[14px]'>
                             <h4 className='text-gray-500'>Phí vận chuyển</h4>
@@ -332,7 +351,7 @@ export default function Checkout() {
                         </div>
                         <div className='flex items-center w-[25%] justify-between text-[14px]'>
                             <h4 className='text-gray-500'>Tổng thanh toán</h4>
-                            <span className='text-blue-600 text-[24px]'>{formatToVND(1200000)}</span>
+                            <span className='text-blue-600 text-[24px]'>{formatToVND(totalCheckoutProduct)}</span>
                         </div>
                     </div>
 

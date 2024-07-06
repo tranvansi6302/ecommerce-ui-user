@@ -145,11 +145,6 @@ export default function CartList() {
     }
 
     const handlePurchase = () => {
-        // navigate(pathConfig.checkout, {
-        //     state: {
-        //         choose_from_cart: checkedCarts
-        //     }
-        // })
         navigate(pathConfig.checkout)
         saveCartToLS(checkedCarts)
     }

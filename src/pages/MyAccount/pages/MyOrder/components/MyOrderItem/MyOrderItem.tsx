@@ -19,7 +19,7 @@ import { OrderStatus } from '~/enums/OrderStatus'
 import { queryClient } from '~/main'
 import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
 import ordersService from '~/services/orders.service'
-import { convertOrderStatus, formatDate, formatToVND } from '~/utils/helpers'
+import { convertOrderStatus, formatDate, formatDateFull, formatToVND } from '~/utils/helpers'
 
 type MyOrderItemProps = {
     orders: Order[]
@@ -162,7 +162,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                 </div>
                                             </div>
                                             <div className='mr-8 flex items-center'>
-                                                <p className='capitalize'>Ngày đặt: {formatDate(order.order_date)}</p>
+                                                <p className='capitalize'>Ngày đặt: {formatDateFull(order.order_date)}</p>
                                                 <div className='h-full w-[0.5px] bg-gray-400 mx-3'></div>
                                                 <p className={`uppercase ${statusColorClass} w-[130px]`}>
                                                     {convertOrderStatus(order.status as OrderStatus)}

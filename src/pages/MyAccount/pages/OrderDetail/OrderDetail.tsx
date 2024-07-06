@@ -11,7 +11,7 @@ import { OrderStatus } from '~/enums/OrderStatus'
 import { queryClient } from '~/main'
 import cartsService from '~/services/carts.service'
 import ordersService from '~/services/orders.service'
-import { convertOrderStatus, formatDate, formatToVND } from '~/utils/helpers'
+import { convertOrderStatus, formatDate, formatDateFull, formatToVND } from '~/utils/helpers'
 import OrderStep from './components/OrderStep'
 export default function OrderDetail() {
     const navigate = useNavigate()
@@ -90,20 +90,15 @@ export default function OrderDetail() {
                     <div className='mt-4'>
                         <h5 className='text-text-primary'>Trần Văn Sĩ</h5>
                         <p className='mt-2 text-[12px]'>(+84) 877751514</p>
-                        <p className='mt-2 text-[12px] text-gray-500 leading-5'>
-                            Ngay Chung Cư - Nhà Trọ Bình Điền Lam, Đoàn Nguyễn Tuấn, Ấp 2, Xã Hưng Long, Huyện Bình Chánh, TP. Hồ
-                            Chí Minh
-                        </p>
+                        <p className='mt-2 text-[12px] text-gray-500 leading-5'>{order?.address}</p>
                     </div>
                 </div>
                 <div className='w-[0.5px] h-[150px] bg-gray-200'></div>
                 <div className='w-1/2'>
                     <h2 className='capitalize text-lg'>Thông tin đơn hàng</h2>
                     <div className='mt-4'>
-                        <h5 className='text-text-primary'>Ngày đặt hàng: 20/11/2022</h5>
-                        <p className='mt-2 text-[12px] leading-5'>
-                            Ghi chú: Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda explicabo qui sequi fugiat
-                        </p>
+                        <h5 className='text-text-primary'>Ngày đặt hàng: {formatDateFull(order?.order_date)}</h5>
+                        <p className='mt-2 text-[12px] leading-5'>Ghi chú: {order?.note || 'Không có'}</p>
                     </div>
                 </div>
             </div>
