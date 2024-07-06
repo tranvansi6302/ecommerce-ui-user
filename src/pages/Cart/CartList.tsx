@@ -4,11 +4,12 @@ import { produce } from 'immer'
 import { keyBy } from 'lodash'
 import React, { useContext, useEffect, useMemo } from 'react'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Cart } from '~/@types/carts.type'
 import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import QuantityController from '~/components/QuantityController'
+import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
 import cartsService from '~/services/carts.service'
@@ -16,6 +17,7 @@ import { formatToVND } from '~/utils/helpers'
 
 export default function CartList() {
     useSetTitle('Giỏ hàng')
+    const navigate = useNavigate()
     const location = useLocation()
     const { extendedCart, setExtendedCart } = useContext(AppContext)
 
@@ -139,6 +141,10 @@ export default function CartList() {
         deleteProductFromCartMutation.mutate({
             cart_detail_ids: cartDetailIds
         })
+    }
+
+    const handlePurchase = () => {
+        navigate(pathConfig.checkout)
     }
 
     return (
@@ -339,7 +345,9 @@ export default function CartList() {
                                             <div className='ml-2 text-2xl text-blue-600'>{formatToVND(totalCheckedCart)}</div>
                                         </div>
                                     </div>
-                                    <MyButton className='flex h-10 w-52 bg-blue-600 text-white ml-6'>Mua hàng</MyButton>
+                                    <MyButton onClick={handlePurchase} className='flex h-10 w-52 bg-blue-600 text-white ml-6'>
+                                        Mua hàng
+                                    </MyButton>
                                 </div>
                             </div>
                         </div>

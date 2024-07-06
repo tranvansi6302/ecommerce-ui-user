@@ -6,6 +6,7 @@ import { AppContext } from '~/contexts/app.context'
 import AccountLayout from '~/layouts/AccountLayout'
 import MainLayout from '~/layouts/MainLayout'
 import CartList from '~/pages/Cart/CartList'
+import Checkout from '~/pages/Checkout'
 import Login from '~/pages/Login'
 import ChangePassword from '~/pages/MyAccount/pages/ChangePassword'
 import CreateAddress from '~/pages/MyAccount/pages/CreateAddress'
@@ -133,6 +134,14 @@ export default function AppRouter() {
                         <AccountLayout>
                             <OrderDetail />
                         </AccountLayout>
+                    )
+                },
+                {
+                    path: pathConfig.checkout,
+                    element: (
+                        <MainLayout>
+                            <Checkout />
+                        </MainLayout>
                     )
                 }
             ]
