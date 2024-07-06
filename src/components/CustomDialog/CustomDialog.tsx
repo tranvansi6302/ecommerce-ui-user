@@ -16,6 +16,7 @@ export default function CustomDialog({ open, setOpen, children, title, descripti
     return (
         <React.Fragment>
             <Dialog
+                maxWidth='md'
                 open={open}
                 onClose={() => setOpen(false)}
                 aria-labelledby='alert-dialog-title'
@@ -27,7 +28,7 @@ export default function CustomDialog({ open, setOpen, children, title, descripti
                     </DialogTitle>
                 )}
                 {description && (
-                    <DialogContent sx={{ width: '500px' }}>
+                    <DialogContent>
                         <DialogContentText id='alert-dialog-description'>{description}</DialogContentText>
                     </DialogContent>
                 )}

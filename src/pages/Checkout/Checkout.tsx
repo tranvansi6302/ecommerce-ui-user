@@ -1,24 +1,25 @@
 import { Container } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaLocationDot } from 'react-icons/fa6'
 import { GoPlus } from 'react-icons/go'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { MdOutlineNoteAlt } from 'react-icons/md'
+import { TfiExchangeVertical } from 'react-icons/tfi'
 import { Link } from 'react-router-dom'
 import { Address } from '~/@types/addresses.type'
 import { ExtendedCartType } from '~/@types/carts.type'
 import tickIcon from '~/assets/images/tickIcon.png'
 import CustomDialog from '~/components/CustomDialog'
 import MyButton from '~/components/MyButton'
-import MyButtonMUI from '~/components/MyButtonMUI'
-import pathConfig from '~/configs/path.config'
+import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
 import addressesService from '~/services/addresses.service'
 import { getCartsFromLS } from '~/utils/auth'
 import { formatToVND } from '~/utils/helpers'
+import CreateAddress from '../MyAccount/pages/CreateAddress'
 
 type PaymentMethodType = {
     id: string
@@ -42,6 +43,7 @@ type ExtendedAddressType = Address & {
 
 export default function Checkout() {
     useSetTitle('Thanh toán')
+    const { setGlobalOpenAddessDialog } = useContext(AppContext)
     const { register, handleSubmit } = useForm<{ note: string }>()
     const [selectedPayment, setSelectedPayment] = useState<string>('')
     const [open, setOpen] = useState<boolean>(false)
@@ -65,6 +67,8 @@ export default function Checkout() {
         queryKey: ['addresses'],
         queryFn: () => addressesService.getMyAddresses()
     })
+
+    console.log(data)
 
     const addresses = data?.data.result as Address[]
     const [extendedAddress, setExtendedAddress] = useState<ExtendedAddressType[]>([])
@@ -103,23 +107,24 @@ export default function Checkout() {
                 <div className='w-[600px] bg-white py-6'>
                     <div className='flex justify-between  border-b'>
                         <h2 className='text-gray-600 capitalize  px-6 pb-4'>Địa chỉ của tôi</h2>
-                        <Link to={pathConfig.accountCreateAddress}>
-                            <MyButton
-                                onClick={() => setOpen(false)}
-                                className='w-[140px] mr-4 pb-4  text-blue-600 rounded-sm hover:opacity-90'
-                            >
-                                <GoPlus fontSize='20px' />
-                                Thêm địa chỉ mới
-                            </MyButton>
-                        </Link>
+
+                        <MyButton
+                            onClick={() => setGlobalOpenAddessDialog(true)}
+                            className='w-[140px] mr-4 pb-4  text-blue-600 rounded-sm hover:opacity-90'
+                        >
+                            <GoPlus fontSize='20px' />
+                            Thêm địa chỉ mới
+                        </MyButton>
+                        {/* Dialog create address */}
+                        <CreateAddress />
                     </div>
                     <div className='px-4 overflow-hidden'>
                         {extendedAddress &&
                             extendedAddress.length > 0 &&
                             extendedAddress.map((address, index) => (
-                                <div key={address.id} className='flex items-start border-b py-4 gap-1'>
+                                <div key={address.id} className='flex items-start border-b gap-1'>
                                     <div className='w-[80%] flex items-start gap-2'>
-                                        <div className='flex items-center'>
+                                        <div className='flex items-center py-4'>
                                             <input
                                                 onChange={handleChecked(index)}
                                                 id={`address-${address.id}`}
@@ -130,7 +135,7 @@ export default function Checkout() {
                                             />
                                         </div>
 
-                                        <label htmlFor={`address-${address.id}`}>
+                                        <label className='py-4 w-full' htmlFor={`address-${address.id}`}>
                                             <div className=' flex items-center gap-2'>
                                                 <div className='text-text-primary'>{address?.full_name}</div>
                                                 <div className='w-[1px] h-4 bg-gray-200'></div>
@@ -145,7 +150,7 @@ export default function Checkout() {
                                 </div>
                             ))}
                     </div>
-                    <div className='px-6 pt-4 flex items-center justify-end gap-2'>
+                    <div className='sticky bottom-0 px-6 bg-white py-5 flex items-center justify-end gap-2'>
                         <MyButton
                             onClick={() => setOpen(false)}
                             className='w-[140px] h-[40px] bg-blue-600 text-white rounded-sm hover:opacity-90'
@@ -171,27 +176,26 @@ export default function Checkout() {
                                     <p>{addressChecked?.full_name}</p>
                                     <p className='mt-1'>{addressChecked?.phone_number}</p>
                                 </div>
-                                <div className='w-[60%]'>
+                                <div className='w-[50%]'>
                                     <p>
                                         {addressChecked?.description}, {addressChecked?.ward}, {addressChecked?.district},{' '}
                                         {addressChecked?.province}
                                     </p>
                                 </div>
-                                <div className='w-[20%] flex items-center justify-end gap-3'>
+                                <div className='w-[30%] flex items-center justify-end gap-3'>
                                     {addressChecked?.is_default == 1 && (
                                         <Fragment>
                                             <button className='py-1 px-2 text-[14px] capitalize b text-red-600'>Mặc định</button>
                                             <div className='w-[0.5px] h-[20px] bg-gray-300'></div>
                                         </Fragment>
                                     )}
-
-                                    <MyButtonMUI
+                                    <button
                                         onClick={() => setOpen(true)}
-                                        variant='outlined'
-                                        sx={{ width: '100px', fontSize: '12px', px: 0, borderRadius: '2px' }}
+                                        className='py-1 px-2 text-[14px] capitalize b text-blue-600 flex items-center gap-1'
                                     >
-                                        Thay đổi
-                                    </MyButtonMUI>
+                                        <TfiExchangeVertical />
+                                        Thay đổi địa chỉ
+                                    </button>
                                 </div>
                             </div>
                         </div>

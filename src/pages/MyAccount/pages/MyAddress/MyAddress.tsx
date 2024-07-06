@@ -1,27 +1,33 @@
 import { useQuery } from '@tanstack/react-query'
+import { useContext } from 'react'
 import { GoPlus } from 'react-icons/go'
-import { Link } from 'react-router-dom'
 import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
-import pathConfig from '~/configs/path.config'
+import { AppContext } from '~/contexts/app.context'
 import addressesService from '~/services/addresses.service'
+import CreateAddress from '../CreateAddress'
 
 export default function MyAddress() {
+    const { setGlobalOpenAddessDialog } = useContext(AppContext)
     const { data } = useQuery({
         queryKey: ['addresses'],
         queryFn: () => addressesService.getMyAddresses()
     })
     const addresses = data?.data.result
+
     return (
         <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
+            <CreateAddress />
             <div className='border-b border-b-gray-200 py-6 flex items-center justify-between'>
                 <h1 className='text-lg font-medium capitalize text-gray-900'>Địa chỉ của tôi</h1>
-                <Link to={pathConfig.accountCreateAddress}>
-                    <MyButton className='rounded-sm bg-blue-600 text-white h-[40px] px-6 flex items-center gap-1'>
-                        <GoPlus fontSize='22px' />
-                        Thêm địa chỉ mới
-                    </MyButton>
-                </Link>
+
+                <MyButton
+                    onClick={() => setGlobalOpenAddessDialog(true)}
+                    className='rounded-sm bg-blue-600 text-white h-[40px] px-6 flex items-center gap-1'
+                >
+                    <GoPlus fontSize='22px' />
+                    Thêm địa chỉ mới
+                </MyButton>
             </div>
             {addresses && addresses.length === 0 && <div>Chưa có địa chỉ nào</div>}
             {addresses &&

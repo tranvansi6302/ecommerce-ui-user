@@ -12,6 +12,7 @@ import { Order } from '~/@types/orders.type'
 import noOrder from '~/assets/images/noOrder.png'
 import CustomDialog from '~/components/CustomDialog'
 import InputMUI from '~/components/InputMUI'
+import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import pathConfig from '~/configs/path.config'
 import { OrderStatus } from '~/enums/OrderStatus'
@@ -95,34 +96,36 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                     }
                     return (
                         <Fragment key={order.id}>
-                            <CustomDialog
-                                title='Bạn có muốn hủy đơn hàng này'
-                                description='Vui lòng cho chúng tôi biết lý do bạn muốn hủy!'
-                                open={open}
-                                setOpen={setOpen}
-                            >
-                                <form onSubmit={onSubmit} className='px-6 pb-6'>
-                                    <div>
-                                        <InputMUI register={register} errors={errors} name='canceled_reason' label='Lý do hủy' />
-                                        <div className='flex items-center justify-end mt-6 gap-3'>
-                                            <MyButtonMUI
-                                                onClick={() => setOpen(false)}
-                                                variant='outlined'
-                                                sx={{ width: '100px' }}
-                                            >
-                                                Đóng
-                                            </MyButtonMUI>
-                                            <MyButtonMUI
-                                                isLoading={updateOrderMutation.isPending}
-                                                type='submit'
-                                                color='error'
-                                                sx={{ width: '120px' }}
-                                            >
-                                                Hủy đơn
-                                            </MyButtonMUI>
+                            <CustomDialog open={open} setOpen={setOpen}>
+                                <div className='rounded-sm bg-white px-2 shadow md:px-7 w-[600px]'>
+                                    <div className=''>
+                                        <div className='border-b border-b-gray-200 py-6 flex items-center justify-between'>
+                                            <h1 className='text-lg font-medium capitalize text-gray-900'>Hủy đơn hàng</h1>
                                         </div>
                                     </div>
-                                </form>
+                                    <p className='my-5 text-[14px] capitalize text-gray-600'>
+                                        Hãy cho chúng tôi biết lý do bạn muốn hủy đơn hàng này!
+                                    </p>
+
+                                    <form onSubmit={onSubmit} className='pb-6 mt-8'>
+                                        <InputMUI register={register} errors={errors} name='canceled_reason' label='Lý do hủy' />
+                                        <div className='flex items-center justify-end mt-6 gap-3'>
+                                            <MyButton
+                                                onClick={() => setOpen(false)}
+                                                className='h-[40px] rounded-sm text-blue-600 px-3 border border-blue-600'
+                                            >
+                                                Đóng
+                                            </MyButton>
+                                            <MyButton
+                                                isLoading={updateOrderMutation.isPending}
+                                                type='submit'
+                                                className='h-[40px] rounded-sm text-white bg-red-600 w-[130px] border'
+                                            >
+                                                Hủy đơn
+                                            </MyButton>
+                                        </div>
+                                    </form>
+                                </div>
                             </CustomDialog>
                             <Accordion
                                 key={order.id}
