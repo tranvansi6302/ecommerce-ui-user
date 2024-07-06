@@ -13,6 +13,7 @@ import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
 import cartsService from '~/services/carts.service'
+import { saveCartToLS } from '~/utils/auth'
 import { formatToVND } from '~/utils/helpers'
 
 export default function CartList() {
@@ -23,7 +24,7 @@ export default function CartList() {
 
     // Handle by now get id
     const chooseCartDetailIdFromLocation = (location.state as { cart_detail_id: number })?.cart_detail_id
-    console.log(chooseCartDetailIdFromLocation)
+
     const { data: productsInCart, refetch } = useQuery({
         queryKey: ['productsInCart'],
         queryFn: () => cartsService.getAllProductFromCarts()
@@ -144,7 +145,13 @@ export default function CartList() {
     }
 
     const handlePurchase = () => {
+        // navigate(pathConfig.checkout, {
+        //     state: {
+        //         choose_from_cart: checkedCarts
+        //     }
+        // })
         navigate(pathConfig.checkout)
+        saveCartToLS(checkedCarts)
     }
 
     return (

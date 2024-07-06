@@ -138,18 +138,22 @@ export default function OrderDetail() {
                                             {formatToVND(orderDetail.price)}
                                         </span>
                                         <div className='flex justify-start items-start gap-2 w-full mt-4'>
-                                            <button className='flex justify-center capitalize bg-white border border-blue-600 px-4 py-2 w-[50%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85'>
-                                                <FaStarHalfStroke />
-                                                Đánh giá
-                                            </button>
                                             {/* Repurchase */}
                                             {order?.status === OrderStatus.DELIVERED && (
-                                                <MyButton
-                                                    onClick={() => handleRepurchase(orderDetail.variant.id, orderDetail.quantity)}
-                                                    className='py-2 w-[50%] rounded-sm px-4 bg-blue-600 text-white'
-                                                >
-                                                    Mua lại
-                                                </MyButton>
+                                                <Fragment>
+                                                    <button className='flex justify-center capitalize bg-white border border-blue-600 px-4 py-2 w-[50%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85'>
+                                                        <FaStarHalfStroke />
+                                                        Đánh giá
+                                                    </button>
+                                                    <MyButton
+                                                        onClick={() =>
+                                                            handleRepurchase(orderDetail.variant.id, orderDetail.quantity)
+                                                        }
+                                                        className='py-2 w-[50%] rounded-sm px-4 bg-blue-600 text-white'
+                                                    >
+                                                        Mua lại
+                                                    </MyButton>
+                                                </Fragment>
                                             )}
                                         </div>
                                     </div>

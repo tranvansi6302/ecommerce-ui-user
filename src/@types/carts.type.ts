@@ -1,6 +1,5 @@
 import { Address } from './addresses.type'
 import { ApiResponse, PaginatedApiResponse } from './common.type'
-import { PricePlan } from './pricePlans.type'
 import { ProductImage } from './productImage.type'
 import { User } from './users.type'
 import { Variant } from './variants.type'
@@ -10,7 +9,6 @@ export type Cart = {
     quantity: number
     variant: Variant & {
         product_images: ProductImage[]
-        current_price_plans: PricePlan
     }
 }
 

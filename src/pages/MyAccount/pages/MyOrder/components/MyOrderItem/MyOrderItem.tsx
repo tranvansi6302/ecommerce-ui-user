@@ -10,15 +10,15 @@ import { Link } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 import { Order } from '~/@types/orders.type'
 import noOrder from '~/assets/images/noOrder.png'
+import CustomDialog from '~/components/CustomDialog'
 import InputMUI from '~/components/InputMUI'
 import MyButtonMUI from '~/components/MyButtonMUI'
+import pathConfig from '~/configs/path.config'
 import { OrderStatus } from '~/enums/OrderStatus'
 import { queryClient } from '~/main'
 import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
 import ordersService from '~/services/orders.service'
 import { convertOrderStatus, formatDate, formatToVND } from '~/utils/helpers'
-import DialogReason from '../DialogReason'
-import pathConfig from '~/configs/path.config'
 
 type MyOrderItemProps = {
     orders: Order[]
@@ -95,7 +95,12 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                     }
                     return (
                         <Fragment key={order.id}>
-                            <DialogReason open={open} setOpen={setOpen}>
+                            <CustomDialog
+                                title='Bạn có muốn hủy đơn hàng này'
+                                description='Vui lòng cho chúng tôi biết lý do bạn muốn hủy!'
+                                open={open}
+                                setOpen={setOpen}
+                            >
                                 <form onSubmit={onSubmit} className='px-6 pb-6'>
                                     <div>
                                         <InputMUI register={register} errors={errors} name='canceled_reason' label='Lý do hủy' />
@@ -118,7 +123,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                         </div>
                                     </div>
                                 </form>
-                            </DialogReason>
+                            </CustomDialog>
                             <Accordion
                                 key={order.id}
                                 className='rounded-sm border border-gray-200 bg-white w-full'
