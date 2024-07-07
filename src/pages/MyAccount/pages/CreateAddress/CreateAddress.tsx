@@ -26,6 +26,7 @@ export default function CreateAddress() {
         control,
         handleSubmit,
         setValue,
+        reset,
         register,
         formState: { errors }
     } = useForm<CreateAddressForm>({
@@ -63,6 +64,7 @@ export default function CreateAddress() {
                     queryKey: ['addresses']
                 })
                 setGlobalOpenAddessDialog(false)
+                reset()
             }
         })
     })

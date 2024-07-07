@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, createContext, useState } from 'react'
 import { ExtendedCartType } from '~/@types/carts.type'
 import { User } from '~/@types/users.type'
+import CreateAddress from '~/pages/MyAccount/pages/CreateAddress'
 
 import { getProfileFromLS, getTokenFromLS } from '~/utils/auth'
 
@@ -44,7 +45,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
                 setGlobalOpenAddessDialog
             }}
         >
-            {children}
+            <div>
+                {children}
+                <CreateAddress />
+            </div>
         </AppContext.Provider>
     )
 }

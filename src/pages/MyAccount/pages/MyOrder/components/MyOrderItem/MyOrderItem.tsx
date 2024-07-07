@@ -19,7 +19,7 @@ import { OrderStatus } from '~/enums/OrderStatus'
 import { queryClient } from '~/main'
 import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
 import ordersService from '~/services/orders.service'
-import { convertOrderStatus, formatDate, formatDateFull, formatToVND } from '~/utils/helpers'
+import { convertOrderStatus, formatDateFull, formatToVND } from '~/utils/helpers'
 
 type MyOrderItemProps = {
     orders: Order[]

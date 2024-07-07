@@ -19,7 +19,6 @@ import useSetTitle from '~/hooks/useSetTitle'
 import addressesService from '~/services/addresses.service'
 import { getCartsFromLS } from '~/utils/auth'
 import { formatToVND } from '~/utils/helpers'
-import CreateAddress from '../MyAccount/pages/CreateAddress'
 
 type PaymentMethodType = {
     id: string
@@ -129,8 +128,6 @@ export default function Checkout() {
                             <GoPlus fontSize='20px' />
                             Thêm địa chỉ mới
                         </MyButton>
-                        {/* Dialog create address */}
-                        <CreateAddress />
                     </div>
                     <div className='px-4 overflow-hidden'>
                         {extendedAddress &&
