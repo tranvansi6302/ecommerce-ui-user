@@ -42,7 +42,7 @@ type ExtendedAddressType = Address & {
 
 export default function Checkout() {
     useSetTitle('Thanh toán')
-    const { setGlobalOpenAddessDialog } = useContext(AppContext)
+    const { setGlobalOpenCreateAddessDialog, setGlobalOpenUpdateAddessDialog, setAddressIdContext } = useContext(AppContext)
     const { register, handleSubmit } = useForm<{ note: string }>()
     const [selectedPayment, setSelectedPayment] = useState<string>('')
     const [open, setOpen] = useState<boolean>(false)
@@ -114,6 +114,11 @@ export default function Checkout() {
         console.log(body)
     })
 
+    const onUpdateAddress = (id: number) => {
+        setGlobalOpenUpdateAddessDialog(true)
+        setAddressIdContext(id)
+    }
+
     return (
         <Container style={{ padding: '0' }}>
             <CustomDialog open={open} setOpen={setOpen}>
@@ -122,7 +127,7 @@ export default function Checkout() {
                         <h2 className='text-gray-600 capitalize  px-6 pb-4'>Địa chỉ của tôi</h2>
 
                         <MyButton
-                            onClick={() => setGlobalOpenAddessDialog(true)}
+                            onClick={() => setGlobalOpenCreateAddessDialog(true)}
                             className='w-[140px] mr-4 pb-4  text-blue-600 rounded-sm hover:opacity-90'
                         >
                             <GoPlus fontSize='20px' />
@@ -162,7 +167,14 @@ export default function Checkout() {
                                             )}
                                         </label>
                                     </div>
-                                    <div className='w-[20%]'></div>
+                                    <div className='w-[20%] flex items-center justify-end'>
+                                        <button
+                                            onClick={() => onUpdateAddress(address.id)}
+                                            className='text-blue-600 capitalize text-[14px] mt-4 pr-6'
+                                        >
+                                            Cập nhật
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                     </div>

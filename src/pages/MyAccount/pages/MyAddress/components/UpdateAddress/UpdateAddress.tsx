@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { CreateAddressRequest } from '~/@types/addresses.type'
+import { Address, AddressRequest } from '~/@types/addresses.type'
 import { District, Province, Ward } from '~/@types/ghn.type'
 import AutocompleteAddress from '~/components/AutocompleteAddress'
 import CustomDialog from '~/components/CustomDialog'
@@ -12,70 +12,122 @@ import { AppContext } from '~/contexts/app.context'
 import { queryClient } from '~/main'
 import { addressSchema, AddressSchemaType } from '~/schemas/address.schema'
 import addressesService from '~/services/addresses.service'
-
 import ghnService from '~/services/ghn.service'
 
-type CreateAddressForm = AddressSchemaType
+type UpdateAddressForm = AddressSchemaType
 
-export default function CreateAddress() {
-    const { globalOpenAddessDialog, setGlobalOpenAddessDialog } = useContext(AppContext)
+export default function UpdateAddress() {
+    const { globalOpenUpdateAddessDialog, setGlobalOpenUpdateAddessDialog, addressIdContext, setAddressIdContext } =
+        useContext(AppContext)
     const [chooseProvince, setChooseProvince] = useState<Province | null>(null)
     const [chooseDistrict, setChooseDistrict] = useState<District | null>(null)
 
     const {
         control,
-        handleSubmit,
         setValue,
-        reset,
         register,
+        handleSubmit,
         formState: { errors }
-    } = useForm<CreateAddressForm>({
+    } = useForm<UpdateAddressForm>({
         resolver: yupResolver(addressSchema)
     })
 
-    const { data: provinces } = useQuery({
+    const { data: addressData } = useQuery({
+        queryKey: ['address', addressIdContext],
+        queryFn: () => addressesService.getAddressById(addressIdContext as number),
+        enabled: !!addressIdContext
+    })
+    const address = addressData?.data.result as Address
+
+    const { data: provincesData } = useQuery({
         queryKey: ['provinces'],
         queryFn: () => ghnService.getProvince()
     })
+    const provinces = provincesData?.data.data as Province[]
 
-    const { data: districts } = useQuery({
-        queryKey: ['districts'],
+    const { data: districtsData, refetch: refetchDistricts } = useQuery({
+        queryKey: ['districts', chooseProvince?.ProvinceID],
         queryFn: () => ghnService.getDistrict({ province_id: chooseProvince?.ProvinceID as number }),
-        enabled: !!chooseProvince
+        enabled: !!chooseProvince?.ProvinceID
     })
-    const { data: wards } = useQuery({
-        queryKey: ['wards'],
+    const districts = districtsData?.data.data as District[]
+
+    const { data: wardsData, refetch: refetchWards } = useQuery({
+        queryKey: ['wards', chooseDistrict?.DistrictID],
         queryFn: () => ghnService.getWard({ district_id: chooseDistrict?.DistrictID as number }),
-        enabled: !!chooseDistrict
+        enabled: !!chooseDistrict?.DistrictID
     })
-    const createAddressMutation = useMutation({
-        mutationFn: (body: CreateAddressRequest) => addressesService.createAddress(body)
+    const wards = wardsData?.data.data as Ward[]
+
+    useEffect(() => {
+        if (address) {
+            const findProvince = provinces?.find((province) => province.ProvinceID === address.province_id)
+            if (findProvince) {
+                setChooseProvince(findProvince)
+            }
+        }
+    }, [address, provinces])
+
+    useEffect(() => {
+        if (address && districts) {
+            const findDistrict = districts?.find((district) => district.DistrictID === address.district_id)
+            if (findDistrict) {
+                setChooseDistrict(findDistrict)
+            }
+        }
+    }, [address, districts])
+
+    useEffect(() => {
+        if (address && wards) {
+            setValue('ward', wards.find((ward) => ward.WardCode === address.ward_id) as Ward)
+        }
+    }, [address, wards, setValue])
+
+    useEffect(() => {
+        if (address) {
+            setValue('full_name', address.full_name)
+            setValue('phone_number', address.phone_number)
+            setValue('description', address.description)
+            setValue('province', chooseProvince as Province)
+            setValue('district', chooseDistrict as District)
+        }
+    }, [address, chooseProvince, chooseDistrict, setValue])
+
+    const updateAddressMutation = useMutation({
+        mutationFn: (payload: { id: number; body: AddressRequest }) => addressesService.updateAddress(payload.id, payload.body)
     })
+
     const onSubmit = handleSubmit((data) => {
         const finalData = {
             ...data,
             province: chooseProvince?.ProvinceName as string,
             district: chooseDistrict?.DistrictName as string,
-            ward: (data.ward as Ward).WardName as string
+            ward: (data.ward as Ward).WardName as string,
+            province_id: chooseProvince?.ProvinceID as number,
+            district_id: chooseDistrict?.DistrictID as number,
+            ward_id: (data.ward as Ward).WardCode as string
         }
-        createAddressMutation.mutate(finalData, {
-            onSuccess: () => {
-                queryClient.invalidateQueries({
-                    queryKey: ['addresses']
-                })
-                setGlobalOpenAddessDialog(false)
-                reset()
+        updateAddressMutation.mutate(
+            { id: addressIdContext as number, body: finalData },
+            {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({
+                        queryKey: ['addresses']
+                    })
+                    setGlobalOpenUpdateAddessDialog(false)
+                    setAddressIdContext(0)
+                }
             }
-        })
+        )
     })
 
     return (
-        <CustomDialog open={globalOpenAddessDialog} setOpen={setGlobalOpenAddessDialog}>
+        <CustomDialog open={globalOpenUpdateAddessDialog} setOpen={setGlobalOpenUpdateAddessDialog}>
             <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-5 w-[800px]'>
                 <div className='border-b border-b-gray-200 py-6 flex items-center justify-between'>
-                    <h1 className='text-lg font-medium capitalize text-gray-900'>Thêm mới địa chỉ</h1>
+                    <h1 className='text-lg font-medium capitalize text-gray-900'>Cập nhật địa chỉ</h1>
                 </div>
-                <form onSubmit={onSubmit} className='mt-6 relative'>
+                <form className='mt-6 relative' onSubmit={onSubmit}>
                     <div className='flex gap-4'>
                         <div className='w-1/2'>
                             <div className=''>
@@ -105,13 +157,13 @@ export default function CreateAddress() {
                                     errors={errors}
                                     name='province'
                                     chooseProvince={chooseProvince}
-                                    data={provinces?.data.data as Province[]}
+                                    data={provinces}
                                     onChange={(_, value) => {
                                         setChooseProvince(value)
-                                        if (!value) {
-                                            setValue('district', null as any)
-                                            setValue('ward', null as any)
-                                        }
+                                        setChooseDistrict(null)
+                                        setValue('district', null as any)
+                                        setValue('ward', null as any)
+                                        refetchDistricts()
                                     }}
                                 />
                             </div>
@@ -125,12 +177,11 @@ export default function CreateAddress() {
                                     errors={errors}
                                     chooseProvince={chooseProvince}
                                     name='district'
-                                    data={districts?.data.data as District[]}
+                                    data={districts}
                                     onChange={(_, value) => {
                                         setChooseDistrict(value)
-                                        if (!value) {
-                                            setValue('ward', null as any)
-                                        }
+                                        setValue('ward', null as any)
+                                        refetchWards()
                                     }}
                                 />
                             </div>
@@ -144,7 +195,7 @@ export default function CreateAddress() {
                                     errors={errors}
                                     chooseDistrict={chooseDistrict}
                                     name='ward'
-                                    data={wards?.data.data as Ward[]}
+                                    data={wards}
                                 />
                             </div>
                         </div>
@@ -158,19 +209,14 @@ export default function CreateAddress() {
                             {...register('description')}
                             id='description'
                             rows={5}
-                            className={`textarea-address w-full p-5 text-[14px] 
-                    rounded-[4px] text-text-primary bg-white border border-[#aeaeae] ${errors.description?.message ? 'invalid' : false}`}
+                            className={`textarea-address w-full p-5 text-[14px] rounded-[4px] text-text-primary bg-white border border-[#aeaeae] ${errors.description?.message ? 'invalid' : ''}`}
                         />
                         {errors.description && (
                             <p className='text-[12px] ml-[14px] mt-[3px] text-[#d32f2f]'>{errors.description.message}</p>
                         )}
                     </div>
                     <div className='flex justify-end sticky bottom-0 bg-white pb-5 border-t mt-6'>
-                        <MyButton
-                            isLoading={createAddressMutation.isPending}
-                            type='submit'
-                            className='w-[160px] h-[40px] bg-blue-600 text-white rounded-sm mt-6'
-                        >
+                        <MyButton type='submit' className='w-[160px] h-[40px] bg-blue-600 text-white rounded-sm mt-6'>
                             Lưu lại
                         </MyButton>
                     </div>

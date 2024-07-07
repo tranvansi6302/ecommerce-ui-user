@@ -12,6 +12,7 @@ import ordersService from '~/services/orders.service'
 import MyOrderItem from './components/MyOrderItem'
 import { OrderStatus } from '~/enums/OrderStatus'
 import { useForm } from 'react-hook-form'
+import useSetTitle from '~/hooks/useSetTitle'
 
 interface TabPanelProps {
     children?: React.ReactNode
@@ -36,6 +37,7 @@ const a11yProps = (index: number) => {
 }
 
 export default function MyOrder() {
+    useSetTitle('Đơn mua')
     const navigate = useNavigate()
     const location = useLocation()
     const queryConfig = useQueryOrders()

@@ -15,10 +15,6 @@ type ConfirmDialogProps = {
 }
 
 export default function ConfirmDialog({ open, setOpen, onConfirm, title, description }: ConfirmDialogProps) {
-    const handleClickOpen = () => {
-        setOpen(true)
-    }
-
     const handleClose = () => {
         setOpen(false)
     }
@@ -30,9 +26,6 @@ export default function ConfirmDialog({ open, setOpen, onConfirm, title, descrip
 
     return (
         <Fragment>
-            <Button variant='outlined' onClick={handleClickOpen}>
-                Open alert dialog
-            </Button>
             <Dialog
                 open={open}
                 onClose={handleClose}

@@ -7,6 +7,7 @@ import InputMUI from '~/components/InputMUI'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
+import useSetTitle from '~/hooks/useSetTitle'
 import { UserSchemaType, userSchema } from '~/schemas/user.schema'
 import usersService from '~/services/users.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
@@ -14,6 +15,7 @@ import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
 type ChangePasswordForm = Pick<UserSchemaType, 'current_password' | 'new_password' | 'confirm_new_password'>
 const changePasswordSchema = userSchema.pick(['current_password', 'new_password', 'confirm_new_password'])
 export default function ChangePassword() {
+    useSetTitle('Đổi mật khẩu')
     const { setIsAuthenticated } = useContext(AppContext)
     const navigate = useNavigate()
     const {

@@ -9,6 +9,7 @@ type MyButtonMUIProps = {
     color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | undefined
     onClick?: () => void
     isLoading?: boolean
+    disabled?: boolean
 }
 export default function MyButtonMUI({
     children,
@@ -17,10 +18,11 @@ export default function MyButtonMUI({
     variant = 'contained',
     color = 'primary',
     onClick,
-    isLoading
+    isLoading,
+    disabled = false
 }: MyButtonMUIProps) {
     return (
-        <Button onClick={onClick} type={type} fullWidth sx={sx} variant={variant} color={color}>
+        <Button disabled={disabled} onClick={onClick} type={type} fullWidth sx={sx} variant={variant} color={color}>
             {isLoading ? <Spinner /> : children}
         </Button>
     )

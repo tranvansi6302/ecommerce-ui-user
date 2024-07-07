@@ -9,6 +9,7 @@ import InputMUI from '~/components/InputMUI'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import UploadAvatar from '~/components/UploadAvatar'
 import { AppContext } from '~/contexts/app.context'
+import useSetTitle from '~/hooks/useSetTitle'
 import { UserSchemaType, userSchema } from '~/schemas/user.schema'
 import usersService, { UpdateProfileRequest } from '~/services/users.service'
 import { saveProfileToLS } from '~/utils/auth'
@@ -16,6 +17,7 @@ import { saveProfileToLS } from '~/utils/auth'
 const profileSchema = userSchema.pick(['full_name', 'phone_number'])
 type UpdateProfileForm = Pick<UserSchemaType, 'full_name' | 'phone_number'>
 export default function Profile() {
+    useSetTitle('Hồ sơ của tôi')
     const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(new Date())
     const { profile: profileLS, setProfile } = useContext(AppContext)
     const { data } = useQuery({
