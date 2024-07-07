@@ -151,7 +151,7 @@ export default function CartList() {
 
     return (
         <Container style={{ padding: '0' }}>
-            <div className='bg-neutral-100 py-5'>
+            <div className='py-5'>
                 <div className='container'>
                     <>
                         <div className='overflow-auto'>

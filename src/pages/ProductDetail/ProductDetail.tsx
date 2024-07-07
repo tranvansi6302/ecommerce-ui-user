@@ -1,14 +1,17 @@
-import { Container } from '@mui/material'
+import { Breadcrumbs, Container, Typography } from '@mui/material'
 import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import ImageViewer from 'react-simple-image-viewer'
+import { toast } from 'react-toastify'
 import { ProductSale } from '~/@types/productSales.type'
 import { Variant } from '~/@types/variants.type'
 import tickIcon from '~/assets/images/tickIcon.png'
 import { AddToCartIcon, NextIcon, PrevIcon } from '~/assets/svg'
 import MyButton from '~/components/MyButton'
+import { FaHome, FaWind } from 'react-icons/fa'
+import { TbCategoryMinus } from 'react-icons/tb'
 import ProductFeatured from '~/components/ProductFeatured'
 import ProductRating from '~/components/ProductRating'
 import QuantityController from '~/components/QuantityController/QuantityController'
@@ -16,6 +19,7 @@ import pathConfig from '~/configs/path.config'
 import useSetTitle from '~/hooks/useSetTitle'
 import { queryClient } from '~/main'
 import cartsService from '~/services/carts.service'
+import { SiWindows } from 'react-icons/si'
 import productSalesService from '~/services/productSales.service'
 import {
     checkEqualPromotionPrice,
@@ -144,15 +148,21 @@ export default function ProductDetail() {
                 variant_id: activeVariant.id,
                 quantity: buyCount
             })
+        } else {
+            toast.warning('Vui lòng chọn màu và kích thước')
         }
     }
 
     const handleByNow = async () => {
+        if (!activeVariant) {
+            toast.warning('Vui lòng chọn màu và kích thước')
+            return
+        }
         const res = await addToCartMutation.mutateAsync({
             variant_id: (activeVariant as Variant).id,
             quantity: buyCount
         })
-        console.log(res.data.result)
+
         navigate(pathConfig.carts, {
             state: {
                 cart_detail_id: res.data.result?.cart_detail.id
@@ -162,7 +172,23 @@ export default function ProductDetail() {
     return (
         <Fragment>
             <Container style={{ padding: '0' }}>
-                <div className='py-6'>
+                <div className='py-4'>
+                    <Breadcrumbs aria-label='breadcrumb'>
+                        <Link className='flex items-center gap-1 text-blue-600 text-[14px]' to={pathConfig.home}>
+                            <FaHome />
+                            Trang chủ
+                        </Link>
+                        <Link
+                            className='flex items-center gap-1 text-blue-600 text-[14px]'
+                            to={`${pathConfig.productFilters}?category=${productSale?.data.result?.category.slug}`}
+                        >
+                            <TbCategoryMinus />
+                            {productSale?.data.result?.category.name}
+                        </Link>
+                        <p className='text-[14px] text-gray-600'>{productSale?.data.result?.product_name}</p>
+                    </Breadcrumbs>
+                </div>
+                <div className=''>
                     <div className='bg-white p-4'>
                         <div className='container'>
                             <div className='grid grid-cols-1 md:grid-cols-12 gap-9'>
