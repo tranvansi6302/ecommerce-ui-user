@@ -1,76 +1,111 @@
 import { Container } from '@mui/material'
-import MyButton from '~/components/MyButton'
+import { useState } from 'react' // Step 1
+import Slider, { Settings } from 'react-slick'
+import 'slick-carousel/slick/slick-theme.css'
+import 'slick-carousel/slick/slick.css'
+
+// Custom Next Arrow
+const NextArrow = (props: any) => {
+    const { className, style, onClick } = props
+    return (
+        <div
+            className={className}
+            style={{
+                ...style,
+                display: 'block',
+                background: 'blue',
+                right: '10px',
+                zIndex: 1,
+                backgroundColor: 'transparent'
+            }}
+            onClick={onClick}
+        />
+    )
+}
+
+// Custom Prev Arrow
+const PrevArrow = (props: any) => {
+    const { className, style, onClick } = props
+    return (
+        <div
+            className={className}
+            style={{
+                ...style,
+                display: 'block',
+                background: 'blue',
+                left: '10px',
+                zIndex: 1,
+                backgroundColor: 'transparent'
+            }}
+            onClick={onClick}
+        />
+    )
+}
 
 export default function Banner() {
+    const [currentSlide, setCurrentSlide] = useState(0)
+
+    const settings: Settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        autoplay: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+
+        nextArrow: <NextArrow />,
+        prevArrow: <PrevArrow />,
+
+        beforeChange: (_: number, next: number) => setCurrentSlide(next), // Step 3
+        customPaging: (i) => (
+            <div
+                style={{
+                    width: '10px',
+                    height: '10px',
+                    backgroundColor: `${currentSlide === i ? '#2563eb' : '#cdcdcd'}`, // Step 4
+                    borderRadius: '50%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}
+            ></div>
+        )
+    }
+
     return (
         <section className='py-5'>
-            <Container style={{ padding: '0' }}>
-                <div className='-mx-4 flex flex-wrap'>
-                    <div className='w-full px-4 lg:w-8/12'>
-                        <div className='relative mb-8 h-[370px] md:h-[480px]'>
-                            <img
-                                src='https://demo.tailgrids.com/templates/planet/build/src/assets/ecom-images/headers/header-04/image-01.jpg'
-                                alt='product'
-                                className='h-full w-full object-cover object-center rounded-sm'
-                            />
-                            <div className='absolute left-0 top-0 flex h-full w-full items-center px-8 md:px-12'>
-                                <div className='max-w-[420px]'>
-                                    <h3>
-                                        <a
-                                            href='"'
-                                            className='mb-5 block text-2xl font-bold text-dark hover:text-primary sm:text-4xl'
-                                        >
-                                            Giảm giả 30% cho các sản phẩm mới
-                                        </a>
-                                    </h3>
-                                    <p className='mb-9 text-base text-body-color'>
-                                        Từ ngày 23/06/2024 đến hết ngày 30/06/2024, giảm giá 30% cho các sản phẩm mới. Hãy nhanh
-                                        tay mua
-                                    </p>
-                                    <MyButton
-                                        type='button'
-                                        className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-8 py-2.5 me-2 mb-2 '
-                                    >
-                                        Khám phá ngay
-                                    </MyButton>
-                                </div>
-                            </div>
-                        </div>
+            <Container style={{ padding: '0', position: 'relative', display: 'flex', height: '400px', gap: '10px' }}>
+                <div className='w-[70%] h-full'>
+                    <Slider {...settings}>
+                        <img
+                            className='w-full object-cover h-[400px]'
+                            src='https://salt.tikicdn.com/cache/w750/ts/tikimsp/a6/f0/8f/5d9b2d0e0fd529c2170cb1e11677a406.png.webp'
+                            alt=''
+                        />
+                        <img
+                            className='w-full object-cover h-[400px]'
+                            src='https://img.lazcdn.com/us/domino/7f98e08b737fb0b9b14f5883084d3d91.jpg_2200x2200q80.jpg_.webp'
+                            alt=''
+                        />
+                        <img
+                            className='w-full object-cover h-[400px]'
+                            src='https://img.lazcdn.com/g/tps/imgextra/i4/O1CN01Japgaw1DWdggoK9pl_!!6000000000224-0-tps-1976-688.jpg_2200x2200q80.jpg_.webp'
+                            alt=''
+                        />
+                    </Slider>
+                </div>
+                <div className='w-[30%] flex flex-col h-full gap-[10px]'>
+                    <div className='w-full h-1/2'>
+                        <img
+                            src='https://salt.tikicdn.com/cache/w750/ts/tikimsp/a6/f0/8f/5d9b2d0e0fd529c2170cb1e11677a406.png.webp'
+                            alt=''
+                        />
                     </div>
-                    <div className='w-full px-4 lg:w-4/12'>
-                        <div className='-mx-4 flex flex-wrap'>
-                            <div className='w-full px-4 md:w-1/2 lg:w-full'>
-                                <div className='relative mb-8 h-[223px]'>
-                                    <img
-                                        src='https://mir-s3-cdn-cf.behance.net/projects/404/6c1669170450969.Y3JvcCwxOTk5LDE1NjQsMCwyMTc.jpg'
-                                        alt='product'
-                                        className='h-full w-full object-cover object-center rounded-sm'
-                                    />
-                                    <div className='absolute left-0 top-0 flex h-full w-full items-end justify-end p-6 sm:p-9'>
-                                        <div className='max-w-[180px] text-right'>
-                                            <h3></h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='w-full px-4 md:w-1/2 lg:w-full'>
-                                <div className='relative mb-8 h-[223px]'>
-                                    <img
-                                        src='https://img.freepik.com/premium-vector/never-give-up-t-shirt-design_832611-3.jpg'
-                                        alt='product'
-                                        className='h-full w-full object-cover object-center rounded-sm'
-                                    />
-                                    <div className='absolute left-0 top-0 flex h-full w-full items-end justify-end p-6 sm:p-9'>
-                                        <div className='max-w-[180px] text-right'>
-                                            <h3></h3>
-                                            <a href='"' className='text-base font-medium text-dark hover:text-primary'>
-                                                Shop Now
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div className='w-full h-1/2'>
+                        <img
+                            src='https://salt.tikicdn.com/cache/w750/ts/tikimsp/10/56/40/23e7b0405a3ccc04ecc4f87cd982c0cb.jpg.webp'
+                            alt=''
+                        />
                     </div>
                 </div>
             </Container>

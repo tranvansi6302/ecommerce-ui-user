@@ -1,5 +1,5 @@
 import { Container } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -51,6 +51,8 @@ export default function ProductDetail() {
     const { data: productSale } = useQuery({
         queryKey: ['productSale', productId],
         queryFn: () => productSalesService.getProductSale(Number(productId)),
+        staleTime: 3 * 60 * 1000,
+        placeholderData: keepPreviousData,
         enabled: !!productId
     })
 
@@ -161,7 +163,7 @@ export default function ProductDetail() {
         <Fragment>
             <Container style={{ padding: '0' }}>
                 <div className='py-6'>
-                    <div className='bg-white p-4 shadow'>
+                    <div className='bg-white p-4'>
                         <div className='container'>
                             <div className='grid grid-cols-1 md:grid-cols-12 gap-9'>
                                 <div className='w-full md:col-span-5'>
@@ -170,7 +172,7 @@ export default function ProductDetail() {
                                         className='relative w-full  cursor-zoom-in overflow-hidden pt-[100%] shadow'
                                     >
                                         <img
-                                            className='absolute top-0 left-0 h-full w-full bg-white object-cover pointer-events-none'
+                                            className='absolute top-0 left-0 h-full w-full object-cover pointer-events-none'
                                             srcSet={activeImage}
                                             alt='product'
                                             ref={imageRef}
@@ -426,8 +428,8 @@ export default function ProductDetail() {
                             </div>
                         </div>
                     </div>
-                    <div className='bg-white shadow p-6 text-text-primary mt-4'>
-                        <h2 className='uppercase bg-gray-100 p-4 text-[18px]'>Chi tiết sản phẩm</h2>
+                    <div className='bg-white p-6 text-text-primary mt-4'>
+                        <h2 className='uppercase bg-gray-100 p-4 text-[15px]'>Chi tiết sản phẩm</h2>
                         <div className='leading-10 p-6'>
                             <div
                                 dangerouslySetInnerHTML={{

@@ -156,7 +156,7 @@ export default function CartList() {
                     <>
                         <div className='overflow-auto'>
                             <div className='min-w-[1000px]'>
-                                <div className='grid grid-cols-12 rounded-sm bg-white py-5 px-9 text-sm capitalize text-gray-500 shadow'>
+                                <div className='grid grid-cols-12 rounded-sm bg-white py-5 px-9 text-sm capitalize text-gray-500'>
                                     <div className='col-span-6'>
                                         <div className='flex items-center'>
                                             <div className='flex flex-shrink-0 items-center justify-center pr-3'>
@@ -183,7 +183,7 @@ export default function CartList() {
                                     </div>
                                 </div>
 
-                                <div className='my-3 rounded-sm bg-white p-5 shadow'>
+                                <div className='my-3 rounded-sm bg-white p-5'>
                                     {extendedCart &&
                                         extendedCart.length > 0 &&
                                         extendedCart.map((item, index) => {
@@ -303,7 +303,7 @@ export default function CartList() {
                                 </div>
                             </div>
                         </div>
-                        <div className='sticky bottom-0 z-10 mt-5  rounded-sm border border-gray-100 bg-white px-5 pb-5 shadow sm:flex-row sm:items-center'>
+                        <div className='sticky bottom-0 z-10 mt-5  rounded-sm border border-gray-100 bg-white px-5 pb-5  sm:flex-row sm:items-center'>
                             <div className='border-b-[1px] mb-2 flex items-center justify-end'>
                                 <div className='py-3'>
                                     <div className='text-blue-800 text-[15px] cursor-pointer hover:text-blue-700 flex items-center'>

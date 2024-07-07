@@ -17,7 +17,7 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
     return (
         <Popover
             renderPopover={
-                <div className='relative w-[400px]  rounded-sm border border-gray-200 bg-white text-sm shadow-md'>
+                <div className='relative w-[400px] z-99999 rounded-sm border border-gray-200 bg-white text-sm shadow-md'>
                     {!isAuthenticated || productsInCart.length === 0 ? (
                         <div className='flex flex-col items-center justify-center py-14'>
                             <img className='w-[100px] h-[100px] object-cover' src={noCart} alt='noCart' />

@@ -63,7 +63,7 @@ export default function MainHeader() {
 
     return (
         <Fragment>
-            <header className='w-full bg-white shadow-sm'>
+            <header className='bg-white sticky top-0 z-50'>
                 <div className='hidden border-b border-stroke sm:block'>
                     <Container style={{ padding: '0' }}>
                         <div className='-mx-4 flex flex-wrap items-center'>
@@ -170,7 +170,7 @@ export default function MainHeader() {
                     </Container>
                 </div>
                 <Container style={{ padding: '0' }}>
-                    <div className=' mx-auto'>
+                    <div className='w-full'>
                         <div className='relative -mx-4 flex items-center justify-center sm:justify-between'>
                             <div className='w-60 max-w-full px-4 lg:w-48'>
                                 <Link to={pathConfig.home} className='w-[60px] py-5 lg:py-3 flex items-center gap-2'>

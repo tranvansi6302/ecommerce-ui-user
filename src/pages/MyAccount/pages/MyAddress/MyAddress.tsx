@@ -75,7 +75,7 @@ export default function MyAddress() {
     }
 
     return (
-        <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
+        <div className='rounded-sm bg-white px-2 pb-10 md:px-7 md:pb-20'>
             <ConfirmDialog
                 title='Bạn có muốn xóa địa chỉ này?'
                 description='Sau khi xóa sẽ không thể khôi phục lại!'

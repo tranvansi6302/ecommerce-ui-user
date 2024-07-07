@@ -5,7 +5,7 @@ export const theme = {
         colors: {
             'text-primary': 'rgba(0,0,0,.87)',
             'text-secondary': 'rgb(0 0 0 / 54%)',
-            'bg-primary': '#f5f5f5;',
+            'bg-primary': '#eff0f5;',
             orange: {
                 100: '#fff3e0',
                 200: '#ffe0b2',

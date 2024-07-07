@@ -17,9 +17,9 @@
     gap: 10px 6px;
 }
 
-.grid-item {
+/* .grid-item {
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-}
+} */
 
 @media (max-width: 599px) {
     .grid-wrapper {
@@ -252,4 +252,12 @@
 }
 .MuiPaper-elevation::before {
     position: unset !important;
+}
+
+.slick-dots {
+    bottom: 0 !important;
+}
+
+#ReactSimpleImageViewer {
+    z-index: 9999 !important;
 }

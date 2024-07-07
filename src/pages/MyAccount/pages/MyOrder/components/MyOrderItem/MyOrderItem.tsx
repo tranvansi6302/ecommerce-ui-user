@@ -97,7 +97,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                     return (
                         <Fragment key={order.id}>
                             <CustomDialog open={open} setOpen={setOpen}>
-                                <div className='rounded-sm bg-white px-2 shadow md:px-7 w-[600px]'>
+                                <div className='rounded-sm bg-white px-2 md:px-7 w-[600px]'>
                                     <div className=''>
                                         <div className='border-b border-b-gray-200 py-6 flex items-center justify-between'>
                                             <h1 className='text-lg font-medium capitalize text-gray-900'>Hủy đơn hàng</h1>
@@ -132,7 +132,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                 className='rounded-sm border border-gray-200 bg-white w-full'
                                 style={{
                                     borderRadius: '0',
-                                    boxShadow: '1px 0 1px 0 rgba(0,0,0,0.1)',
+                                    boxShadow: 'none',
                                     padding: '16px',
                                     marginBottom: '8px',
                                     borderRight: '4px solid #2563eb'
