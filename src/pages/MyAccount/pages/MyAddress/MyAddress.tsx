@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useContext, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { GoPlus } from 'react-icons/go'
+import { Address } from '~/@types/addresses.type'
 import noAddress from '~/assets/images/noAddress.png'
 import ConfirmDialog from '~/components/ConfirmDialog'
 import MyButton from '~/components/MyButton'
@@ -16,8 +17,15 @@ export default function MyAddress() {
         queryKey: ['addresses'],
         queryFn: () => addressesService.getMyAddresses()
     })
-    const addresses = data?.data.result
-
+    const addresses = data?.data.result as Address[]
+    const defaultAddress = useMemo(() => addresses?.find((address) => address.is_default === 1), [addresses])
+    const otherAddresses = useMemo(() => addresses?.filter((address) => address.is_default === 0), [addresses])
+    const allAddresses = useMemo(() => {
+        if (defaultAddress) {
+            return [defaultAddress, ...otherAddresses]
+        }
+        return addresses
+    }, [addresses, defaultAddress, otherAddresses])
     // Delete address
     const deleteAddressMutation = useMutation({
         mutationFn: (body: { address_id: number }) => addressesService.deleteAddress(body)
@@ -29,6 +37,24 @@ export default function MyAddress() {
     const handleConfirm = () => {
         deleteAddressMutation.mutate(
             { address_id: addressId },
+            {
+                onSuccess: () => {
+                    refetch()
+                    setOpenConfirmDialog(false)
+                    setAddressId(0)
+                }
+            }
+        )
+    }
+
+    // Set default
+    const updateAddressDefaultMutation = useMutation({
+        mutationFn: (body: { address_id: number; is_default: number }) => addressesService.updateAddressDefault(body)
+    })
+
+    const handleSetDefaultAddress = (addressId: number) => {
+        updateAddressDefaultMutation.mutate(
+            { address_id: addressId, is_default: 1 },
             {
                 onSuccess: () => {
                     refetch()
@@ -59,7 +85,7 @@ export default function MyAddress() {
                     Thêm địa chỉ mới
                 </MyButton>
             </div>
-            {addresses && addresses.length === 0 && (
+            {allAddresses && allAddresses.length === 0 && (
                 <div className=' bg-white p-10 flex items-center justify-center'>
                     <div className='w-[250px] h-[250px]'>
                         <img className='w-full h-full object-cover' src={noAddress} alt='address' />
@@ -67,9 +93,9 @@ export default function MyAddress() {
                     </div>
                 </div>
             )}
-            {addresses &&
-                addresses.length > 0 &&
-                addresses.map((address) => (
+            {allAddresses &&
+                allAddresses.length > 0 &&
+                allAddresses.map((address) => (
                     <div key={address.id} className='flex justify-between py-6 border-b-[1px]'>
                         <div className='w-[60%]'>
                             <div className=' flex items-center gap-2'>
@@ -80,6 +106,11 @@ export default function MyAddress() {
                             <p className='text-[14px] text-gray-500 mt-4 leading-5'>
                                 {address.description}, {address.ward}, {address.district}, {address.province}
                             </p>
+                            {address.is_default && (
+                                <span className='text-[12px] text-red-600 rounded-sm border border-red-600 bg-red-30 px-2 py-1 capitalize inline-block mt-3'>
+                                    Mặc định
+                                </span>
+                            )}
                         </div>
                         <div className='flex flex-col items-end gap-4 w-[60%] text-[14px]'>
                             <div className='flex items-center gap-4'>
@@ -92,18 +123,21 @@ export default function MyAddress() {
                                     Xóa
                                 </button>
                             </div>
-                            <MyButtonMUI
-                                variant='outlined'
-                                sx={{
-                                    width: '180px',
-                                    fontSize: '14px',
-                                    textTransform: 'capitalize',
-                                    height: '32px',
-                                    borderRadius: '2px'
-                                }}
-                            >
-                                Thiết lập mặc định
-                            </MyButtonMUI>
+                            {address.is_default === 0 && (
+                                <MyButtonMUI
+                                    onClick={() => handleSetDefaultAddress(address.id)}
+                                    variant='outlined'
+                                    sx={{
+                                        width: '180px',
+                                        fontSize: '14px',
+                                        textTransform: 'capitalize',
+                                        height: '32px',
+                                        borderRadius: '2px'
+                                    }}
+                                >
+                                    Thiết lập mặc định
+                                </MyButtonMUI>
+                            )}
                         </div>
                     </div>
                 ))}
