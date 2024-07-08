@@ -1,21 +1,20 @@
-import { Avatar, Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
+import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material'
 import { Container } from '@mui/system'
 import { useQuery } from '@tanstack/react-query'
 import { MouseEvent, useContext, useState } from 'react'
-import { LuBadgeInfo, LuChevronDown } from 'react-icons/lu'
+import { GrLanguage } from 'react-icons/gr'
+import { LuBadgeInfo } from 'react-icons/lu'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { Fragment } from 'react/jsx-runtime'
 import { Cart } from '~/@types/carts.type'
 import avatarDefault from '~/assets/images/avatarDefault.png'
-import vtiLogo from '~/assets/images/vtiLogo.png'
-import { NeedHelpIcon } from '~/assets/svg'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import cartsService from '~/services/carts.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
 import HeaderSearch from '../HeaderSearch'
 import MiniCart from '../MiniCart'
-import { toast } from 'react-toastify'
 
 const settings = [
     {
@@ -58,13 +57,13 @@ export default function MainHeader() {
     const { data: productsInCart } = useQuery({
         queryKey: ['productsInCart'],
         queryFn: () => cartsService.getAllProductFromCarts(),
-        enabled: isAuthenticated == true
+        enabled: isAuthenticated
     })
 
     return (
         <Fragment>
             <header className='bg-white sticky top-0 z-50'>
-                <div className='hidden border-b border-stroke sm:block'>
+                <div className='hidden border-b border-stroke sm:block py-2'>
                     <Container style={{ padding: '0' }}>
                         <div className='-mx-4 flex flex-wrap items-center'>
                             <div className='w-full px-4 md:w-2/3 lg:w-1/2'>
@@ -72,15 +71,16 @@ export default function MainHeader() {
                                     <li>
                                         <Link
                                             to={''}
-                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize hover:text-blue-600'
+                                            className='inline-block px-3 text-[13px] font-medium text-text-primary capitalize hover:text-blue-600'
                                         >
                                             Về chúng tôi
                                         </Link>
                                     </li>
+                                    <li className='w-[0.5px] h-[12px] bg-gray-300'></li>
                                     <li>
                                         <Link
                                             to={''}
-                                            className='inline-block px-3 py-4 text-sm font-medium text-text-primary capitalize hover:text-blue-600'
+                                            className='inline-block px-3 text-[13px] font-medium text-text-primary capitalize hover:text-blue-600'
                                         >
                                             Liên hệ
                                         </Link>
@@ -90,32 +90,32 @@ export default function MainHeader() {
                             <div className='w-full px-4 md:w-1/3 lg:w-1/2'>
                                 <div className='hidden items-center gap-6 justify-end md:flex'>
                                     <div>
-                                        <div className='relative'>
-                                            <select
-                                                name='lang'
-                                                className='w-full appearance-none rounded-lg bg-transparent py-3 pl-3 pr-5 text-sm font-medium text-body-color outline-none capitalize'
-                                            >
-                                                <option>Tiếng việt</option>
-                                                <option>English</option>
-                                            </select>
-                                            <span className='absolute right-0 top-1/2 -translate-y-1/2 text-body-color'>
-                                                <LuChevronDown />
+                                        <div className='relative text-text-primary'>
+                                            <span className='capitalize text-[13px] flex items-center gap-1'>
+                                                <span className='mb-[1px]'>
+                                                    <GrLanguage />
+                                                </span>
+                                                Tiếng việt
                                             </span>
                                         </div>
                                     </div>
                                     {isAuthenticated ? (
                                         <Box sx={{ flexGrow: 0 }}>
-                                            <Tooltip title={profile?.full_name}>
-                                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                                    <Avatar
-                                                        sx={{ width: '32px', height: '32px' }}
-                                                        alt='avatar'
+                                            <Tooltip title={'Cài đặt'}>
+                                                <IconButton
+                                                    onClick={handleOpenUserMenu}
+                                                    sx={{ p: 0, display: 'flex', alignItems: 'center' }}
+                                                >
+                                                    <img
+                                                        className='w-[15px] h-[15px] border object-cover rounded-full mb-[1px]'
                                                         src={profile?.avatar ? profile.avatar : avatarDefault}
+                                                        alt=''
                                                     />
+                                                    <p className='text-[13px] text-text-primary ml-1'>{profile?.full_name}</p>
                                                 </IconButton>
                                             </Tooltip>
                                             <Menu
-                                                sx={{ mt: '35px' }}
+                                                sx={{ mt: '20px' }}
                                                 id='menu-appbar'
                                                 anchorEl={openSetting}
                                                 anchorOrigin={{
@@ -158,10 +158,10 @@ export default function MainHeader() {
                                     ) : (
                                         <Link
                                             to={pathConfig.login}
-                                            className='text-blue-600 text-[14px] capitalize flex items-center gap-1 hover:text-blue-500'
+                                            className='text-blue-600 text-[13px] capitalize flex items-center gap-1 hover:text-blue-500'
                                         >
                                             Chưa đăng nhập
-                                            <LuBadgeInfo fontSize='16px' />
+                                            <LuBadgeInfo fontSize='15px' />
                                         </Link>
                                     )}
                                 </div>
@@ -170,33 +170,24 @@ export default function MainHeader() {
                     </Container>
                 </div>
                 <Container style={{ padding: '0' }}>
-                    <div className='w-full'>
+                    <div className='w-full h-[72px]'>
                         <div className='relative -mx-4 flex items-center justify-center sm:justify-between'>
-                            <div className='w-60 max-w-full px-4 lg:w-48'>
-                                <Link to={pathConfig.home} className='w-[60px] py-5 lg:py-3 flex items-center gap-2'>
-                                    <img src={vtiLogo} alt='logo' className='w-full' />
+                            <div className='w-60 max-w-full px-4'>
+                                <Link to={pathConfig.home} className='py-5 lg:py-3 flex items-center gap-2'>
+                                    <img
+                                        src='https://techmayntra.com/wp-content/uploads/2023/03/E-commerce-Img-Techmayntra.png'
+                                        alt='logo'
+                                        className='w-[80%] h-full object-cover'
+                                    />
                                 </Link>
                             </div>
                             <div className='flex w-full items-center justify-end px-4 lg:justify-between'>
-                                <div className='flex w-[70%] items-center justify-between px-4'>
+                                <div className='flex w-[80%] items-center justify-between px-4'>
                                     <div className='w-full'>
                                         <HeaderSearch />
                                     </div>
                                 </div>
-                                <div className='hidden w-[30%] items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-0'>
-                                    <div className='hidden items-center pr-1 xl:flex'>
-                                        <div className='mr-3 flex h-[42px] w-[42px] items-center justify-center rounded-full border-[.5px] border-stroke bg-gray-2 text-text-primary'>
-                                            <NeedHelpIcon />
-                                        </div>
-                                        <div>
-                                            <p className='text-sm font-medium text-text-primary capitalize'>
-                                                Cần hổ trợ?
-                                                <br />
-                                                +84 369060306
-                                            </p>
-                                        </div>
-                                    </div>
-
+                                <div className='hidden w-[20%] items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-16'>
                                     <div className='relative z-1'>
                                         <MiniCart productsInCart={(productsInCart?.data.result as Cart[]) || []} />
                                     </div>

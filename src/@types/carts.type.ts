@@ -24,5 +24,10 @@ export type ExtendedCartType = Cart & {
     checked: boolean
 }
 
+export type SaveCartToLSType = {
+    user_id: number
+    cart_details: ExtendedCartType[]
+}
+
 export type ListCartProductResponse = PaginatedApiResponse<Cart[]>
 export type CartCreatedUpdatedResponse = ApiResponse<CartCreatedUpdated>

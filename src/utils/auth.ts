@@ -1,4 +1,4 @@
-import { ExtendedCartType } from '~/@types/carts.type'
+import { SaveCartToLSType } from '~/@types/carts.type'
 import { User } from '~/@types/users.type'
 import { oauth2Config } from '~/configs/oauth2.config'
 
@@ -25,11 +25,15 @@ export const getProfileFromLS = () => {
     return null
 }
 
+export const clearCartFromLS = () => {
+    localStorage.removeItem('carts')
+}
+
 export const clearProfileFromLS = () => {
     localStorage.removeItem('profile')
 }
 
-export const saveCartToLS = (carts: ExtendedCartType[]) => {
+export const saveCartToLS = (carts: SaveCartToLSType) => {
     localStorage.setItem('carts', JSON.stringify(carts))
 }
 

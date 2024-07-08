@@ -5,7 +5,8 @@ import { keyBy } from 'lodash'
 import React, { useContext, useEffect, useMemo } from 'react'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Cart } from '~/@types/carts.type'
+import { toast } from 'react-toastify'
+import { Cart, SaveCartToLSType } from '~/@types/carts.type'
 import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import QuantityController from '~/components/QuantityController'
@@ -20,7 +21,7 @@ export default function CartList() {
     useSetTitle('Giỏ hàng')
     const navigate = useNavigate()
     const location = useLocation()
-    const { extendedCart, setExtendedCart } = useContext(AppContext)
+    const { profile, extendedCart, setExtendedCart } = useContext(AppContext)
 
     // Handle by now get id
     const chooseCartDetailIdFromLocation = (location.state as { cart_detail_id: number })?.cart_detail_id
@@ -145,8 +146,17 @@ export default function CartList() {
     }
 
     const handlePurchase = () => {
+        if (!checkedCarts.length) {
+            toast.warn('Vui lòng chọn sản phẩm để mua')
+            return
+        }
         navigate(pathConfig.checkout)
-        saveCartToLS(checkedCarts)
+        const checkedCartsSave = {
+            user_id: Number(profile?.id),
+            cart_details: checkedCarts
+        }
+
+        saveCartToLS(checkedCartsSave as SaveCartToLSType)
     }
 
     return (

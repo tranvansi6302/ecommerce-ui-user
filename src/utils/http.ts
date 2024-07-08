@@ -30,6 +30,13 @@ class Http {
                 const message = (response.data as ErrorMessage).message
                 toast.success(message)
                 const { url } = response.config
+                if (url?.includes(API_URL.LOGIN_GOOGLE)) {
+                    this.token = (response.data as LoginResponse).result?.token || ''
+                    const profile = (response?.data as LoginResponse).result?.user
+                    saveTokenToLS(this.token)
+                    saveProfileToLS(profile as User)
+                    return response
+                }
                 switch (url) {
                     case API_URL.LOGIN: {
                         this.token = (response.data as LoginResponse).result?.token || ''

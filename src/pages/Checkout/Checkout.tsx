@@ -10,10 +10,12 @@ import { MdOutlineNoteAlt } from 'react-icons/md'
 import { TfiExchangeVertical } from 'react-icons/tfi'
 import { Link } from 'react-router-dom'
 import { Address } from '~/@types/addresses.type'
-import { ExtendedCartType } from '~/@types/carts.type'
+import { SaveCartToLSType } from '~/@types/carts.type'
+import noOrder from '~/assets/images/noOrder.png'
 import tickIcon from '~/assets/images/tickIcon.png'
 import CustomDialog from '~/components/CustomDialog'
 import MyButton from '~/components/MyButton'
+import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
 import addressesService from '~/services/addresses.service'
@@ -42,11 +44,16 @@ type ExtendedAddressType = Address & {
 
 export default function Checkout() {
     useSetTitle('Thanh toán')
-    const { setGlobalOpenCreateAddessDialog, setGlobalOpenUpdateAddessDialog, setAddressIdContext } = useContext(AppContext)
+    const { setGlobalOpenCreateAddessDialog, setGlobalOpenUpdateAddessDialog, setAddressIdContext, profile } =
+        useContext(AppContext)
     const { register, handleSubmit } = useForm<{ note: string }>()
     const [selectedPayment, setSelectedPayment] = useState<string>('')
     const [open, setOpen] = useState<boolean>(false)
-    const getCartFromLS = getCartsFromLS() as ExtendedCartType[]
+    const getCartLS = getCartsFromLS() as SaveCartToLSType
+    const cartUser = getCartLS.user_id
+    const cartDetails = useMemo(() => {
+        return cartUser === profile?.id ? getCartLS.cart_details : []
+    }, [cartUser, getCartLS.cart_details, profile?.id])
 
     const { data } = useQuery({
         queryKey: ['addresses'],
@@ -86,7 +93,7 @@ export default function Checkout() {
 
     // Total
     const totalCheckoutProduct = useMemo(() => {
-        return getCartFromLS.reduce((acc, item) => {
+        return cartDetails.reduce((acc, item) => {
             // Ensure we have a valid price, defaulting to 0 if not available
             const price = item.variant?.current_price_plan?.sale_price
                 ? item.variant.current_price_plan.sale_price
@@ -94,11 +101,11 @@ export default function Checkout() {
             const quantity = typeof item.quantity === 'number' ? item.quantity : 0
             return acc + price * quantity
         }, 0)
-    }, [getCartFromLS])
+    }, [cartDetails])
 
     // Handle checkout
     const onSubmit = handleSubmit((data) => {
-        const variantIds = getCartFromLS.map((item) => {
+        const variantIds = cartDetails.map((item) => {
             return {
                 variant_id: item.variant.id
             }
@@ -199,33 +206,47 @@ export default function Checkout() {
                                     Địa chỉ nhận hàng
                                 </div>
                             </div>
-                            <div className='flex mt-4'>
-                                <div className='w-[20%] text-text-primary font-semibold'>
-                                    <p>{addressChecked?.full_name}</p>
-                                    <p className='mt-1'>{addressChecked?.phone_number}</p>
+                            {addressChecked ? (
+                                <div className='flex mt-4'>
+                                    <div className='w-[20%] text-text-primary font-semibold'>
+                                        <p>{addressChecked?.full_name}</p>
+                                        <p className='mt-1'>{addressChecked?.phone_number}</p>
+                                    </div>
+                                    <div className='w-[50%]'>
+                                        <p>
+                                            {addressChecked?.description}, {addressChecked?.ward}, {addressChecked?.district},{' '}
+                                            {addressChecked?.province}
+                                        </p>
+                                    </div>
+                                    <div className='w-[30%] flex items-center justify-end gap-3'>
+                                        {addressChecked?.is_default == 1 && (
+                                            <Fragment>
+                                                <button className='py-1 px-2 text-[14px] capitalize b text-red-600'>
+                                                    Mặc định
+                                                </button>
+                                                <div className='w-[0.5px] h-[20px] bg-gray-300'></div>
+                                            </Fragment>
+                                        )}
+                                        <button
+                                            onClick={() => setOpen(true)}
+                                            className='py-1 px-2 text-[14px] capitalize b text-blue-600 flex items-center gap-1'
+                                        >
+                                            <TfiExchangeVertical />
+                                            Thay đổi địa chỉ
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className='w-[50%]'>
-                                    <p>
-                                        {addressChecked?.description}, {addressChecked?.ward}, {addressChecked?.district},{' '}
-                                        {addressChecked?.province}
-                                    </p>
-                                </div>
-                                <div className='w-[30%] flex items-center justify-end gap-3'>
-                                    {addressChecked?.is_default == 1 && (
-                                        <Fragment>
-                                            <button className='py-1 px-2 text-[14px] capitalize b text-red-600'>Mặc định</button>
-                                            <div className='w-[0.5px] h-[20px] bg-gray-300'></div>
-                                        </Fragment>
-                                    )}
-                                    <button
-                                        onClick={() => setOpen(true)}
-                                        className='py-1 px-2 text-[14px] capitalize b text-blue-600 flex items-center gap-1'
+                            ) : (
+                                <div className='mt-6'>
+                                    <MyButton
+                                        onClick={() => setGlobalOpenCreateAddessDialog(true)}
+                                        className='w-[140px] mr-4 pb-4  text-blue-600 rounded-sm hover:opacity-90'
                                     >
-                                        <TfiExchangeVertical />
-                                        Thay đổi địa chỉ
-                                    </button>
+                                        <GoPlus fontSize='20px' />
+                                        Thêm địa chỉ mới
+                                    </MyButton>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 )}
@@ -250,9 +271,9 @@ export default function Checkout() {
 
                     {/* Product Order */}
                     <div className='py-4'>
-                        {getCartFromLS &&
-                            getCartFromLS.length > 0 &&
-                            getCartFromLS.map((item) => {
+                        {cartDetails &&
+                            cartDetails.length > 0 &&
+                            cartDetails.map((item) => {
                                 const promotionPrice = item.variant?.current_price_plan?.promotion_price
                                 const salePrice = item.variant?.current_price_plan?.sale_price
                                 return (
@@ -309,6 +330,15 @@ export default function Checkout() {
                                     </div>
                                 )
                             })}
+
+                        {cartDetails && cartDetails.length === 0 && (
+                            <div className='flex flex-col justify-center items-center'>
+                                <img src={noOrder} alt='noProduct' />
+                                <Link className='mt-4 text-blue-600' to={pathConfig.carts}>
+                                    <MyButton>Xem giỏ hàng</MyButton>
+                                </Link>
+                            </div>
+                        )}
                     </div>
                 </div>
 

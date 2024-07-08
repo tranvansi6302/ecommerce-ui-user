@@ -14,12 +14,14 @@
 
 .grid-wrapper {
     display: grid;
-    gap: 10px 6px;
+    gap: 6px;
 }
 
-/* .grid-item {
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-} */
+.grid-item {
+    /* box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+     */
+    overflow: hidden;
+}
 
 @media (max-width: 599px) {
     .grid-wrapper {
@@ -27,9 +29,6 @@
         padding: 0 8px;
     }
 
-    .grid-item {
-        margin-top: 32px;
-    }
     .grid-item img {
         margin-bottom: 18px;
     }
