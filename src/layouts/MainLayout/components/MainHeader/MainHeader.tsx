@@ -32,7 +32,13 @@ const settings = [
         label: 'Đăng xuất'
     }
 ]
-export default function MainHeader() {
+
+type MainHeaderProps = {
+    cartTitle?: string
+    checkoutTitle?: string
+}
+
+export default function MainHeader({ cartTitle, checkoutTitle }: MainHeaderProps) {
     const navigate = useNavigate()
     const { profile, isAuthenticated, setIsAuthenticated } = useContext(AppContext)
 
@@ -63,24 +69,30 @@ export default function MainHeader() {
     return (
         <Fragment>
             <header className='bg-white sticky top-0 z-50'>
-                <div className='hidden border-b border-stroke sm:block py-2'>
+                <div
+                    className={`hidden border-b border-stroke sm:block py-2 ${cartTitle || checkoutTitle ? 'bg-blue-600' : 'bg-white'}`}
+                >
                     <Container style={{ padding: '0' }}>
                         <div className='-mx-4 flex flex-wrap items-center'>
                             <div className='w-full px-4 md:w-2/3 lg:w-1/2'>
-                                <ul className='-mx-3 flex items-center'>
+                                <ul
+                                    className={`-mx-3 flex items-center ${cartTitle || checkoutTitle ? 'text-white' : 'text-text-primary'}`}
+                                >
                                     <li>
                                         <Link
                                             to={''}
-                                            className='inline-block px-3 text-[13px] font-medium text-text-primary capitalize hover:text-blue-600'
+                                            className='inline-block px-3 text-[13px] font-medium text-inherit capitalize hover:opacity-90'
                                         >
                                             Về chúng tôi
                                         </Link>
                                     </li>
-                                    <li className='w-[0.5px] h-[12px] bg-gray-300'></li>
+                                    <li
+                                        className={`w-[0.5px] h-[12px] ${cartTitle || checkoutTitle ? 'bg-white' : 'bg-gray-300'}`}
+                                    ></li>
                                     <li>
                                         <Link
                                             to={''}
-                                            className='inline-block px-3 text-[13px] font-medium text-text-primary capitalize hover:text-blue-600'
+                                            className='inline-block px-3 text-[13px] font-medium text-inherit capitalize hover:opacity-90'
                                         >
                                             Liên hệ
                                         </Link>
@@ -88,11 +100,13 @@ export default function MainHeader() {
                                 </ul>
                             </div>
                             <div className='w-full px-4 md:w-1/3 lg:w-1/2'>
-                                <div className='hidden items-center gap-6 justify-end md:flex'>
+                                <div
+                                    className={`hidden items-center gap-6 justify-end md:flex  ${cartTitle || checkoutTitle ? 'text-white' : 'text-text-primary'}`}
+                                >
                                     <div>
-                                        <div className='relative text-text-primary'>
+                                        <div className='relative'>
                                             <span className='capitalize text-[13px] flex items-center gap-1'>
-                                                <span className='mb-[1px]'>
+                                                <span className='mb-[1px] text-inherit'>
                                                     <GrLanguage />
                                                 </span>
                                                 Tiếng việt
@@ -104,14 +118,14 @@ export default function MainHeader() {
                                             <Tooltip title={'Cài đặt'}>
                                                 <IconButton
                                                     onClick={handleOpenUserMenu}
-                                                    sx={{ p: 0, display: 'flex', alignItems: 'center' }}
+                                                    sx={{ p: 0, display: 'flex', alignItems: 'center', color: 'inherit' }}
                                                 >
                                                     <img
                                                         className='w-[15px] h-[15px] border object-cover rounded-full mb-[1px]'
                                                         src={profile?.avatar ? profile.avatar : avatarDefault}
                                                         alt=''
                                                     />
-                                                    <p className='text-[13px] text-text-primary ml-1'>{profile?.full_name}</p>
+                                                    <p className='text-[13px] text-inherit ml-1'>{profile?.full_name}</p>
                                                 </IconButton>
                                             </Tooltip>
                                             <Menu
@@ -172,26 +186,45 @@ export default function MainHeader() {
                 <Container style={{ padding: '0' }}>
                     <div className='w-full h-[72px]'>
                         <div className='relative -mx-4 flex items-center justify-center sm:justify-between'>
-                            <div className='w-60 max-w-full px-4'>
+                            <div
+                                className={`max-w-full px-4 ${cartTitle || checkoutTitle ? 'w-[35%] shrink-0 flex items-center' : 'w-60'}`}
+                            >
                                 <Link to={pathConfig.home} className='py-5 lg:py-3 flex items-center gap-2'>
                                     <img
                                         src='https://techmayntra.com/wp-content/uploads/2023/03/E-commerce-Img-Techmayntra.png'
                                         alt='logo'
-                                        className='w-[80%] h-full object-cover'
+                                        className='w-[138px] h-full object-cover'
                                     />
                                 </Link>
+                                {(cartTitle || checkoutTitle) && (
+                                    <Fragment>
+                                        <div className='w-[1px] h-[30px] bg-blue-600 mx-4'></div>
+                                        <p className='capitalize text-blue-600 text-[20px]'>
+                                            {' '}
+                                            {cartTitle ? 'Giỏ hàng' : checkoutTitle ? 'Thanh toán' : ''}
+                                        </p>
+                                    </Fragment>
+                                )}
                             </div>
-                            <div className='flex w-full items-center justify-end px-4 lg:justify-between'>
-                                <div className='flex w-[80%] items-center justify-between px-4'>
-                                    <div className='w-full'>
-                                        <HeaderSearch />
+                            <div
+                                className={`flex w-full items-center justify-end px-4 ${cartTitle || checkoutTitle ? 'lg:justify-end w-[65%]' : 'lg:justify-between'}`}
+                            >
+                                {!checkoutTitle && (
+                                    <div
+                                        className={`flex items-center justify-between ${cartTitle ? 'w-full px-0' : 'w-[80%] px-4'}`}
+                                    >
+                                        <div className='w-full'>
+                                            <HeaderSearch />
+                                        </div>
                                     </div>
-                                </div>
-                                <div className='hidden w-[20%] items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-16'>
-                                    <div className='relative z-1'>
-                                        <MiniCart productsInCart={(productsInCart?.data.result as Cart[]) || []} />
+                                )}
+                                {!cartTitle && !checkoutTitle && (
+                                    <div className='hidden w-[20%] items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-16'>
+                                        <div className='relative z-1'>
+                                            <MiniCart productsInCart={(productsInCart?.data.result as Cart[]) || []} />
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>

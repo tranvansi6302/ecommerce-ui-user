@@ -18,6 +18,7 @@ import ProductDetail from '~/pages/ProductDetail'
 import ProductFilter from '~/pages/ProductFilter'
 import ProductHome from '~/pages/ProductHome'
 import Register from '~/pages/Register'
+import ShoppingLayout from '~/layouts/ShoppingLayout'
 const ProtectedRoute = () => {
     const { isAuthenticated } = useContext(AppContext)
 
@@ -83,9 +84,9 @@ export default function AppRouter() {
                 {
                     path: pathConfig.carts,
                     element: (
-                        <MainLayout>
+                        <ShoppingLayout cartTitle='Giỏ hàng'>
                             <CartList />
-                        </MainLayout>
+                        </ShoppingLayout>
                     )
                 },
                 {
@@ -139,9 +140,9 @@ export default function AppRouter() {
                 {
                     path: pathConfig.checkout,
                     element: (
-                        <MainLayout>
+                        <ShoppingLayout checkoutTitle='Thanh toán'>
                             <Checkout />
-                        </MainLayout>
+                        </ShoppingLayout>
                     )
                 }
             ]
