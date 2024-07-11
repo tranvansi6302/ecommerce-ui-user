@@ -3,7 +3,6 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { keyBy } from 'lodash'
 import React, { useContext, useEffect, useMemo } from 'react'
-import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { Cart, SaveCartToLSType } from '~/@types/carts.type'
@@ -313,19 +312,8 @@ export default function CartList() {
                                 </div>
                             </div>
                         </div>
-                        <div className='sticky bottom-0 z-10 mt-5  rounded-sm border border-gray-100 bg-white px-5 pb-5  sm:flex-row sm:items-center'>
-                            <div className='border-b-[1px] mb-2 flex items-center justify-end'>
-                                <div className='py-3'>
-                                    <div className='text-blue-800 text-[15px] cursor-pointer hover:text-blue-700 flex items-center'>
-                                        <div className='mr-60 flex items-center gap-3'>
-                                            <LiaMoneyCheckAltSolid fontSize='26px' />
-                                            <span className='capitalize mt-[1px]'>Shop voucher</span>
-                                        </div>
-                                        <span> Chọn mã giảm giá</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='flex items-center justify-between w-full'>
+                        <div className='sticky bottom-0 z-10 mt-4  rounded-sm border border-gray-100 bg-white px-5 pb-5  sm:flex-row sm:items-center'>
+                            <div className='flex items-center justify-between w-full pt-5'>
                                 <div className='flex items-center'>
                                     <div className='flex flex-shrink-0 items-center justify-center pr-3'>
                                         <input

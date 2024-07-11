@@ -1,6 +1,7 @@
 import { SaveCartToLSType } from '~/@types/carts.type'
 import { User } from '~/@types/users.type'
 import { oauth2Config } from '~/configs/oauth2.config'
+import { Voucher } from '~/pages/Checkout/components/MyVoucher/fake'
 
 export const saveTokenToLS = (token: string) => {
     localStorage.setItem('token', token)
@@ -45,6 +46,17 @@ export const getCartsFromLS = () => {
     return []
 }
 
+export const saveVoucherToLS = (key: string, voucher: Voucher) => {
+    localStorage.setItem(key, JSON.stringify(voucher))
+}
+
+export const getVoucherFromLS = (key: string) => {
+    const voucher = localStorage.getItem(key)
+    if (voucher) {
+        return JSON.parse(voucher)
+    }
+    return null
+}
 export const loginWithGoogle = () => {
     console.log('Login with google...')
     const callbackUrl = oauth2Config.redirectUri

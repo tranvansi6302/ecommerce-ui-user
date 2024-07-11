@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { FaShippingFast } from 'react-icons/fa'
 import { FaLocationDot } from 'react-icons/fa6'
 import { GoPlus } from 'react-icons/go'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
@@ -11,20 +12,21 @@ import { TfiExchangeVertical } from 'react-icons/tfi'
 import { Link } from 'react-router-dom'
 import { Address } from '~/@types/addresses.type'
 import { SaveCartToLSType } from '~/@types/carts.type'
+import { AvailableService, AvailableServiceRequest, FeeRequest, Leadtime, LeadtimeRequest } from '~/@types/ghn.type'
 import noOrder from '~/assets/images/noOrder.png'
 import tickIcon from '~/assets/images/tickIcon.png'
 import CustomDialog from '~/components/CustomDialog'
 import MyButton from '~/components/MyButton'
+import goodsDefaultConfig from '~/configs/goods.config'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
 import addressesService from '~/services/addresses.service'
-import { getCartsFromLS } from '~/utils/auth'
-import { FaShippingFast } from 'react-icons/fa'
-import { convertTimestampToDate, formatToVND } from '~/utils/helpers'
 import ghnService from '~/services/ghn.service'
-import { AvailableService, AvailableServiceRequest, FeeRequest, Leadtime, LeadtimeRequest } from '~/@types/ghn.type'
-import goodsDefaultConfig from '~/configs/goods.config'
+import { getCartsFromLS, getVoucherFromLS } from '~/utils/auth'
+import { convertTimestampToDate, formatToVND } from '~/utils/helpers'
+import MyVoucher from './components/MyVoucher'
+import { Voucher } from './components/MyVoucher/fake'
 
 type PaymentMethodType = {
     id: string
@@ -55,6 +57,7 @@ export default function Checkout() {
     const { register, handleSubmit } = useForm<{ note: string }>()
     const [selectedPayment, setSelectedPayment] = useState<string>('')
     const [open, setOpen] = useState<boolean>(false)
+    const [openVoucher, setOpenVoucher] = useState<boolean>(false)
     const getCartLS = getCartsFromLS() as SaveCartToLSType
     const cartUser = getCartLS.user_id
     const cartDetails = useMemo(() => {
@@ -186,8 +189,23 @@ export default function Checkout() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addressChecked])
 
+    // Handle caculate voucher
+
+    const getVcShipping = getVoucherFromLS('vc_shipping') as Voucher
+    const getVcOrder = getVoucherFromLS('vc_order') as Voucher
+    const [selectedShippingVoucher, setSelectedShippingVoucher] = useState<Voucher | null>(getVcShipping || null)
+    const [selectedOrderVoucher, setSelectedOrderVoucher] = useState<Voucher | null>(getVcOrder || null)
+
     return (
         <Container style={{ padding: '0' }}>
+            <MyVoucher
+                selectedOrderVoucher={selectedOrderVoucher}
+                setSelectedOrderVoucher={setSelectedOrderVoucher}
+                selectedShippingVoucher={selectedShippingVoucher}
+                setSelectedShippingVoucher={setSelectedShippingVoucher}
+                openVoucher={openVoucher}
+                setOpenVoucher={setOpenVoucher}
+            />
             <CustomDialog open={open} setOpen={setOpen}>
                 <div className='w-[600px] bg-white py-6'>
                     <div className='flex justify-between  border-b'>
@@ -435,7 +453,10 @@ export default function Checkout() {
                             <LiaMoneyCheckAltSolid fontSize='26px' />
                             <span className='capitalize mt-[1px] text-lg'>Shop voucher</span>
                         </div>
-                        <span className='capitalize'> Chọn mã giảm giá</span>
+                        <button onClick={() => setOpenVoucher(true)} className='capitalize'>
+                            {' '}
+                            Chọn mã giảm giá
+                        </button>
                     </div>
                 </div>
 
@@ -448,7 +469,7 @@ export default function Checkout() {
                                 <button
                                     key={item.id}
                                     onClick={() => setSelectedPayment(item.title.toLowerCase())}
-                                    className={`items-center bg-blue-50 justify-center  border rounded-sm box-border text-black text-opacity-80 cursor-pointer inline-flex m-1 min-h-[2.5rem] min-w-[5rem] outline-none overflow-visible p-2 relative text-left break-words capitalize text-[14px] ${selectedPayment === (item.title as string).toLowerCase() ? 'border-blue-600' : 'border-gray-300 '}`}
+                                    className={`items-center justify-center  border rounded-sm box-border text-black text-opacity-80 cursor-pointer inline-flex m-1 min-h-[2.5rem] min-w-[5rem] outline-none overflow-visible p-2 relative text-left break-words capitalize text-[14px] hover:border-blue-600 hover:text-blue-600 ${selectedPayment === (item.title as string).toLowerCase() ? 'border-blue-600' : 'border-gray-300 '}`}
                                 >
                                     {item.title as string}
                                     {selectedPayment === (item.title as string).toLowerCase() && (
