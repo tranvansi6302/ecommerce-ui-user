@@ -12,7 +12,7 @@ import avatarDefault from '~/assets/images/avatarDefault.png'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import cartsService from '~/services/carts.service'
-import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
+import { clearCartFromLS, clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
 import HeaderSearch from '../HeaderSearch'
 import MiniCart from '../MiniCart'
 import logo from '~/assets/images/logo.png'
@@ -20,7 +20,7 @@ import logo from '~/assets/images/logo.png'
 const settings = [
     {
         id: 'account',
-        label: 'Tài khoản của tôi',
+        label: 'Tài khoản của tô    i',
         link: pathConfig.profile
     },
     {
@@ -53,6 +53,7 @@ export default function MainHeader({ cartTitle, checkoutTitle }: MainHeaderProps
             case 'logout':
                 clearProfileFromLS()
                 clearTokenFromLS()
+                clearCartFromLS()
                 setIsAuthenticated(false)
                 navigate(pathConfig.login)
                 toast.success('Đăng xuất thành công')

@@ -23,7 +23,7 @@ import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
 import addressesService from '~/services/addresses.service'
 import ghnService from '~/services/ghn.service'
-import { getCartsFromLS, getVoucherFromLS } from '~/utils/auth'
+import { getCartsFromLS } from '~/utils/auth'
 import { convertTimestampToDate, formatToVND } from '~/utils/helpers'
 import MyVoucher from './components/MyVoucher'
 import { Voucher } from './components/MyVoucher/fake'
@@ -50,14 +50,16 @@ type ExtendedAddressType = Address & {
 
 export default function Checkout() {
     useSetTitle('Thanh toán')
-    const [feeOrder, setFeeOrder] = useState<string | undefined>('')
     const [leadtimeDate, setLeadtimeDate] = useState<string | undefined>('')
+    const [feeMoney, setFeeMoney] = useState<number>(0)
     const { setGlobalOpenCreateAddessDialog, setGlobalOpenUpdateAddessDialog, setAddressIdContext, profile } =
         useContext(AppContext)
     const { register, handleSubmit } = useForm<{ note: string }>()
     const [selectedPayment, setSelectedPayment] = useState<string>('')
     const [open, setOpen] = useState<boolean>(false)
     const [openVoucher, setOpenVoucher] = useState<boolean>(false)
+    const [selectedShippingVoucher, setSelectedShippingVoucher] = useState<Voucher | null>(null)
+    const [selectedOrderVoucher, setSelectedOrderVoucher] = useState<Voucher | null>(null)
     const getCartLS = getCartsFromLS() as SaveCartToLSType
     const cartUser = getCartLS.user_id
     const cartDetails = useMemo(() => {
@@ -150,7 +152,7 @@ export default function Checkout() {
     const getFeeMutation = useMutation({
         mutationFn: (body: FeeRequest) => ghnService.getFee(body),
         onSuccess: (data) => {
-            setFeeOrder(formatToVND(Number(data?.data?.data?.total)))
+            setFeeMoney(Number(data?.data?.data?.total))
         }
     })
 
@@ -189,16 +191,47 @@ export default function Checkout() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addressChecked])
 
-    // Handle caculate voucher
+    const amountVoucherOrder = useMemo(() => {
+        if (selectedOrderVoucher) {
+            if (selectedOrderVoucher.discount_type === 'MONEY') {
+                return formatToVND(selectedOrderVoucher.value)
+            } else {
+                return formatToVND((totalCheckoutProduct * selectedOrderVoucher.value) / 100)
+            }
+        }
+        return 'Chưa áp dụng'
+    }, [selectedOrderVoucher, totalCheckoutProduct])
 
-    const getVcShipping = getVoucherFromLS('vc_shipping') as Voucher
-    const getVcOrder = getVoucherFromLS('vc_order') as Voucher
-    const [selectedShippingVoucher, setSelectedShippingVoucher] = useState<Voucher | null>(getVcShipping || null)
-    const [selectedOrderVoucher, setSelectedOrderVoucher] = useState<Voucher | null>(getVcOrder || null)
+    const amountVoucherShipping = useMemo(() => {
+        if (selectedShippingVoucher) {
+            if (selectedShippingVoucher.discount_type === 'MONEY' && feeMoney > selectedShippingVoucher.value) {
+                return formatToVND(selectedShippingVoucher.value)
+            }
+
+            if (selectedShippingVoucher.discount_type === 'MONEY' && feeMoney <= selectedShippingVoucher.value) {
+                return formatToVND(feeMoney)
+            }
+
+            if (selectedShippingVoucher.discount_type === 'PERCENTAGE' && selectedShippingVoucher.value === 100) {
+                return formatToVND(feeMoney)
+            }
+        }
+        return 'Chưa áp dụng'
+    }, [feeMoney, selectedShippingVoucher])
+
+    const totalCheckout = useMemo(() => {
+        return formatToVND(
+            totalCheckoutProduct -
+                Number(amountVoucherOrder.replace(/\D/g, '')) -
+                Number(amountVoucherShipping.replace(/\D/g, '')) +
+                feeMoney
+        )
+    }, [totalCheckoutProduct, amountVoucherOrder, feeMoney, amountVoucherShipping])
 
     return (
         <Container style={{ padding: '0' }}>
             <MyVoucher
+                totalCheckoutProduct={totalCheckoutProduct}
                 selectedOrderVoucher={selectedOrderVoucher}
                 setSelectedOrderVoucher={setSelectedOrderVoucher}
                 selectedShippingVoucher={selectedShippingVoucher}
@@ -440,7 +473,7 @@ export default function Checkout() {
                             </div>
                             <div className='flex items-center gap-2 text-green-600 text-[14px] mr-20'>
                                 <div className='capitalize'>Phí vận chuyển:</div>
-                                <p>{feeOrder}</p>
+                                <p>{formatToVND(Number(feeMoney))}</p>
                             </div>
                         </div>
                     </div>
@@ -454,8 +487,11 @@ export default function Checkout() {
                             <span className='capitalize mt-[1px] text-lg'>Shop voucher</span>
                         </div>
                         <button onClick={() => setOpenVoucher(true)} className='capitalize'>
-                            {' '}
-                            Chọn mã giảm giá
+                            {selectedOrderVoucher && selectedShippingVoucher
+                                ? 'Đã áp dụng 2 mã'
+                                : selectedOrderVoucher || selectedShippingVoucher
+                                  ? 'Đã áp dụng 1 mã'
+                                  : 'Chọn mã giảm giá'}
                         </button>
                     </div>
                 </div>
@@ -482,22 +518,43 @@ export default function Checkout() {
                         </div>
                     </div>
                     {/* Total */}
-                    <div className='p-6 border-t bg-blue-50 flex items-end flex-col gap-4'>
-                        <div className='flex items-center w-[25%] justify-between text-[14px] '>
-                            <h4 className='text-gray-500 capitalize'>Tổng tiền hàng</h4>
-                            <span className='text-text-primary'>{formatToVND(totalCheckoutProduct)}</span>
-                        </div>
-                        <div className='flex items-center w-[25%] justify-between text-[14px]'>
-                            <h4 className='text-gray-500 capitalize'>Phí vận chuyển</h4>
-                            <span className='text-text-primary'>{feeOrder}</span>
-                        </div>
-                        <div className='flex items-center w-[25%] justify-between text-[14px]'>
-                            <h4 className='text-gray-500 capitalize'>Giảm giá</h4>
-                            <span className='text-text-primary'>{formatToVND(0)}</span>
-                        </div>
-                        <div className='flex items-center w-[25%] justify-between text-[14px]'>
-                            <h4 className='text-gray-500 capitalize'>Tổng thanh toán</h4>
-                            <span className='text-blue-600 text-[24px]'>{formatToVND(totalCheckoutProduct)}</span>
+                    <div className=' bg-white'>
+                        <div className='px-7 bg-white'>
+                            <div className='flex justify-end h-[48px] items-center px-6 border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Tổng tiền hàng
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {formatToVND(totalCheckoutProduct)}
+                                </h2>
+                            </div>
+
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Phí vận chuyển
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {formatToVND(Number(feeMoney))}
+                                </h2>
+                            </div>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Giảm giá phí vận chuyển
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{amountVoucherShipping}</h2>
+                            </div>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Giảm giá
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{amountVoucherOrder}</h2>
+                            </div>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Thành tiền
+                                </h2>
+                                <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>{totalCheckout}</h2>
+                            </div>
                         </div>
                     </div>
 
