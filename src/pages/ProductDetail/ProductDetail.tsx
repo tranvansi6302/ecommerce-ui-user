@@ -63,25 +63,25 @@ export default function ProductDetail() {
 
     const { colors, sizes } = getUniqueSizeAndColor(productSale?.data.result as ProductSale)
 
-    // const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    //     const rect = event.currentTarget.getBoundingClientRect()
-    //     const image = imageRef.current as HTMLImageElement
-    //     const { naturalHeight, naturalWidth } = image
+    const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const rect = event.currentTarget.getBoundingClientRect()
+        const image = imageRef.current as HTMLImageElement
+        const { naturalHeight, naturalWidth } = image
 
-    //     const offsetX = event.pageX - (rect.x + window.scrollX)
-    //     const offsetY = event.pageY - (rect.y + window.scrollY)
+        const offsetX = event.pageX - (rect.x + window.scrollX)
+        const offsetY = event.pageY - (rect.y + window.scrollY)
 
-    //     const top = offsetY * (1 - naturalHeight / rect.height)
-    //     const left = offsetX * (1 - naturalWidth / rect.width)
-    //     image.style.width = naturalWidth + 'px'
-    //     image.style.height = naturalHeight + 'px'
-    //     image.style.maxWidth = 'unset'
-    //     image.style.top = top + 'px'
-    //     image.style.left = left + 'px'
-    // }
-    // const handleRemoveZoom = () => {
-    //     imageRef.current?.removeAttribute('style')
-    // }
+        const top = offsetY * (1 - naturalHeight / rect.height)
+        const left = offsetX * (1 - naturalWidth / rect.width)
+        image.style.width = naturalWidth + 'px'
+        image.style.height = naturalHeight + 'px'
+        image.style.maxWidth = 'unset'
+        image.style.top = top + 'px'
+        image.style.left = left + 'px'
+    }
+    const handleRemoveZoom = () => {
+        imageRef.current?.removeAttribute('style')
+    }
     useEffect(() => {
         if (productSale && (productSale?.data.result as ProductSale).images.length > 0) {
             setActiveImage((productSale?.data.result as ProductSale).images[0].url as string)
@@ -193,6 +193,8 @@ export default function ProductDetail() {
                             <div className='grid grid-cols-1 md:grid-cols-12 gap-9'>
                                 <div className='w-full md:col-span-5'>
                                     <div
+                                        onMouseMove={handleZoom}
+                                        onMouseLeave={handleRemoveZoom}
                                         onClick={() => openImageViewer(currentIndexImages[0])}
                                         className='relative w-full  cursor-zoom-in overflow-hidden pt-[100%] shadow'
                                     >

@@ -11,10 +11,15 @@ export const API_URL = {
     PROFILE: '/users/profile',
     PROFILE_UPLOAD: '/users/profile/upload',
     CHANGE_PASSWORD: '/users/change-password',
-    GET_PROVINCE: '/province',
-    GET_DISTRICT: '/district',
-    GET_WARD: '/ward',
     ADDRESS: '/users/addresses',
     CREATE_ADDRESS: '/users/addresses',
-    ORDER: '/orders'
+    ORDER: '/orders',
+
+    // GHN
+    GHN_GET_PROVINCE: '/master-data/province',
+    GHN_GET_DISTRICT: '/master-data/district',
+    GHN_GET_WARD: '/master-data/ward',
+    GHN_GET_AVAILABLE_SERVICES: '/v2/shipping-order/available-services',
+    GHN_GET_FEE: '/v2/shipping-order/fee',
+    GHN_GET_LEADTIME: '/v2/shipping-order/leadtime'
 }

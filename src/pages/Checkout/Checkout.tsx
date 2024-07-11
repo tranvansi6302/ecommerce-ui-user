@@ -1,5 +1,5 @@
 import { Container } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -20,7 +20,11 @@ import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
 import addressesService from '~/services/addresses.service'
 import { getCartsFromLS } from '~/utils/auth'
-import { formatToVND } from '~/utils/helpers'
+import { FaShippingFast } from 'react-icons/fa'
+import { convertTimestampToDate, formatToVND } from '~/utils/helpers'
+import ghnService from '~/services/ghn.service'
+import { AvailableService, AvailableServiceRequest, FeeRequest, Leadtime, LeadtimeRequest } from '~/@types/ghn.type'
+import goodsDefaultConfig from '~/configs/goods.config'
 
 type PaymentMethodType = {
     id: string
@@ -44,6 +48,8 @@ type ExtendedAddressType = Address & {
 
 export default function Checkout() {
     useSetTitle('Thanh toán')
+    const [feeOrder, setFeeOrder] = useState<string | undefined>('')
+    const [leadtimeDate, setLeadtimeDate] = useState<string | undefined>('')
     const { setGlobalOpenCreateAddessDialog, setGlobalOpenUpdateAddessDialog, setAddressIdContext, profile } =
         useContext(AppContext)
     const { register, handleSubmit } = useForm<{ note: string }>()
@@ -126,6 +132,60 @@ export default function Checkout() {
         setAddressIdContext(id)
     }
 
+    // Handle GHN service
+    const getAvailableServiceMutation = useMutation({
+        mutationFn: (body: AvailableServiceRequest) => ghnService.getAvailableServices(body)
+    })
+
+    const getleadtimeMutation = useMutation({
+        mutationFn: (body: LeadtimeRequest) => ghnService.getLeadtime(body),
+        onSuccess: (data) => {
+            setLeadtimeDate(convertTimestampToDate((data?.data?.data as Leadtime).leadtime))
+        }
+    })
+
+    const getFeeMutation = useMutation({
+        mutationFn: (body: FeeRequest) => ghnService.getFee(body),
+        onSuccess: (data) => {
+            setFeeOrder(formatToVND(Number(data?.data?.data?.total)))
+        }
+    })
+
+    useEffect(() => {
+        const handleGetLeadtime = async () => {
+            const service = await getAvailableServiceMutation.mutateAsync({
+                from_district: Number(import.meta.env.VITE_DISTRICT_GHN_ID),
+                to_district: Number(addressChecked?.district_id),
+                shop_id: Number(import.meta.env.VITE_SHOP_GHN_ID)
+            })
+            await getleadtimeMutation.mutateAsync({
+                from_district_id: Number(import.meta.env.VITE_DISTRICT_GHN_ID),
+                from_ward_code: import.meta.env.VITE_WARD_GHN_ID,
+                to_district_id: Number(addressChecked?.district_id),
+                to_ward_code: addressChecked?.ward_id.toString() as string,
+                service_id: Number((service?.data?.data as AvailableService[])[0].service_id)
+            })
+        }
+        if (addressChecked) {
+            handleGetLeadtime()
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addressChecked])
+
+    useEffect(() => {
+        const data: FeeRequest = {
+            service_type_id: 2, // Default
+            to_district_id: Number(addressChecked?.district_id),
+            to_ward_code: addressChecked?.ward_id.toString() as string,
+            height: goodsDefaultConfig.HEIGHT,
+            length: goodsDefaultConfig.LENGTH,
+            weight: goodsDefaultConfig.WEIGHT * cartDetails.map((item) => item.quantity).reduce((acc, cur) => acc + cur, 0),
+            width: goodsDefaultConfig.WIDTH
+        }
+        getFeeMutation.mutate(data)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [addressChecked])
+
     return (
         <Container style={{ padding: '0' }}>
             <CustomDialog open={open} setOpen={setOpen}>
@@ -201,7 +261,7 @@ export default function Checkout() {
                     <div className=' bg-white p-6 rounded-sm'>
                         <div className=''>
                             <div className=''>
-                                <div className='text-blue-600 text-lg flex items-center gap-2'>
+                                <div className='text-blue-600 text-lg flex items-center gap-2 capitalize'>
                                     <FaLocationDot />
                                     Địa chỉ nhận hàng
                                 </div>
@@ -341,6 +401,32 @@ export default function Checkout() {
                         )}
                     </div>
                 </div>
+                {/* Ship */}
+                {/* Voucher */}
+                <div className='mt-2 bg-blue-50'>
+                    <div className='px-6 py-3 border border-dashed border-gray-400'>
+                        <h2 className='text-[14px] capitalize flex items-center gap-2 font-medium text-text-primary'>
+                            Đơn vị vận chuyển:
+                        </h2>
+                        <div className='flex justify-between'>
+                            <div className='mt-3 px-5 py-2 ml-24'>
+                                <img
+                                    className='w-[100px]'
+                                    src='https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png'
+                                    alt='ghn'
+                                />
+                                <p className='text-[14px] text-green-600 mt-2 flex items-center gap-2'>
+                                    <FaShippingFast />
+                                    Đảm bảo nhận hàng trước {leadtimeDate}
+                                </p>
+                            </div>
+                            <div className='flex items-center gap-2 text-green-600 text-[14px] mr-20'>
+                                <div className='capitalize'>Phí vận chuyển:</div>
+                                <p>{feeOrder}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Voucher */}
                 <div className='mt-2 bg-white'>
@@ -356,13 +442,13 @@ export default function Checkout() {
                 <div className='mt-2 bg-white'>
                     {/* Payment method */}
                     <div className='p-6 flex items-center gap-4'>
-                        <div className='capitalize text-lg'>Phương thức thanh toán</div>
+                        <div className='capitalize text-[18px]'>Phương thức thanh toán</div>
                         <div className=''>
                             {paymentMethod.map((item) => (
                                 <button
                                     key={item.id}
                                     onClick={() => setSelectedPayment(item.title.toLowerCase())}
-                                    className={`items-center bg-blue-50 justify-center  border rounded-sm box-border text-black text-opacity-80 cursor-pointer inline-flex m-1 min-h-[2.5rem] min-w-[5rem] outline-none overflow-visible p-2 relative text-left break-words capitalize ${selectedPayment === (item.title as string).toLowerCase() ? 'border-blue-600' : 'border-gray-300 '}`}
+                                    className={`items-center bg-blue-50 justify-center  border rounded-sm box-border text-black text-opacity-80 cursor-pointer inline-flex m-1 min-h-[2.5rem] min-w-[5rem] outline-none overflow-visible p-2 relative text-left break-words capitalize text-[14px] ${selectedPayment === (item.title as string).toLowerCase() ? 'border-blue-600' : 'border-gray-300 '}`}
                                 >
                                     {item.title as string}
                                     {selectedPayment === (item.title as string).toLowerCase() && (
@@ -377,19 +463,19 @@ export default function Checkout() {
                     {/* Total */}
                     <div className='p-6 border-t bg-blue-50 flex items-end flex-col gap-4'>
                         <div className='flex items-center w-[25%] justify-between text-[14px] '>
-                            <h4 className='text-gray-500'>Tổng tiền hàng</h4>
+                            <h4 className='text-gray-500 capitalize'>Tổng tiền hàng</h4>
                             <span className='text-text-primary'>{formatToVND(totalCheckoutProduct)}</span>
                         </div>
                         <div className='flex items-center w-[25%] justify-between text-[14px]'>
-                            <h4 className='text-gray-500'>Phí vận chuyển</h4>
-                            <span className='text-text-primary'>Miễn phí</span>
+                            <h4 className='text-gray-500 capitalize'>Phí vận chuyển</h4>
+                            <span className='text-text-primary'>{feeOrder}</span>
                         </div>
                         <div className='flex items-center w-[25%] justify-between text-[14px]'>
-                            <h4 className='text-gray-500'>Giảm giá</h4>
+                            <h4 className='text-gray-500 capitalize'>Giảm giá</h4>
                             <span className='text-text-primary'>{formatToVND(0)}</span>
                         </div>
                         <div className='flex items-center w-[25%] justify-between text-[14px]'>
-                            <h4 className='text-gray-500'>Tổng thanh toán</h4>
+                            <h4 className='text-gray-500 capitalize'>Tổng thanh toán</h4>
                             <span className='text-blue-600 text-[24px]'>{formatToVND(totalCheckoutProduct)}</span>
                         </div>
                     </div>

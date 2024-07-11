@@ -125,3 +125,11 @@ export const convertOrderStatus = (status: OrderStatus) => {
             return 'Không xác định'
     }
 }
+
+export const convertTimestampToDate = (epoch: number) => {
+    const date = new Date(epoch * 1000) // Convert to milliseconds
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0') // January is 0!
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
+}

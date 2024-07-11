@@ -15,6 +15,7 @@ import cartsService from '~/services/carts.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
 import HeaderSearch from '../HeaderSearch'
 import MiniCart from '../MiniCart'
+import logo from '~/assets/images/logo.png'
 
 const settings = [
     {
@@ -190,11 +191,7 @@ export default function MainHeader({ cartTitle, checkoutTitle }: MainHeaderProps
                                 className={`max-w-full px-4 ${cartTitle || checkoutTitle ? 'w-[35%] shrink-0 flex items-center' : 'w-60'}`}
                             >
                                 <Link to={pathConfig.home} className='py-5 lg:py-3 flex items-center gap-2'>
-                                    <img
-                                        src='https://techmayntra.com/wp-content/uploads/2023/03/E-commerce-Img-Techmayntra.png'
-                                        alt='logo'
-                                        className='w-[138px] h-full object-cover'
-                                    />
+                                    <img src={logo} alt='logo' className='w-[138px] h-full object-cover' />
                                 </Link>
                                 {(cartTitle || checkoutTitle) && (
                                     <Fragment>

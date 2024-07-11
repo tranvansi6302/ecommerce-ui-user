@@ -71,7 +71,7 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
                 <PiShoppingCart fontSize='30px' />
 
                 {isAuthenticated && (
-                    <span className='absolute top-[-5px] left-[25px] rounded-full bg-blue-600 w-5 h-5 flex items-center justify-center text-[10px] text-white'>
+                    <span className='absolute top-[-5px] left-[20px] rounded-full bg-blue-600 w-5 h-5 flex items-center justify-center text-[10px] text-white'>
                         {productsInCart && productsInCart.length > 0 ? productsInCart?.length : 0}
                     </span>
                 )}
