@@ -1,12 +1,12 @@
+import { useContext } from 'react'
+import { PiShoppingCart } from 'react-icons/pi'
 import { Link } from 'react-router-dom'
 import { Cart } from '~/@types/carts.type'
-import Popover from '~/components/Popover'
-import { formatToVND } from '~/utils/helpers'
-import { IoCartOutline } from 'react-icons/io5'
 import noCart from '~/assets/images/noCart.png'
+import Popover from '~/components/Popover'
 import pathConfig from '~/configs/path.config'
-import { useContext } from 'react'
 import { AppContext } from '~/contexts/app.context'
+import { formatToVND } from '~/utils/helpers'
 
 type MiniCartProps = {
     productsInCart: Cart[]
@@ -17,7 +17,7 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
     return (
         <Popover
             renderPopover={
-                <div className='relative w-[400px]  rounded-sm border border-gray-200 bg-white text-sm shadow-md'>
+                <div className='relative w-[400px] z-99999 rounded-sm border border-gray-200 bg-white text-sm shadow-md'>
                     {!isAuthenticated || productsInCart.length === 0 ? (
                         <div className='flex flex-col items-center justify-center py-14'>
                             <img className='w-[100px] h-[100px] object-cover' src={noCart} alt='noCart' />
@@ -67,11 +67,11 @@ export default function MiniCart({ productsInCart }: MiniCartProps) {
                 </div>
             }
         >
-            <Link to='/' className='relative'>
-                <IoCartOutline fontSize='28px' />
+            <Link to={pathConfig.carts} className='relative'>
+                <PiShoppingCart fontSize='30px' />
 
                 {isAuthenticated && (
-                    <span className='absolute top-[-5px] left-[17px] rounded-full bg-blue-600 w-5 h-5 flex items-center justify-center text-[10px] text-white '>
+                    <span className='absolute top-[-5px] left-[20px] rounded-full bg-blue-600 w-5 h-5 flex items-center justify-center text-[10px] text-white'>
                         {productsInCart && productsInCart.length > 0 ? productsInCart?.length : 0}
                     </span>
                 )}

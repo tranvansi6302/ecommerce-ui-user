@@ -14,8 +14,8 @@ export default function CategoryList() {
 
     return (
         <Container style={{ padding: '0' }}>
-            <div className='bg-white rounded-sm shadow-sm'>
-                <h2 className='text-text-secondary uppercase text p-6'>Loại sản phẩm</h2>
+            <div className='bg-white rounded-sm'>
+                <h2 className='text-text-primary uppercase text-[15px] text p-6'>Loại sản phẩm</h2>
                 <div className='flex flex-wrap category-list'>
                     {categories?.data.result &&
                         categories?.data.result?.length > 0 &&

@@ -11,7 +11,8 @@ class HttpGhn {
             timeout: 10000,
             headers: {
                 'Content-Type': 'application/json',
-                token: this.token
+                token: this.token,
+                ShopId: import.meta.env.VITE_API_GHN_SHOP_ID as string
             }
         })
     }

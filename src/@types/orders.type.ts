@@ -20,6 +20,12 @@ export type Order = {
     pending_date: string
     order_code: string
     order_date: string
+    payment_method: string
+    discount_order: number
+    discount_shipping: number
+    paid_date: string
+    shipping_fee: number
+    online_payment_status: string
     order_details: OrderDetail[]
 }
 
@@ -38,5 +44,18 @@ export type OrderFilters = {
     search?: string
 }
 
+export type CreateOrderRequest = {
+    full_name: string | undefined
+    phone_number: string | undefined
+    address: string
+    order_details: {
+        variant_id: number
+    }[]
+    discount_on_order: number
+    discount_shipping: number
+    payment_method: string
+    shipping_fee: number
+    note: string
+}
 export type ListOrderResponse = PaginatedApiResponse<Order[]>
 export type OrderResponse = ApiResponse<Order>

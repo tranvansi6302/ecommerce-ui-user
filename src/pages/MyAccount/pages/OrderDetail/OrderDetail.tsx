@@ -11,8 +11,10 @@ import { OrderStatus } from '~/enums/OrderStatus'
 import { queryClient } from '~/main'
 import cartsService from '~/services/carts.service'
 import ordersService from '~/services/orders.service'
-import { convertOrderStatus, formatDate, formatToVND } from '~/utils/helpers'
+import { convertOrderStatus, convertPaymentMethod, formatDate, formatDateFull, formatToVND } from '~/utils/helpers'
 import OrderStep from './components/OrderStep'
+import { Alert } from '@mui/material'
+import paymentsService from '~/services/payments.service'
 export default function OrderDetail() {
     const navigate = useNavigate()
     const { id: orderId } = useParams<{ id: string }>()
@@ -23,9 +25,6 @@ export default function OrderDetail() {
     })
 
     const order = data?.data.result as Order
-    const totalMoney = useMemo(() => {
-        return order?.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
-    }, [order])
 
     const handleBack = () => {
         navigate(-1)
@@ -53,6 +52,32 @@ export default function OrderDetail() {
         })
     }
 
+    const totalProduct = useMemo(() => {
+        return order?.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+    }, [order])
+
+    const totalCheckout = useMemo(() => {
+        return totalProduct + order?.shipping_fee - order?.discount_order - order?.discount_shipping
+    }, [order?.discount_order, order?.discount_shipping, order?.shipping_fee, totalProduct])
+
+    // Repayment
+    const createPaymentMomoMutation = useMutation({
+        mutationFn: (body: { amount: number; order_id: string }) => paymentsService.createPaymentMomo(body)
+    })
+    const handleRepayment = () => {
+        createPaymentMomoMutation.mutate(
+            {
+                amount: Math.round(totalCheckout),
+                order_id: order?.order_code
+            },
+            {
+                onSuccess: (data) => {
+                    window.location.href = data.data.result?.qr_code as string
+                }
+            }
+        )
+    }
+
     return (
         <div className='rounded-sm  pb-10  min-h-[100vh] md:pb-20'>
             <div className='border-b border-b-gray-200 py-6 flex items-center justify-between px-2 md:px-7 bg-white'>
@@ -66,6 +91,13 @@ export default function OrderDetail() {
                     <div className='uppercase text-blue-600'>Đơn hàng {convertOrderStatus(order?.status as OrderStatus)}</div>
                 </div>
             </div>
+            {order?.online_payment_status === OrderStatus.UNPAID && (
+                <div className='p-6 bg-white'>
+                    <Alert sx={{ fontSize: '14px' }} severity='warning'>
+                        Vui lòng thanh toán đơn hàng trong 24h. Sau 24h chưa thanh toán đơn hàng sẽ tự động hủy!
+                    </Alert>
+                </div>
+            )}
             {order?.status !== OrderStatus.CANCELLED ? (
                 <OrderStep order={order} />
             ) : (
@@ -90,20 +122,15 @@ export default function OrderDetail() {
                     <div className='mt-4'>
                         <h5 className='text-text-primary'>Trần Văn Sĩ</h5>
                         <p className='mt-2 text-[12px]'>(+84) 877751514</p>
-                        <p className='mt-2 text-[12px] text-gray-500 leading-5'>
-                            Ngay Chung Cư - Nhà Trọ Bình Điền Lam, Đoàn Nguyễn Tuấn, Ấp 2, Xã Hưng Long, Huyện Bình Chánh, TP. Hồ
-                            Chí Minh
-                        </p>
+                        <p className='mt-2 text-[12px] text-gray-500 leading-5'>{order?.address}</p>
                     </div>
                 </div>
                 <div className='w-[0.5px] h-[150px] bg-gray-200'></div>
                 <div className='w-1/2'>
                     <h2 className='capitalize text-lg'>Thông tin đơn hàng</h2>
                     <div className='mt-4'>
-                        <h5 className='text-text-primary'>Ngày đặt hàng: 20/11/2022</h5>
-                        <p className='mt-2 text-[12px] leading-5'>
-                            Ghi chú: Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda explicabo qui sequi fugiat
-                        </p>
+                        <h5 className='text-text-primary'>Ngày đặt hàng: {formatDateFull(order?.order_date)}</h5>
+                        <p className='mt-2 text-[12px] leading-5'>Ghi chú: {order?.note || 'Không có'}</p>
                     </div>
                 </div>
             </div>
@@ -138,18 +165,22 @@ export default function OrderDetail() {
                                             {formatToVND(orderDetail.price)}
                                         </span>
                                         <div className='flex justify-start items-start gap-2 w-full mt-4'>
-                                            <button className='flex justify-center capitalize bg-white border border-blue-600 px-4 py-2 w-[50%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85'>
-                                                <FaStarHalfStroke />
-                                                Đánh giá
-                                            </button>
                                             {/* Repurchase */}
                                             {order?.status === OrderStatus.DELIVERED && (
-                                                <MyButton
-                                                    onClick={() => handleRepurchase(orderDetail.variant.id, orderDetail.quantity)}
-                                                    className='py-2 w-[50%] rounded-sm px-4 bg-blue-600 text-white'
-                                                >
-                                                    Mua lại
-                                                </MyButton>
+                                                <Fragment>
+                                                    <button className='flex justify-center capitalize bg-white border border-blue-600 px-4 py-2 w-[50%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85'>
+                                                        <FaStarHalfStroke />
+                                                        Đánh giá
+                                                    </button>
+                                                    <MyButton
+                                                        onClick={() =>
+                                                            handleRepurchase(orderDetail.variant.id, orderDetail.quantity)
+                                                        }
+                                                        className='py-2 w-[50%] rounded-sm px-4 bg-blue-600 text-white'
+                                                    >
+                                                        Mua lại
+                                                    </MyButton>
+                                                </Fragment>
                                             )}
                                         </div>
                                     </div>
@@ -166,7 +197,7 @@ export default function OrderDetail() {
                         <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                             Tổng tiền hàng
                         </h2>
-                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
+                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{formatToVND(totalProduct)}</h2>
                     </div>
                     {order?.status !== OrderStatus.CANCELLED && (
                         <Fragment>
@@ -174,13 +205,31 @@ export default function OrderDetail() {
                                 <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                                     Phí vận chuyển
                                 </h2>
-                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>Miễn phí</h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {formatToVND(order?.shipping_fee)}
+                                </h2>
+                            </div>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Giảm giá phí vận chuyển
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {formatToVND(order?.discount_shipping || 0)}
+                                </h2>
+                            </div>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Giảm giá
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {formatToVND(order?.discount_order || 0)}
+                                </h2>
                             </div>
                             <div className='flex justify-end h-[48px] items-center px-6  border-t'>
                                 <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                                     Thành tiền
                                 </h2>
-                                <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
+                                <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>{formatToVND(totalCheckout)}</h2>
                             </div>
                         </Fragment>
                     )}
@@ -189,8 +238,23 @@ export default function OrderDetail() {
                             <RiSecurePaymentLine fontSize='20px' className='text-blue-600' />
                             Phương thức thanh toán
                         </h2>
-                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>Thanh toán khi nhận hàng</h2>
+                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                            {convertPaymentMethod(order?.payment_method)}
+                        </h2>
                     </div>
+                    {order?.online_payment_status === OrderStatus.UNPAID && (
+                        <div className='flex justify-end pb-8 items-center px-6 border-t'>
+                            <div className='mt-4'>
+                                <MyButton
+                                    type='button'
+                                    onClick={handleRepayment}
+                                    className='h-[40px] px-8 border-blue-600 border text-blue-600'
+                                >
+                                    Thanh toán ngay
+                                </MyButton>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

@@ -12,6 +12,7 @@ import ordersService from '~/services/orders.service'
 import MyOrderItem from './components/MyOrderItem'
 import { OrderStatus } from '~/enums/OrderStatus'
 import { useForm } from 'react-hook-form'
+import useSetTitle from '~/hooks/useSetTitle'
 
 interface TabPanelProps {
     children?: React.ReactNode
@@ -36,13 +37,14 @@ const a11yProps = (index: number) => {
 }
 
 export default function MyOrder() {
+    useSetTitle('Đơn mua')
     const navigate = useNavigate()
     const location = useLocation()
     const queryConfig = useQueryOrders()
     const [value, setValue] = useState<number>(0)
     const { register, handleSubmit } = useForm<{ search: string }>()
 
-    const orderStatusValues: OrderStatus[] = Object.values(OrderStatus)
+    const orderStatusValues: OrderStatus[] = Object.values(OrderStatus).filter((status) => status !== OrderStatus.PAID)
 
     useEffect(() => {
         const params = new URLSearchParams(location.search)
@@ -97,12 +99,42 @@ export default function MyOrder() {
                         onChange={handleChange}
                         aria-label='tabs-order'
                     >
-                        <Tab sx={{ textTransform: 'capitalize', fontSize: '16px' }} label='Tất cả' {...a11yProps(0)} />
-                        <Tab sx={{ textTransform: 'capitalize', fontSize: '16px' }} label='Chờ xác nhận' {...a11yProps(1)} />
-                        <Tab sx={{ textTransform: 'capitalize', fontSize: '16px' }} label='Đã xác nhận' {...a11yProps(2)} />
-                        <Tab sx={{ textTransform: 'capitalize', fontSize: '16px' }} label='Đang giao hàng' {...a11yProps(3)} />
-                        <Tab sx={{ textTransform: 'capitalize', fontSize: '16px' }} label='Hoàn thành' {...a11yProps(4)} />
-                        <Tab sx={{ textTransform: 'capitalize', fontSize: '16px' }} label='Đã hủy' {...a11yProps(5)} />
+                        <Tab
+                            sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
+                            label='Tất cả'
+                            {...a11yProps(0)}
+                        />
+                        <Tab
+                            sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
+                            label='Đã đặt'
+                            {...a11yProps(1)}
+                        />
+                        <Tab
+                            sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
+                            label='Chưa thanh toán'
+                            {...a11yProps(2)}
+                        />
+                        <Tab
+                            sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
+                            label='Xác nhận'
+                            {...a11yProps(3)}
+                        />
+
+                        <Tab
+                            sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
+                            label='Vận chuyển'
+                            {...a11yProps(4)}
+                        />
+                        <Tab
+                            sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
+                            label='Hoàn thành'
+                            {...a11yProps(5)}
+                        />
+                        <Tab
+                            sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
+                            label='Đã hủy'
+                            {...a11yProps(6)}
+                        />
                     </Tabs>
                 </Box>
             </div>
@@ -136,6 +168,9 @@ export default function MyOrder() {
                     <MyOrderItem orders={data?.data.result as Order[]} />
                 </TabStatusOrder>
                 <TabStatusOrder value={value} index={5}>
+                    <MyOrderItem orders={data?.data.result as Order[]} />
+                </TabStatusOrder>
+                <TabStatusOrder value={value} index={6}>
                     <MyOrderItem orders={data?.data.result as Order[]} />
                 </TabStatusOrder>
             </div>

@@ -7,6 +7,7 @@ import InputMUI from '~/components/InputMUI'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
+import useSetTitle from '~/hooks/useSetTitle'
 import { UserSchemaType, userSchema } from '~/schemas/user.schema'
 import usersService from '~/services/users.service'
 import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
@@ -14,6 +15,7 @@ import { clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
 type ChangePasswordForm = Pick<UserSchemaType, 'current_password' | 'new_password' | 'confirm_new_password'>
 const changePasswordSchema = userSchema.pick(['current_password', 'new_password', 'confirm_new_password'])
 export default function ChangePassword() {
+    useSetTitle('Đổi mật khẩu')
     const { setIsAuthenticated } = useContext(AppContext)
     const navigate = useNavigate()
     const {
@@ -39,7 +41,7 @@ export default function ChangePassword() {
         })
     })
     return (
-        <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
+        <div className='rounded-sm bg-white px-2 pb-10 md:px-7 md:pb-20'>
             <div className='border-b border-b-gray-200 py-6'>
                 <h1 className='text-lg font-medium capitalize text-gray-900'>Đổi mật khẩu</h1>
                 <div className='mt-1 text-sm text-gray-700'>

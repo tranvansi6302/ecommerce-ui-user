@@ -10,6 +10,7 @@ const pathConfig = {
     accountAddress: '/account/address',
     accountCreateAddress: '/account/address/create',
     accountOrders: '/account/orders',
-    accountOrderDetails: '/account/orders/:id'
+    accountOrderDetails: '/account/orders/:id',
+    checkout: '/checkout'
 }
 export default pathConfig

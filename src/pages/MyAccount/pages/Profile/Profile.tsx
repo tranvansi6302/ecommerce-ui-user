@@ -9,6 +9,7 @@ import InputMUI from '~/components/InputMUI'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import UploadAvatar from '~/components/UploadAvatar'
 import { AppContext } from '~/contexts/app.context'
+import useSetTitle from '~/hooks/useSetTitle'
 import { UserSchemaType, userSchema } from '~/schemas/user.schema'
 import usersService, { UpdateProfileRequest } from '~/services/users.service'
 import { saveProfileToLS } from '~/utils/auth'
@@ -16,6 +17,7 @@ import { saveProfileToLS } from '~/utils/auth'
 const profileSchema = userSchema.pick(['full_name', 'phone_number'])
 type UpdateProfileForm = Pick<UserSchemaType, 'full_name' | 'phone_number'>
 export default function Profile() {
+    useSetTitle('Hồ sơ của tôi')
     const [dateOfBirth, setDateOfBirth] = useState<Date | undefined>(new Date())
     const { profile: profileLS, setProfile } = useContext(AppContext)
     const { data } = useQuery({
@@ -85,7 +87,7 @@ export default function Profile() {
     }
 
     return (
-        <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
+        <div className='rounded-sm bg-white px-2 pb-10 md:px-7 md:pb-20'>
             <div className='border-b border-b-gray-200 py-6'>
                 <h1 className='text-lg font-medium capitalize text-gray-900'>Hồ Sơ Của Tôi</h1>
                 <div className='mt-1 text-sm text-gray-700'>Quản lý thông tin hồ sơ để bảo mật tài khoản</div>

@@ -83,6 +83,64 @@ export type Ward = {
     UpdatedDate: string
 }
 
+export type LeadtimeRequest = {
+    from_district_id: number
+    from_ward_code: string
+    to_district_id: number
+    to_ward_code: string
+    service_id: number
+}
+
+export type AvailableServiceRequest = {
+    shop_id: number
+    from_district: number
+    to_district: number
+}
+
+export type FeeRequest = {
+    service_type_id: number // Default: 2
+    to_district_id: number
+    to_ward_code: string
+    height: number
+    length: number
+    weight: number
+    width: number
+}
+
+export type Leadtime = {
+    leadtime: number
+    order_date: number
+}
+
+export type AvailableService = {
+    service_id: number
+    short_name: string
+    service_type_id: number
+    config_fee_id: string
+    extra_cost_id: string
+    standard_config_fee_id: string
+    standard_extra_cost_id: string
+}
+
+export type Fee = {
+    total: number
+    service_fee: number
+    insurance_fee: number
+    pick_station_fee: number
+    coupon_value: number
+    r2s_fee: number
+    return_again: number
+    document_return: number
+    double_check: number
+    cod_fee: number
+    pick_remote_areas_fee: number
+    deliver_remote_areas_fee: number
+    cod_failed_fee: number
+}
+
 export type ProvinceResponse = ApiGHNResponse<Province[]>
 export type DistrictResponse = ApiGHNResponse<District[]>
 export type WardResponse = ApiGHNResponse<Ward[]>
+export type LeadtimeResponse = ApiGHNResponse<Leadtime>
+export type ListAvailableServiceResponse = ApiGHNResponse<AvailableService[]>
+export type FeeResponse = ApiGHNResponse<Fee>

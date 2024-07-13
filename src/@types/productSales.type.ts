@@ -10,6 +10,7 @@ export type ProductSale = {
     category: Category
     description: string
     images: ProductImage[]
+    sku: string
     variants: Variant[]
     product_id: number
     product_name: 'string'

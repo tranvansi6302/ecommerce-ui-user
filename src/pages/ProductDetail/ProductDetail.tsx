@@ -1,9 +1,12 @@
-import { Container } from '@mui/material'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { Breadcrumbs, Container } from '@mui/material'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { FaHome } from 'react-icons/fa'
+import { TbCategoryMinus } from 'react-icons/tb'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import ImageViewer from 'react-simple-image-viewer'
+import { toast } from 'react-toastify'
 import { ProductSale } from '~/@types/productSales.type'
 import { Variant } from '~/@types/variants.type'
 import tickIcon from '~/assets/images/tickIcon.png'
@@ -51,6 +54,8 @@ export default function ProductDetail() {
     const { data: productSale } = useQuery({
         queryKey: ['productSale', productId],
         queryFn: () => productSalesService.getProductSale(Number(productId)),
+        staleTime: 3 * 60 * 1000,
+        placeholderData: keepPreviousData,
         enabled: !!productId
     })
 
@@ -58,25 +63,25 @@ export default function ProductDetail() {
 
     const { colors, sizes } = getUniqueSizeAndColor(productSale?.data.result as ProductSale)
 
-    // const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    //     const rect = event.currentTarget.getBoundingClientRect()
-    //     const image = imageRef.current as HTMLImageElement
-    //     const { naturalHeight, naturalWidth } = image
+    const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const rect = event.currentTarget.getBoundingClientRect()
+        const image = imageRef.current as HTMLImageElement
+        const { naturalHeight, naturalWidth } = image
 
-    //     const offsetX = event.pageX - (rect.x + window.scrollX)
-    //     const offsetY = event.pageY - (rect.y + window.scrollY)
+        const offsetX = event.pageX - (rect.x + window.scrollX)
+        const offsetY = event.pageY - (rect.y + window.scrollY)
 
-    //     const top = offsetY * (1 - naturalHeight / rect.height)
-    //     const left = offsetX * (1 - naturalWidth / rect.width)
-    //     image.style.width = naturalWidth + 'px'
-    //     image.style.height = naturalHeight + 'px'
-    //     image.style.maxWidth = 'unset'
-    //     image.style.top = top + 'px'
-    //     image.style.left = left + 'px'
-    // }
-    // const handleRemoveZoom = () => {
-    //     imageRef.current?.removeAttribute('style')
-    // }
+        const top = offsetY * (1 - naturalHeight / rect.height)
+        const left = offsetX * (1 - naturalWidth / rect.width)
+        image.style.width = naturalWidth + 'px'
+        image.style.height = naturalHeight + 'px'
+        image.style.maxWidth = 'unset'
+        image.style.top = top + 'px'
+        image.style.left = left + 'px'
+    }
+    const handleRemoveZoom = () => {
+        imageRef.current?.removeAttribute('style')
+    }
     useEffect(() => {
         if (productSale && (productSale?.data.result as ProductSale).images.length > 0) {
             setActiveImage((productSale?.data.result as ProductSale).images[0].url as string)
@@ -142,15 +147,21 @@ export default function ProductDetail() {
                 variant_id: activeVariant.id,
                 quantity: buyCount
             })
+        } else {
+            toast.warning('Vui lòng chọn màu và kích thước')
         }
     }
 
     const handleByNow = async () => {
+        if (!activeVariant) {
+            toast.warning('Vui lòng chọn màu và kích thước')
+            return
+        }
         const res = await addToCartMutation.mutateAsync({
             variant_id: (activeVariant as Variant).id,
             quantity: buyCount
         })
-        console.log(res.data.result)
+
         navigate(pathConfig.carts, {
             state: {
                 cart_detail_id: res.data.result?.cart_detail.id
@@ -160,17 +171,35 @@ export default function ProductDetail() {
     return (
         <Fragment>
             <Container style={{ padding: '0' }}>
-                <div className='py-6'>
-                    <div className='bg-white p-4 shadow'>
+                <div className='py-4'>
+                    <Breadcrumbs aria-label='breadcrumb'>
+                        <Link className='flex items-center gap-1 text-blue-600 text-[14px]' to={pathConfig.home}>
+                            <FaHome />
+                            Trang chủ
+                        </Link>
+                        <Link
+                            className='flex items-center gap-1 text-blue-600 text-[14px]'
+                            to={`${pathConfig.productFilters}?category=${productSale?.data.result?.category.slug}`}
+                        >
+                            <TbCategoryMinus />
+                            {productSale?.data.result?.category.name}
+                        </Link>
+                        <p className='text-[14px] text-gray-600'>{productSale?.data.result?.product_name}</p>
+                    </Breadcrumbs>
+                </div>
+                <div className=''>
+                    <div className='bg-white p-4'>
                         <div className='container'>
                             <div className='grid grid-cols-1 md:grid-cols-12 gap-9'>
                                 <div className='w-full md:col-span-5'>
                                     <div
+                                        onMouseMove={handleZoom}
+                                        onMouseLeave={handleRemoveZoom}
                                         onClick={() => openImageViewer(currentIndexImages[0])}
                                         className='relative w-full  cursor-zoom-in overflow-hidden pt-[100%] shadow'
                                     >
                                         <img
-                                            className='absolute top-0 left-0 h-full w-full bg-white object-cover pointer-events-none'
+                                            className='absolute top-0 left-0 h-full w-full object-cover pointer-events-none'
                                             srcSet={activeImage}
                                             alt='product'
                                             ref={imageRef}
@@ -426,8 +455,8 @@ export default function ProductDetail() {
                             </div>
                         </div>
                     </div>
-                    <div className='bg-white shadow p-6 text-text-primary mt-4'>
-                        <h2 className='uppercase bg-gray-100 p-4 text-[18px]'>Chi tiết sản phẩm</h2>
+                    <div className='bg-white p-6 text-text-primary mt-4'>
+                        <h2 className='uppercase bg-gray-100 p-4 text-[15px]'>Chi tiết sản phẩm</h2>
                         <div className='leading-10 p-6'>
                             <div
                                 dangerouslySetInnerHTML={{

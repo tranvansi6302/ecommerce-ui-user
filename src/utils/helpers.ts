@@ -1,5 +1,6 @@
 import { ProductSale } from '~/@types/productSales.type'
 import { OrderStatus } from '~/enums/OrderStatus'
+import { PaymentMethod } from '~/enums/PaymentMethod'
 export const getMinMaxSalePrice = (product: ProductSale) => {
     let minSalePrice = Infinity
     let maxSalePrice = -Infinity
@@ -121,7 +122,32 @@ export const convertOrderStatus = (status: OrderStatus) => {
             return 'Hoàn thành'
         case OrderStatus.CANCELLED:
             return 'Đã hủy'
+        case OrderStatus.PAID:
+            return 'Đã thanh toán'
+        case OrderStatus.UNPAID:
+            return 'Chưa thanh toán'
         default:
             return 'Không xác định'
     }
+}
+
+export const convertPaymentMethod = (method: string) => {
+    switch (method) {
+        case PaymentMethod.CASH_ON_DELIVERY:
+            return 'Thanh toán khi nhận hàng'
+        case PaymentMethod.MOMO:
+            return 'Thanh toán qua MoMo'
+        case PaymentMethod.VNPAY:
+            return 'Thanh toán qua VNPay'
+        default:
+            return 'Không xác định'
+    }
+}
+
+export const convertTimestampToDate = (epoch: number) => {
+    const date = new Date(epoch * 1000) // Convert to milliseconds
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0') // January is 0!
+    const year = date.getFullYear()
+    return `${day}/${month}/${year}`
 }

@@ -6,9 +6,10 @@ import { AppContext } from '~/contexts/app.context'
 import AccountLayout from '~/layouts/AccountLayout'
 import MainLayout from '~/layouts/MainLayout'
 import CartList from '~/pages/Cart/CartList'
+import Checkout from '~/pages/Checkout'
 import Login from '~/pages/Login'
 import ChangePassword from '~/pages/MyAccount/pages/ChangePassword'
-import CreateAddress from '~/pages/MyAccount/pages/CreateAddress'
+import CreateAddress from '~/pages/MyAccount/pages/MyAddress/components/CreateAddress'
 import MyAddress from '~/pages/MyAccount/pages/MyAddress'
 import MyOrder from '~/pages/MyAccount/pages/MyOrder'
 import OrderDetail from '~/pages/MyAccount/pages/OrderDetail'
@@ -17,6 +18,7 @@ import ProductDetail from '~/pages/ProductDetail'
 import ProductFilter from '~/pages/ProductFilter'
 import ProductHome from '~/pages/ProductHome'
 import Register from '~/pages/Register'
+import ShoppingLayout from '~/layouts/ShoppingLayout'
 const ProtectedRoute = () => {
     const { isAuthenticated } = useContext(AppContext)
 
@@ -82,9 +84,9 @@ export default function AppRouter() {
                 {
                     path: pathConfig.carts,
                     element: (
-                        <MainLayout>
+                        <ShoppingLayout cartTitle='Giỏ hàng'>
                             <CartList />
-                        </MainLayout>
+                        </ShoppingLayout>
                     )
                 },
                 {
@@ -133,6 +135,14 @@ export default function AppRouter() {
                         <AccountLayout>
                             <OrderDetail />
                         </AccountLayout>
+                    )
+                },
+                {
+                    path: pathConfig.checkout,
+                    element: (
+                        <ShoppingLayout checkoutTitle='Thanh toán'>
+                            <Checkout />
+                        </ShoppingLayout>
                     )
                 }
             ]

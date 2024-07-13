@@ -9,14 +9,21 @@ export type Address = {
     full_name: string
     phone_number: string
     is_default: number
+    province_id: number
+    district_id: number
+    ward_id: string
 }
-export type CreateAddressRequest = {
+export type AddressRequest = {
     full_name: string
     phone_number: string
     description: string
     province: string
     district: string
     ward: string
+    province_id: number
+    district_id: number
+    ward_id: string
 }
 export type CreateAddressResponse = ApiResponse<Address>
 export type ListAddressResponse = PaginatedApiResponse<Address[]>
+export type AddressResponse = ApiResponse<Address>

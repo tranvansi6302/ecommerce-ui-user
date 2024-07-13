@@ -10,15 +10,16 @@ import { Link } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 import { Order } from '~/@types/orders.type'
 import noOrder from '~/assets/images/noOrder.png'
+import CustomDialog from '~/components/CustomDialog'
 import InputMUI from '~/components/InputMUI'
+import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
+import pathConfig from '~/configs/path.config'
 import { OrderStatus } from '~/enums/OrderStatus'
 import { queryClient } from '~/main'
 import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
 import ordersService from '~/services/orders.service'
-import { convertOrderStatus, formatDate, formatToVND } from '~/utils/helpers'
-import DialogReason from '../DialogReason'
-import pathConfig from '~/configs/path.config'
+import { convertOrderStatus, formatDateFull, formatToVND } from '~/utils/helpers'
 
 type MyOrderItemProps = {
     orders: Order[]
@@ -72,7 +73,9 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
             {orders &&
                 orders.length > 0 &&
                 orders.map((order) => {
-                    const totalMoney = order.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+                    const totalProduct = order?.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+
+                    const totalCheckout = totalProduct + order?.shipping_fee - order?.discount_order - order?.discount_shipping
                     let statusColorClass = ''
                     switch (order.status) {
                         case OrderStatus.PENDING:
@@ -90,41 +93,54 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                         case OrderStatus.CANCELLED:
                             statusColorClass = 'text-red-600'
                             break
+                        case OrderStatus.PAID:
+                            statusColorClass = 'text-green-600'
+                            break
+                        case OrderStatus.UNPAID:
+                            statusColorClass = 'text-orange-800'
+                            break
                         default:
-                            statusColorClass = 'text-gray-600'
+                            statusColorClass = 'text-gray-500'
                     }
                     return (
                         <Fragment key={order.id}>
-                            <DialogReason open={open} setOpen={setOpen}>
-                                <form onSubmit={onSubmit} className='px-6 pb-6'>
-                                    <div>
-                                        <InputMUI register={register} errors={errors} name='canceled_reason' label='Lý do hủy' />
-                                        <div className='flex items-center justify-end mt-6 gap-3'>
-                                            <MyButtonMUI
-                                                onClick={() => setOpen(false)}
-                                                variant='outlined'
-                                                sx={{ width: '100px' }}
-                                            >
-                                                Đóng
-                                            </MyButtonMUI>
-                                            <MyButtonMUI
-                                                isLoading={updateOrderMutation.isPending}
-                                                type='submit'
-                                                color='error'
-                                                sx={{ width: '120px' }}
-                                            >
-                                                Hủy đơn
-                                            </MyButtonMUI>
+                            <CustomDialog open={open} setOpen={setOpen}>
+                                <div className='rounded-sm bg-white px-2 md:px-7 w-[600px]'>
+                                    <div className=''>
+                                        <div className='border-b border-b-gray-200 py-6 flex items-center justify-between'>
+                                            <h1 className='text-lg font-medium capitalize text-gray-900'>Hủy đơn hàng</h1>
                                         </div>
                                     </div>
-                                </form>
-                            </DialogReason>
+                                    <p className='my-5 text-[14px] capitalize text-gray-600'>
+                                        Hãy cho chúng tôi biết lý do bạn muốn hủy đơn hàng này!
+                                    </p>
+
+                                    <form onSubmit={onSubmit} className='pb-6 mt-8'>
+                                        <InputMUI register={register} errors={errors} name='canceled_reason' label='Lý do hủy' />
+                                        <div className='flex items-center justify-end mt-6 gap-3'>
+                                            <MyButton
+                                                onClick={() => setOpen(false)}
+                                                className='h-[40px] rounded-sm text-blue-600 px-3 border border-blue-600'
+                                            >
+                                                Đóng
+                                            </MyButton>
+                                            <MyButton
+                                                isLoading={updateOrderMutation.isPending}
+                                                type='submit'
+                                                className='h-[40px] rounded-sm text-white bg-red-600 w-[130px] border'
+                                            >
+                                                Hủy đơn
+                                            </MyButton>
+                                        </div>
+                                    </form>
+                                </div>
+                            </CustomDialog>
                             <Accordion
                                 key={order.id}
                                 className='rounded-sm border border-gray-200 bg-white w-full'
                                 style={{
                                     borderRadius: '0',
-                                    boxShadow: '1px 0 1px 0 rgba(0,0,0,0.1)',
+                                    boxShadow: 'none',
                                     padding: '16px',
                                     marginBottom: '8px',
                                     borderRight: '4px solid #2563eb'
@@ -150,13 +166,13 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                 </div>
                                                 <div className='flex items-center'>
                                                     <div className='w-[120px] capitalize'>Tổng tiền:</div>
-                                                    <p>{formatToVND(totalMoney)}</p>
+                                                    <p>{formatToVND(totalCheckout)}</p>
                                                 </div>
                                             </div>
                                             <div className='mr-8 flex items-center'>
-                                                <p className='capitalize'>Ngày đặt: {formatDate(order.order_date)}</p>
+                                                <p className='capitalize'>Ngày đặt: {formatDateFull(order.order_date)}</p>
                                                 <div className='h-full w-[0.5px] bg-gray-400 mx-3'></div>
-                                                <p className={`uppercase ${statusColorClass} w-[130px]`}>
+                                                <p className={`uppercase ${statusColorClass} w-[150px]`}>
                                                     {convertOrderStatus(order.status as OrderStatus)}
                                                 </p>
                                                 {order.status === OrderStatus.PENDING && (
@@ -209,7 +225,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                 <MdSecurity className='text-[18px] text-blue-600 mb-1' />
                                                 Thành tiền:
                                             </div>
-                                            <div className='text-blue-600 text-2xl'>{formatToVND(totalMoney)}</div>
+                                            <div className='text-blue-600 text-2xl'>{formatToVND(totalCheckout)}</div>
                                         </div>
                                     </div>
                                 </AccordionDetails>

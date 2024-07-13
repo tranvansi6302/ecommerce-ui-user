@@ -3,25 +3,28 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { produce } from 'immer'
 import { keyBy } from 'lodash'
 import React, { useContext, useEffect, useMemo } from 'react'
-import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
-import { Link, useLocation } from 'react-router-dom'
-import { Cart } from '~/@types/carts.type'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { Cart, SaveCartToLSType } from '~/@types/carts.type'
 import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import QuantityController from '~/components/QuantityController'
+import pathConfig from '~/configs/path.config'
 import { AppContext } from '~/contexts/app.context'
 import useSetTitle from '~/hooks/useSetTitle'
 import cartsService from '~/services/carts.service'
+import { saveCartToLS } from '~/utils/auth'
 import { formatToVND } from '~/utils/helpers'
 
 export default function CartList() {
     useSetTitle('Giỏ hàng')
+    const navigate = useNavigate()
     const location = useLocation()
-    const { extendedCart, setExtendedCart } = useContext(AppContext)
+    const { profile, extendedCart, setExtendedCart } = useContext(AppContext)
 
     // Handle by now get id
     const chooseCartDetailIdFromLocation = (location.state as { cart_detail_id: number })?.cart_detail_id
-    console.log(chooseCartDetailIdFromLocation)
+
     const { data: productsInCart, refetch } = useQuery({
         queryKey: ['productsInCart'],
         queryFn: () => cartsService.getAllProductFromCarts()
@@ -141,14 +144,28 @@ export default function CartList() {
         })
     }
 
+    const handlePurchase = () => {
+        if (!checkedCarts.length) {
+            toast.warn('Vui lòng chọn sản phẩm để mua')
+            return
+        }
+        navigate(pathConfig.checkout)
+        const checkedCartsSave = {
+            user_id: Number(profile?.id),
+            cart_details: checkedCarts
+        }
+
+        saveCartToLS(checkedCartsSave as SaveCartToLSType)
+    }
+
     return (
         <Container style={{ padding: '0' }}>
-            <div className='bg-neutral-100 py-5'>
+            <div className='py-5'>
                 <div className='container'>
                     <>
                         <div className='overflow-auto'>
                             <div className='min-w-[1000px]'>
-                                <div className='grid grid-cols-12 rounded-sm bg-white py-5 px-9 text-sm capitalize text-gray-500 shadow'>
+                                <div className='grid grid-cols-12 rounded-sm bg-white py-5 px-9 text-sm capitalize text-gray-500'>
                                     <div className='col-span-6'>
                                         <div className='flex items-center'>
                                             <div className='flex flex-shrink-0 items-center justify-center pr-3'>
@@ -175,7 +192,7 @@ export default function CartList() {
                                     </div>
                                 </div>
 
-                                <div className='my-3 rounded-sm bg-white p-5 shadow'>
+                                <div className='my-3 rounded-sm bg-white p-5'>
                                     {extendedCart &&
                                         extendedCart.length > 0 &&
                                         extendedCart.map((item, index) => {
@@ -295,19 +312,8 @@ export default function CartList() {
                                 </div>
                             </div>
                         </div>
-                        <div className='sticky bottom-0 z-10 mt-5  rounded-sm border border-gray-100 bg-white px-5 pb-5 shadow sm:flex-row sm:items-center'>
-                            <div className='border-b-[1px] mb-2 flex items-center justify-end'>
-                                <div className='py-3'>
-                                    <div className='text-blue-800 text-[15px] cursor-pointer hover:text-blue-700 flex items-center'>
-                                        <div className='mr-60 flex items-center gap-3'>
-                                            <LiaMoneyCheckAltSolid fontSize='26px' />
-                                            <span className='capitalize mt-[1px]'>Shop voucher</span>
-                                        </div>
-                                        <span> Chọn mã giảm giá</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='flex items-center justify-between w-full'>
+                        <div className='sticky bottom-0 z-10 mt-4  rounded-sm border border-gray-100 bg-white px-5 pb-5  sm:flex-row sm:items-center'>
+                            <div className='flex items-center justify-between w-full pt-5'>
                                 <div className='flex items-center'>
                                     <div className='flex flex-shrink-0 items-center justify-center pr-3'>
                                         <input
@@ -339,7 +345,9 @@ export default function CartList() {
                                             <div className='ml-2 text-2xl text-blue-600'>{formatToVND(totalCheckedCart)}</div>
                                         </div>
                                     </div>
-                                    <MyButton className='flex h-10 w-52 bg-blue-600 text-white ml-6'>Mua hàng</MyButton>
+                                    <MyButton onClick={handlePurchase} className='flex h-10 w-52 bg-blue-600 text-white ml-6'>
+                                        Mua hàng
+                                    </MyButton>
                                 </div>
                             </div>
                         </div>
