@@ -27,20 +27,41 @@ import { getCartsFromLS } from '~/utils/auth'
 import { convertTimestampToDate, formatToVND } from '~/utils/helpers'
 import MyVoucher from './components/MyVoucher'
 import { Voucher } from './components/MyVoucher/fake'
+import { toast } from 'react-toastify'
+import { CreateOrderRequest } from '~/@types/orders.type'
+import ordersService from '~/services/orders.service'
+import paymentsService from '~/services/payments.service'
+import { PaymentMethod } from '~/enums/PaymentMethod'
+import momoLogo from '~/assets/images/momoLogo.png'
+import vnpayLogo from '~/assets/images/vnpayLogo.png'
 
-type PaymentMethodType = {
-    id: string
-    title: string
-}
-
-const paymentMethod: PaymentMethodType[] = [
+const paymentTitle = [
     {
         id: 'cod',
         title: 'Thanh toán khi nhận hàng'
     },
     {
-        id: 'online',
+        id: 'online_banking',
         title: 'Thanh toán online'
+    }
+]
+
+type OnlinePaymentType = {
+    id: string
+    title: string
+    logo: string
+}
+
+const onlinePayment: OnlinePaymentType[] = [
+    {
+        id: PaymentMethod.MOMO,
+        title: 'Thanh toán bằng Momo',
+        logo: momoLogo
+    },
+    {
+        id: PaymentMethod.VNPAY,
+        title: 'Thanh toán bằng VNPay',
+        logo: vnpayLogo
     }
 ]
 
@@ -60,6 +81,7 @@ export default function Checkout() {
     const [openVoucher, setOpenVoucher] = useState<boolean>(false)
     const [selectedShippingVoucher, setSelectedShippingVoucher] = useState<Voucher | null>(null)
     const [selectedOrderVoucher, setSelectedOrderVoucher] = useState<Voucher | null>(null)
+    const [selectedMethodOnline, setSelectedMethodOnline] = useState<string>('')
     const getCartLS = getCartsFromLS() as SaveCartToLSType
     const cartUser = getCartLS.user_id
     const cartDetails = useMemo(() => {
@@ -113,24 +135,6 @@ export default function Checkout() {
             return acc + price * quantity
         }, 0)
     }, [cartDetails])
-
-    // Handle checkout
-    const onSubmit = handleSubmit((data) => {
-        const variantIds = cartDetails.map((item) => {
-            return {
-                variant_id: item.variant.id
-            }
-        })
-
-        const body = {
-            ...data,
-            full_name: addressChecked?.full_name,
-            phone_number: addressChecked?.phone_number,
-            address: `${addressChecked?.description}, ${addressChecked?.ward}, ${addressChecked?.district}, ${addressChecked?.province}`,
-            order_details: variantIds
-        }
-        console.log(body)
-    })
 
     const onUpdateAddress = (id: number) => {
         setGlobalOpenUpdateAddessDialog(true)
@@ -205,29 +209,75 @@ export default function Checkout() {
     const amountVoucherShipping = useMemo(() => {
         if (selectedShippingVoucher) {
             if (selectedShippingVoucher.discount_type === 'MONEY' && feeMoney > selectedShippingVoucher.value) {
-                return formatToVND(selectedShippingVoucher.value)
+                return selectedShippingVoucher.value
             }
 
             if (selectedShippingVoucher.discount_type === 'MONEY' && feeMoney <= selectedShippingVoucher.value) {
-                return formatToVND(feeMoney)
+                return feeMoney
             }
 
             if (selectedShippingVoucher.discount_type === 'PERCENTAGE' && selectedShippingVoucher.value === 100) {
-                return formatToVND(feeMoney)
+                return feeMoney
             }
         }
-        return 'Chưa áp dụng'
+        return null
     }, [feeMoney, selectedShippingVoucher])
 
     const totalCheckout = useMemo(() => {
         return formatToVND(
-            totalCheckoutProduct -
-                Number(amountVoucherOrder.replace(/\D/g, '')) -
-                Number(amountVoucherShipping.replace(/\D/g, '')) +
-                feeMoney
+            totalCheckoutProduct - Number(amountVoucherOrder.replace(/\D/g, '')) - Number(amountVoucherShipping) + feeMoney
         )
     }, [totalCheckoutProduct, amountVoucherOrder, feeMoney, amountVoucherShipping])
 
+    // Handle checkout
+    const createOrderMutation = useMutation({
+        mutationFn: (body: CreateOrderRequest) => ordersService.createOrder(body)
+    })
+    const createPaymentMomoMutation = useMutation({
+        mutationFn: (body: { amount: number; order_id: string }) => paymentsService.createPaymentMomo(body)
+    })
+    const onSubmit = handleSubmit(async (data) => {
+        if (!selectedPayment) {
+            toast.warn('Vui lòng chọn phương thức thanh toán!')
+            return
+        }
+
+        if (!selectedMethodOnline) {
+            toast.warn('Vui lòng chọn phương thức thanh toán online!')
+            return
+        }
+
+        const variantIds = cartDetails.map((item) => {
+            return {
+                variant_id: item.variant.id
+            }
+        })
+
+        const body = {
+            ...data,
+            full_name: addressChecked?.full_name,
+            phone_number: addressChecked?.phone_number,
+            address: `${addressChecked?.description}, ${addressChecked?.ward}, ${addressChecked?.district}, ${addressChecked?.province}`,
+            order_details: variantIds,
+            discount_on_order: selectedOrderVoucher?.value ?? 0,
+            discount_shipping: amountVoucherShipping ?? 0,
+            payment_method: PaymentMethod.MOMO,
+            shipping_fee: feeMoney ?? 0
+        }
+        const resOrder = await createOrderMutation.mutateAsync(body)
+
+        await createPaymentMomoMutation.mutateAsync(
+            {
+                amount: Number(totalCheckout.replace(/\D/g, '')),
+                order_id: resOrder?.data?.result?.order_code.toString() || ''
+            },
+            {
+                onSuccess: (data) => {
+                    window.location.href = data.data.result?.qr_code as string
+                }
+            }
+        )
+    })
     return (
         <Container style={{ padding: '0' }}>
             <MyVoucher
@@ -462,7 +512,7 @@ export default function Checkout() {
                         <div className='flex justify-between'>
                             <div className='mt-3 px-5 py-2 ml-24'>
                                 <img
-                                    className='w-[100px]'
+                                    className='w-[90px]'
                                     src='https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png'
                                     alt='ghn'
                                 />
@@ -498,17 +548,17 @@ export default function Checkout() {
 
                 <div className='mt-2 bg-white'>
                     {/* Payment method */}
-                    <div className='p-6 flex items-center gap-4'>
+                    <div className='px-6 pt-6 mb-5 flex items-center gap-4'>
                         <div className='capitalize text-[18px]'>Phương thức thanh toán</div>
                         <div className=''>
-                            {paymentMethod.map((item) => (
+                            {paymentTitle.map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => setSelectedPayment(item.title.toLowerCase())}
-                                    className={`items-center justify-center  border rounded-sm box-border text-black text-opacity-80 cursor-pointer inline-flex m-1 min-h-[2.5rem] min-w-[5rem] outline-none overflow-visible p-2 relative text-left break-words capitalize text-[14px] hover:border-blue-600 hover:text-blue-600 ${selectedPayment === (item.title as string).toLowerCase() ? 'border-blue-600' : 'border-gray-300 '}`}
+                                    onClick={() => setSelectedPayment(item.id.toLowerCase())}
+                                    className={`items-center justify-center  border rounded-sm box-border text-black text-opacity-80 cursor-pointer inline-flex m-1 min-h-[2.5rem] min-w-[5rem] outline-none overflow-visible p-2 relative text-left break-words capitalize text-[14px] hover:border-blue-600 hover:text-blue-600 ${selectedPayment === (item.id as string).toLowerCase() ? 'border-blue-600' : 'border-gray-300 '}`}
                                 >
                                     {item.title as string}
-                                    {selectedPayment === (item.title as string).toLowerCase() && (
+                                    {selectedPayment === (item.id as string).toLowerCase() && (
                                         <div className='nkxh-v4'>
                                             <img alt='icon-tick-bold' className='qx2j-qy' src={tickIcon} />
                                         </div>
@@ -517,6 +567,39 @@ export default function Checkout() {
                             ))}
                         </div>
                     </div>
+                    {selectedPayment && (
+                        <div className='p-6 bg-blue-50'>
+                            {selectedPayment === 'cod' && (
+                                <p className='text-[14px] text-text-primary'>Thanh toán khi nhận hàng: Phí thu hộ 0đ</p>
+                            )}
+
+                            {selectedPayment === 'online_banking' && (
+                                <div className='w-[400px] flex flex-col gap-6'>
+                                    {onlinePayment.map((item) => (
+                                        <label
+                                            htmlFor={item.id}
+                                            className='text-[14px] capitalize text-text-primary cursor-pointer'
+                                        >
+                                            <div className='flex items-center gap-3'>
+                                                <input
+                                                    onChange={() => setSelectedMethodOnline(item.id)}
+                                                    checked={selectedMethodOnline === item.id}
+                                                    name={item.id}
+                                                    id={item.id}
+                                                    className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500'
+                                                    type='radio'
+                                                />
+                                                <div className='w-[60px]'>
+                                                    <img className=' h-[45px] object-cover' src={item.logo} alt={item.title} />
+                                                </div>
+                                                <span>{item?.title}</span>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                     {/* Total */}
                     <div className=' bg-white'>
                         <div className='px-7 bg-white'>
@@ -541,7 +624,9 @@ export default function Checkout() {
                                 <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                                     Giảm giá phí vận chuyển
                                 </h2>
-                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{amountVoucherShipping}</h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {selectedOrderVoucher ? formatToVND(amountVoucherShipping as number) : 'Chưa áp dụng'}
+                                </h2>
                             </div>
                             <div className='flex justify-end h-[48px] items-center px-6  border-t'>
                                 <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>

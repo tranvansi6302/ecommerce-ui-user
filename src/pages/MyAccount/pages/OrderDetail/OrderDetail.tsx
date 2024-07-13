@@ -11,8 +11,10 @@ import { OrderStatus } from '~/enums/OrderStatus'
 import { queryClient } from '~/main'
 import cartsService from '~/services/carts.service'
 import ordersService from '~/services/orders.service'
-import { convertOrderStatus, formatDate, formatDateFull, formatToVND } from '~/utils/helpers'
+import { convertOrderStatus, convertPaymentMethod, formatDate, formatDateFull, formatToVND } from '~/utils/helpers'
 import OrderStep from './components/OrderStep'
+import { Alert } from '@mui/material'
+import paymentsService from '~/services/payments.service'
 export default function OrderDetail() {
     const navigate = useNavigate()
     const { id: orderId } = useParams<{ id: string }>()
@@ -23,9 +25,6 @@ export default function OrderDetail() {
     })
 
     const order = data?.data.result as Order
-    const totalMoney = useMemo(() => {
-        return order?.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
-    }, [order])
 
     const handleBack = () => {
         navigate(-1)
@@ -53,6 +52,32 @@ export default function OrderDetail() {
         })
     }
 
+    const totalProduct = useMemo(() => {
+        return order?.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+    }, [order])
+
+    const totalCheckout = useMemo(() => {
+        return totalProduct + order?.shipping_fee - order?.discount_order - order?.discount_shipping
+    }, [order?.discount_order, order?.discount_shipping, order?.shipping_fee, totalProduct])
+
+    // Repayment
+    const createPaymentMomoMutation = useMutation({
+        mutationFn: (body: { amount: number; order_id: string }) => paymentsService.createPaymentMomo(body)
+    })
+    const handleRepayment = () => {
+        createPaymentMomoMutation.mutate(
+            {
+                amount: Math.round(totalCheckout),
+                order_id: order?.order_code
+            },
+            {
+                onSuccess: (data) => {
+                    window.location.href = data.data.result?.qr_code as string
+                }
+            }
+        )
+    }
+
     return (
         <div className='rounded-sm  pb-10  min-h-[100vh] md:pb-20'>
             <div className='border-b border-b-gray-200 py-6 flex items-center justify-between px-2 md:px-7 bg-white'>
@@ -66,6 +91,13 @@ export default function OrderDetail() {
                     <div className='uppercase text-blue-600'>Đơn hàng {convertOrderStatus(order?.status as OrderStatus)}</div>
                 </div>
             </div>
+            {order?.online_payment_status === OrderStatus.UNPAID && (
+                <div className='p-6 bg-white'>
+                    <Alert sx={{ fontSize: '14px' }} severity='warning'>
+                        Vui lòng thanh toán đơn hàng trong 24h. Sau 24h chưa thanh toán đơn hàng sẽ tự động hủy!
+                    </Alert>
+                </div>
+            )}
             {order?.status !== OrderStatus.CANCELLED ? (
                 <OrderStep order={order} />
             ) : (
@@ -165,7 +197,7 @@ export default function OrderDetail() {
                         <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                             Tổng tiền hàng
                         </h2>
-                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
+                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>{formatToVND(totalProduct)}</h2>
                     </div>
                     {order?.status !== OrderStatus.CANCELLED && (
                         <Fragment>
@@ -173,13 +205,31 @@ export default function OrderDetail() {
                                 <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                                     Phí vận chuyển
                                 </h2>
-                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>Miễn phí</h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {formatToVND(order?.shipping_fee)}
+                                </h2>
+                            </div>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Giảm giá phí vận chuyển
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {formatToVND(order?.discount_shipping || 0)}
+                                </h2>
+                            </div>
+                            <div className='flex justify-end h-[48px] items-center px-6  border-t'>
+                                <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
+                                    Giảm giá
+                                </h2>
+                                <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                                    {formatToVND(order?.discount_order || 0)}
+                                </h2>
                             </div>
                             <div className='flex justify-end h-[48px] items-center px-6  border-t'>
                                 <h2 className='text-[12px] text-gray-400 w-[20%] border-r justify-end px-4 h-full flex items-center'>
                                     Thành tiền
                                 </h2>
-                                <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>{formatToVND(totalMoney)}</h2>
+                                <h2 className='text-[24px] text-blue-600 text-end w-[20%]'>{formatToVND(totalCheckout)}</h2>
                             </div>
                         </Fragment>
                     )}
@@ -188,8 +238,23 @@ export default function OrderDetail() {
                             <RiSecurePaymentLine fontSize='20px' className='text-blue-600' />
                             Phương thức thanh toán
                         </h2>
-                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>Thanh toán khi nhận hàng</h2>
+                        <h2 className='text-[14px] text-text-primary text-end w-[20%]'>
+                            {convertPaymentMethod(order?.payment_method)}
+                        </h2>
                     </div>
+                    {order?.online_payment_status === OrderStatus.UNPAID && (
+                        <div className='flex justify-end pb-8 items-center px-6 border-t'>
+                            <div className='mt-4'>
+                                <MyButton
+                                    type='button'
+                                    onClick={handleRepayment}
+                                    className='h-[40px] px-8 border-blue-600 border text-blue-600'
+                                >
+                                    Thanh toán ngay
+                                </MyButton>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

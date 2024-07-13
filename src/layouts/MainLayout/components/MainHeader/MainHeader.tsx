@@ -20,7 +20,7 @@ import logo from '~/assets/images/logo.png'
 const settings = [
     {
         id: 'account',
-        label: 'Tài khoản của tô    i',
+        label: 'Tài khoản của tôi',
         link: pathConfig.profile
     },
     {

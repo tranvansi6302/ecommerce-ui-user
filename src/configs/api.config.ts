@@ -21,5 +21,8 @@ export const API_URL = {
     GHN_GET_WARD: '/master-data/ward',
     GHN_GET_AVAILABLE_SERVICES: '/v2/shipping-order/available-services',
     GHN_GET_FEE: '/v2/shipping-order/fee',
-    GHN_GET_LEADTIME: '/v2/shipping-order/leadtime'
+    GHN_GET_LEADTIME: '/v2/shipping-order/leadtime',
+
+    // PAYMENTS
+    PAYMENTS_MOMO: '/payments/momo'
 }

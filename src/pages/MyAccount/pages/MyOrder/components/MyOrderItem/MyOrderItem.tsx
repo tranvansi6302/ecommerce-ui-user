@@ -73,7 +73,9 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
             {orders &&
                 orders.length > 0 &&
                 orders.map((order) => {
-                    const totalMoney = order.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+                    const totalProduct = order?.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
+
+                    const totalCheckout = totalProduct + order?.shipping_fee - order?.discount_order - order?.discount_shipping
                     let statusColorClass = ''
                     switch (order.status) {
                         case OrderStatus.PENDING:
@@ -91,8 +93,14 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                         case OrderStatus.CANCELLED:
                             statusColorClass = 'text-red-600'
                             break
+                        case OrderStatus.PAID:
+                            statusColorClass = 'text-green-600'
+                            break
+                        case OrderStatus.UNPAID:
+                            statusColorClass = 'text-orange-800'
+                            break
                         default:
-                            statusColorClass = 'text-gray-600'
+                            statusColorClass = 'text-gray-500'
                     }
                     return (
                         <Fragment key={order.id}>
@@ -158,13 +166,13 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                 </div>
                                                 <div className='flex items-center'>
                                                     <div className='w-[120px] capitalize'>Tổng tiền:</div>
-                                                    <p>{formatToVND(totalMoney)}</p>
+                                                    <p>{formatToVND(totalCheckout)}</p>
                                                 </div>
                                             </div>
                                             <div className='mr-8 flex items-center'>
                                                 <p className='capitalize'>Ngày đặt: {formatDateFull(order.order_date)}</p>
                                                 <div className='h-full w-[0.5px] bg-gray-400 mx-3'></div>
-                                                <p className={`uppercase ${statusColorClass} w-[130px]`}>
+                                                <p className={`uppercase ${statusColorClass} w-[150px]`}>
                                                     {convertOrderStatus(order.status as OrderStatus)}
                                                 </p>
                                                 {order.status === OrderStatus.PENDING && (
@@ -217,7 +225,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                 <MdSecurity className='text-[18px] text-blue-600 mb-1' />
                                                 Thành tiền:
                                             </div>
-                                            <div className='text-blue-600 text-2xl'>{formatToVND(totalMoney)}</div>
+                                            <div className='text-blue-600 text-2xl'>{formatToVND(totalCheckout)}</div>
                                         </div>
                                     </div>
                                 </AccordionDetails>
