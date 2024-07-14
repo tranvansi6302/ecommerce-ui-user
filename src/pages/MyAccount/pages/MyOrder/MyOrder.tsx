@@ -44,7 +44,9 @@ export default function MyOrder() {
     const [value, setValue] = useState<number>(0)
     const { register, handleSubmit } = useForm<{ search: string }>()
 
-    const orderStatusValues: OrderStatus[] = Object.values(OrderStatus).filter((status) => status !== OrderStatus.PAID)
+    const orderStatusValues: OrderStatus[] = Object.values(OrderStatus).filter(
+        (status) => status !== OrderStatus.PAID && status !== OrderStatus.UNPAID
+    )
 
     useEffect(() => {
         const params = new URLSearchParams(location.search)
@@ -106,14 +108,10 @@ export default function MyOrder() {
                         />
                         <Tab
                             sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
-                            label='Đã đặt'
+                            label='Chờ xác nhận'
                             {...a11yProps(1)}
                         />
-                        <Tab
-                            sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
-                            label='Chưa thanh toán'
-                            {...a11yProps(2)}
-                        />
+
                         <Tab
                             sx={{ textTransform: 'capitalize', fontSize: '14px', color: '#000000DE' }}
                             label='Xác nhận'
@@ -168,9 +166,6 @@ export default function MyOrder() {
                     <MyOrderItem orders={data?.data.result as Order[]} />
                 </TabStatusOrder>
                 <TabStatusOrder value={value} index={5}>
-                    <MyOrderItem orders={data?.data.result as Order[]} />
-                </TabStatusOrder>
-                <TabStatusOrder value={value} index={6}>
                     <MyOrderItem orders={data?.data.result as Order[]} />
                 </TabStatusOrder>
             </div>

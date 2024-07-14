@@ -15,7 +15,7 @@ import cartsService from '~/services/carts.service'
 import { clearCartFromLS, clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
 import HeaderSearch from '../HeaderSearch'
 import MiniCart from '../MiniCart'
-import logo from '~/assets/images/logo.png'
+// import logo from '~/assets/images/logo.png'
 
 const settings = [
     {
@@ -192,7 +192,11 @@ export default function MainHeader({ cartTitle, checkoutTitle }: MainHeaderProps
                                 className={`max-w-full px-4 ${cartTitle || checkoutTitle ? 'w-[35%] shrink-0 flex items-center' : 'w-60'}`}
                             >
                                 <Link to={pathConfig.home} className='py-5 lg:py-3 flex items-center gap-2'>
-                                    <img src={logo} alt='logo' className='w-[138px] h-full object-cover' />
+                                    <img
+                                        src='https://laz-img-cdn.alicdn.com/images/ims-web/TB1T7K2d8Cw3KVjSZFuXXcAOpXa.png'
+                                        alt='logo'
+                                        className='w-[138px] h-full object-cover'
+                                    />
                                 </Link>
                                 {(cartTitle || checkoutTitle) && (
                                     <Fragment>
