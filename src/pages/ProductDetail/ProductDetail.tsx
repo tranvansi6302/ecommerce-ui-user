@@ -262,7 +262,7 @@ export default function ProductDetail() {
                                     <div className='mt-8 flex items-center'>
                                         <div className='flex items-center'>
                                             <span className='mr-1 border-b border-b-blue-600 text-blue-600'>
-                                                {productSale?.data.result?.average_rating}
+                                                {Math.ceil((productSale?.data.result?.average_rating as number) * 10) / 10}
                                             </span>
                                             <ProductRating
                                                 className='gap-1'
@@ -490,7 +490,7 @@ export default function ProductDetail() {
             </Container>
             <Container style={{ padding: '0' }}>
                 <div className='my-6 bg-white'>
-                    <Review />
+                    <Review productSale={productSale?.data.result as ProductSale} />
                 </div>
             </Container>
             <div className='text-text-primary'>

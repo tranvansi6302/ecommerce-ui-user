@@ -11,6 +11,7 @@ type MyButtonMUIProps = {
     isLoading?: boolean
     disabled?: boolean
 }
+
 export default function MyButtonMUI({
     children,
     sx,

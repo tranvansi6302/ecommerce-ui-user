@@ -237,12 +237,16 @@ export default function Checkout() {
         mutationFn: (body: { amount: number; order_id: string }) => paymentsService.createPaymentMomo(body)
     })
     const onSubmit = handleSubmit(async (data) => {
+        if (extendedAddress.length === 0) {
+            toast.warn('Vui lòng thêm địa chỉ nhận hàng!')
+            return
+        }
         if (!selectedPayment) {
             toast.warn('Vui lòng chọn phương thức thanh toán!')
             return
         }
 
-        if (!selectedMethodOnline) {
+        if (!selectedMethodOnline && selectedPayment === 'online_banking') {
             toast.warn('Vui lòng chọn phương thức thanh toán online!')
             return
         }
@@ -266,17 +270,19 @@ export default function Checkout() {
         }
         const resOrder = await createOrderMutation.mutateAsync(body)
 
-        await createPaymentMomoMutation.mutateAsync(
-            {
-                amount: Number(totalCheckout.replace(/\D/g, '')),
-                order_id: resOrder?.data?.result?.order_code.toString() || ''
-            },
-            {
-                onSuccess: (data) => {
-                    window.location.href = data.data.result?.qr_code as string
+        if (selectedMethodOnline === PaymentMethod.MOMO) {
+            await createPaymentMomoMutation.mutateAsync(
+                {
+                    amount: Number(totalCheckout.replace(/\D/g, '')),
+                    order_id: resOrder?.data?.result?.order_code.toString() || ''
+                },
+                {
+                    onSuccess: (data) => {
+                        window.location.href = data.data.result?.qr_code as string
+                    }
                 }
-            }
-        )
+            )
+        }
     })
     return (
         <Container style={{ padding: '0' }}>
