@@ -7,6 +7,7 @@ export type Review = {
     id: number
     rating: number
     comment: string
+    order_id: string
     user: User
     created_at: string
     updated_at: string

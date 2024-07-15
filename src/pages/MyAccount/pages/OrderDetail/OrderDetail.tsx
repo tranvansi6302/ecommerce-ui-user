@@ -89,7 +89,12 @@ export default function OrderDetail() {
 
     return (
         <Fragment>
-            <CreateReview orderDetail={orderDetail as OrderDetail} openReview={openReview} setOpenReview={setOpenReview} />
+            <CreateReview
+                orderId={order?.id as number}
+                orderDetail={orderDetail as OrderDetail}
+                openReview={openReview}
+                setOpenReview={setOpenReview}
+            />
             <div className='rounded-sm  pb-10  min-h-[100vh] md:pb-20'>
                 <div className='border-b border-b-gray-200 py-6 flex items-center justify-between px-2 md:px-7 bg-white'>
                     <button onClick={handleBack} className='flex items-center gap-1 uppercase text-gray-500'>

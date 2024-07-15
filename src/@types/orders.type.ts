@@ -30,6 +30,7 @@ export type Order = {
 }
 
 export type OrderDetail = {
+    id: number
     price: number
     quantity: number
 

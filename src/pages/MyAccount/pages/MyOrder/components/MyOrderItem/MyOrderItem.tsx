@@ -1,10 +1,10 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import ExpandMoreIcon from '@mui/icons-material/ArrowDownward'
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { FaStarHalfStroke } from 'react-icons/fa6'
 import { IoMdOpen } from 'react-icons/io'
+import { IoCheckmarkDone } from 'react-icons/io5'
 import { MdSecurity } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
@@ -19,6 +19,7 @@ import { OrderStatus } from '~/enums/OrderStatus'
 import { queryClient } from '~/main'
 import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
 import ordersService from '~/services/orders.service'
+import reviewsService from '~/services/reviews.service'
 import { convertOrderStatus, formatDateFull, formatToVND } from '~/utils/helpers'
 
 type MyOrderItemProps = {
@@ -38,6 +39,9 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
     })
     const [open, setOpen] = useState<boolean>(false)
     const [orderId, setOrderId] = useState<number>(0)
+    const [reviewExistence, setReviewExistence] = useState<{ [key: number]: boolean }>({})
+    const [reviews, setReviews] = useState<{ [key: number]: any }>({})
+
     const handleCancelOrder = (orderId: number) => {
         setOpen(true)
         setOrderId(orderId)
@@ -60,6 +64,40 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
         setOpen(false)
         setOrderId(0)
     })
+
+    const handleViewReview = (orderDetailId: number) => {
+        console.log(reviews[orderDetailId])
+    }
+
+    useEffect(() => {
+        if (orders && orders.length > 0) {
+            orders.forEach((order) => {
+                order.order_details.forEach((orderDetail) => {
+                    reviewsService
+                        .findByReviewExist({
+                            user_id: order?.user.id,
+                            variant_id: orderDetail?.variant.id,
+                            order_id: order?.id
+                        })
+                        .then((response) => {
+                            setReviewExistence((prev) => ({
+                                ...prev,
+                                [orderDetail.id]: response.data.result?.id !== null
+                            }))
+                            setReviews((prev) => ({
+                                ...prev,
+                                [orderDetail.id]: response.data.result
+                            }))
+                        })
+                })
+            })
+        }
+    }, [orders])
+
+    useEffect(() => {
+        console.log(reviewExistence)
+    }, [reviewExistence])
+
     return (
         <Fragment>
             {orders && orders.length === 0 && (
@@ -74,9 +112,9 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                 orders.length > 0 &&
                 orders.map((order) => {
                     const totalProduct = order?.order_details.reduce((acc, cur) => acc + cur.price * cur.quantity, 0)
-
                     const totalCheckout = totalProduct + order?.shipping_fee - order?.discount_order - order?.discount_shipping
                     let statusColorClass = ''
+
                     switch (order.status) {
                         case OrderStatus.PENDING:
                             statusColorClass = 'text-yellow-600'
@@ -135,7 +173,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                     </form>
                                 </div>
                             </CustomDialog>
-                            <Accordion
+                            <div
                                 key={order.id}
                                 className='rounded-sm border border-gray-200 bg-white w-full'
                                 style={{
@@ -146,14 +184,10 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                     borderRight: '4px solid #2563eb'
                                 }}
                             >
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
-                                    aria-controls='panel1-content'
-                                    id='panel1-header'
-                                >
+                                <div aria-controls='panel1-content' id='panel1-header'>
                                     <div className='flex flex-col w-full'>
-                                        <div className='text-[14px] flex justify-between w-full'>
-                                            <div className='flex flex-col gap-2'>
+                                        <div className='text-[14px] flex justify-between px-5 w-full h-[36px] pb-3'>
+                                            <div className='flex flex-col gap-2 justify-center'>
                                                 <div className='flex items-center'>
                                                     <div className='w-[120px] capitalize'>Mã đơn hàng:</div>
                                                     <Link
@@ -164,15 +198,11 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                         <IoMdOpen fontSize='18px' className='mb-0.5' />
                                                     </Link>
                                                 </div>
-                                                <div className='flex items-center'>
-                                                    <div className='w-[120px] capitalize'>Tổng tiền:</div>
-                                                    <p>{formatToVND(totalCheckout)}</p>
-                                                </div>
                                             </div>
-                                            <div className='mr-8 flex items-center'>
+                                            <div className='flex items-center'>
                                                 <p className='capitalize'>Ngày đặt: {formatDateFull(order.order_date)}</p>
-                                                <div className='h-full w-[0.5px] bg-gray-400 mx-3'></div>
-                                                <p className={`uppercase ${statusColorClass} w-[150px]`}>
+                                                <div className='h-[20px] w-[0.5px] bg-gray-400 mx-3'></div>
+                                                <p className={`uppercase ${statusColorClass}`}>
                                                     {convertOrderStatus(order.status as OrderStatus)}
                                                 </p>
                                                 {order.status === OrderStatus.PENDING && (
@@ -188,39 +218,69 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                             </div>
                                         </div>
                                     </div>
-                                </AccordionSummary>
-                                <AccordionDetails>
+                                </div>
+                                <div>
                                     <div className=''>
-                                        {order.order_details.map((orderDetail) => (
-                                            <div key={orderDetail.variant.id} className='border-t-[1px]'>
-                                                <div className='my-6 flex justify-between'>
-                                                    <div className='w-[70%] flex gap-1'>
-                                                        <div className='w-20 h-20 flex-shrink-0'>
-                                                            <img
-                                                                className='w-full h-full object-cover'
-                                                                src={orderDetail?.variant?.product_images[0].url}
-                                                                alt='product'
-                                                            />
+                                        {order.order_details.map((orderDetail) => {
+                                            const existReview = reviewExistence[orderDetail.id]
+
+                                            return (
+                                                <div key={orderDetail.variant.id} className='border-t-[1px]'>
+                                                    <div className='my-6 flex justify-between'>
+                                                        <div className='w-[65%] flex gap-1'>
+                                                            <div className='w-20 h-20 flex-shrink-0'>
+                                                                <img
+                                                                    className='w-full h-full object-cover'
+                                                                    src={orderDetail?.variant?.product_images[0].url}
+                                                                    alt='product'
+                                                                />
+                                                            </div>
+                                                            <div className='flex-grow px-2 pt-1 pb-2 text-left text-[14px] flex flex-col gap-1'>
+                                                                <Link to={`123`} className='text-left line-clamp-1'>
+                                                                    {orderDetail.variant.product_name}
+                                                                </Link>
+                                                                <p className='text-[14px] text-gray-500'>
+                                                                    Phân loại: {orderDetail.variant.color} -{' '}
+                                                                    {orderDetail.variant.size}
+                                                                </p>
+                                                                <span>x{orderDetail.quantity}</span>
+                                                            </div>
                                                         </div>
-                                                        <div className='flex-grow px-2 pt-1 pb-2 text-left text-[14px] flex flex-col gap-1'>
-                                                            <Link to={`123`} className='text-left line-clamp-1'>
-                                                                {orderDetail.variant.product_name}
-                                                            </Link>
-                                                            <p className='text-[14px] text-gray-500'>
-                                                                Phân loại: {orderDetail.variant.color} -{' '}
-                                                                {orderDetail.variant.size}
-                                                            </p>
-                                                            <span>x{orderDetail.quantity}</span>
+                                                        <div className='w-[35%] flex flex-col items-end justify-end text-[15px] gap-2 px-6'>
+                                                            <span className='text-blue-600'>
+                                                                {formatToVND(orderDetail.price)}
+                                                            </span>
+                                                            <div className='flex justify-start items-start gap-2 w-full mt-4'>
+                                                                {/* Repurchase */}
+                                                                {order?.status === OrderStatus.DELIVERED && (
+                                                                    <Fragment>
+                                                                        {existReview ? (
+                                                                            <button
+                                                                                className='flex justify-center capitalize items-center bg-white border border-gray-600 px-4 py-2 w-[60%] text-[14px] text-gray-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'
+                                                                                onClick={() => handleViewReview(orderDetail.id)}
+                                                                            >
+                                                                                <IoCheckmarkDone fontSize='16px' />
+                                                                                Xem đánh giá
+                                                                            </button>
+                                                                        ) : (
+                                                                            <button className='flex justify-center items-center capitalize bg-white border border-blue-600 px-4 py-2 w-[60%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'>
+                                                                                <FaStarHalfStroke />
+                                                                                Đánh giá
+                                                                            </button>
+                                                                        )}
+                                                                        <MyButton className='py-2 w-[40%] rounded-sm px-4 bg-blue-600 text-white h-[32px] flex items-center justify-center'>
+                                                                            Mua lại
+                                                                        </MyButton>
+                                                                    </Fragment>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className='w-[30%] flex items-center justify-end text-[15px] gap-2 px-6'>
-                                                        <span className='text-blue-600'>{formatToVND(orderDetail.price)}</span>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            )
+                                        })}
 
-                                        <div className='mt-6 flex justify-end gap-3 items-center py-6 px-6 border-t-[1px] bg-blue-50'>
+                                        <div className='mt-6 flex justify-end gap-3 items-center py-3 px-6 border-t-[1px] bg-blue-50'>
                                             <div className='text-text-primary text-[14px] capitalize flex items-center gap-1'>
                                                 <MdSecurity className='text-[18px] text-blue-600 mb-1' />
                                                 Thành tiền:
@@ -228,8 +288,8 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                             <div className='text-blue-600 text-2xl'>{formatToVND(totalCheckout)}</div>
                                         </div>
                                     </div>
-                                </AccordionDetails>
-                            </Accordion>
+                                </div>
+                            </div>
                         </Fragment>
                     )
                 })}

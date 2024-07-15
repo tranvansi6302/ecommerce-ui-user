@@ -12,10 +12,12 @@ type CreateReviewProps = {
     openReview: boolean
     setOpenReview: React.Dispatch<React.SetStateAction<boolean>>
     orderDetail: OrderDetail
+    orderId: number
 }
 
-export default function CreateReview({ openReview, setOpenReview, orderDetail }: CreateReviewProps) {
+export default function CreateReview({ openReview, setOpenReview, orderDetail, orderId }: CreateReviewProps) {
     const [valueRating, setValueRating] = useState<number | null>(1)
+
     const [files, setFiles] = useState<File[]>([])
     const {
         register,
@@ -26,7 +28,7 @@ export default function CreateReview({ openReview, setOpenReview, orderDetail }:
     } = useForm<{ comment: string }>()
 
     const createReviewMutation = useMutation({
-        mutationFn: (body: { rating: number; comment: string; product_id: number; variant_id: number }) =>
+        mutationFn: (body: { rating: number; comment: string; product_id: number; variant_id: number; order_id: number }) =>
             reviewsService.createReview(body),
         onSuccess: () => {
             setOpenReview(false)
@@ -49,7 +51,8 @@ export default function CreateReview({ openReview, setOpenReview, orderDetail }:
             ...data,
             rating: valueRating as number,
             product_id: orderDetail.variant.product_id,
-            variant_id: orderDetail.variant.id
+            variant_id: orderDetail.variant.id,
+            order_id: orderId
         }
         const resReview = await createReviewMutation.mutateAsync(finalData)
 
