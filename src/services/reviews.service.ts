@@ -18,6 +18,9 @@ const reviewsService = {
     findByReviewExist: (body: { user_id: number; variant_id: number; order_id: number }) =>
         http.post<ReviewResponse>(`${API_URL.REVIEWS}/variants`, body),
 
+    findByReviewExistByOrderId: (params: { user_id: number; variant_id: number; order_id: number }) =>
+        http.get<ReviewResponse>(`${API_URL.REVIEWS}/variants`, { params }),
+
     updateReview: (id: number, body: { rating: number; comment: string }) =>
         http.patch<ReviewResponse>(`${API_URL.REVIEWS}/${id}`, body)
 }

@@ -1,20 +1,15 @@
 import { Alert } from '@mui/material'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Fragment, useMemo, useState } from 'react'
-import { FaStarHalfStroke } from 'react-icons/fa6'
+import { Fragment, useMemo } from 'react'
 import { IoChevronBack } from 'react-icons/io5'
 import { RiSecurePaymentLine } from 'react-icons/ri'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import type { Order, OrderDetail } from '~/@types/orders.type'
+import type { Order } from '~/@types/orders.type'
 import MyButton from '~/components/MyButton'
-import pathConfig from '~/configs/path.config'
 import { OrderStatus } from '~/enums/OrderStatus'
-import { queryClient } from '~/main'
-import cartsService from '~/services/carts.service'
 import ordersService from '~/services/orders.service'
 import paymentsService from '~/services/payments.service'
 import { convertOrderStatus, convertPaymentMethod, formatDate, formatDateFull, formatToVND } from '~/utils/helpers'
-import CreateReview from './components/CreateReview/CreateReview'
 import OrderStep from './components/OrderStep'
 export default function OrderDetail() {
     const navigate = useNavigate()
@@ -29,28 +24,6 @@ export default function OrderDetail() {
 
     const handleBack = () => {
         navigate(-1)
-    }
-
-    // Handle Repurchase
-    const addToCartMutation = useMutation({
-        mutationFn: (body: { variant_id: number; quantity: number }) => cartsService.addProductToCart(body),
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ['productsInCart']
-            })
-        }
-    })
-    const handleRepurchase = async (variantId: number, quantity: number) => {
-        const res = await addToCartMutation.mutateAsync({
-            variant_id: variantId,
-            quantity
-        })
-
-        navigate(pathConfig.carts, {
-            state: {
-                cart_detail_id: res.data.result?.cart_detail.id
-            }
-        })
     }
 
     const totalProduct = useMemo(() => {
@@ -79,22 +52,8 @@ export default function OrderDetail() {
         )
     }
 
-    // Review
-    const [openReview, setOpenReview] = useState<boolean>(false)
-    const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null)
-    const onReview = (orderDetail: OrderDetail) => {
-        setOpenReview(true)
-        setOrderDetail(orderDetail)
-    }
-
     return (
         <Fragment>
-            <CreateReview
-                orderId={order?.id as number}
-                orderDetail={orderDetail as OrderDetail}
-                openReview={openReview}
-                setOpenReview={setOpenReview}
-            />
             <div className='rounded-sm  pb-10  min-h-[100vh] md:pb-20'>
                 <div className='border-b border-b-gray-200 py-6 flex items-center justify-between px-2 md:px-7 bg-white'>
                     <button onClick={handleBack} className='flex items-center gap-1 uppercase text-gray-500'>
@@ -155,57 +114,37 @@ export default function OrderDetail() {
                 <div className='p-7 bg-white mt-4'>
                     <div className='border-t-[1px]'>
                         {order &&
-                            order.order_details.map((orderDetail) => (
-                                <div key={orderDetail.variant.id} className='border-t-[1px]'>
-                                    <div className='my-6 flex justify-between'>
-                                        <div className='w-[70%] flex gap-1'>
-                                            <div className='w-20 h-20 flex-shrink-0'>
-                                                <img
-                                                    className='w-full h-full object-cover'
-                                                    src={orderDetail?.variant?.product_images[0].url}
-                                                    alt='product'
-                                                />
+                            order.order_details.map((orderDetail) => {
+                                return (
+                                    <div key={orderDetail.variant.id} className='border-t-[1px]'>
+                                        <div className='my-6 flex justify-between'>
+                                            <div className='w-[65%] flex gap-1'>
+                                                <div className='w-20 h-20 flex-shrink-0'>
+                                                    <img
+                                                        className='w-full h-full object-cover'
+                                                        src={orderDetail?.variant?.product_images[0].url}
+                                                        alt='product'
+                                                    />
+                                                </div>
+                                                <div className='flex-grow px-2 pt-1 pb-2 text-left text-[14px] flex flex-col gap-1'>
+                                                    <Link to={`123`} className='text-left line-clamp-1'>
+                                                        {orderDetail.variant.product_name}
+                                                    </Link>
+                                                    <p className='text-[14px] text-gray-500'>
+                                                        Phân loại: {orderDetail.variant.color} - {orderDetail.variant.size}
+                                                    </p>
+                                                    <span>x{orderDetail.quantity}</span>
+                                                </div>
                                             </div>
-                                            <div className='flex-grow px-2 pt-1 pb-2 text-left text-[14px] flex flex-col gap-1'>
-                                                <Link to={`123`} className='text-left line-clamp-1'>
-                                                    {orderDetail.variant.product_name}
-                                                </Link>
-                                                <p className='text-[14px] text-gray-500'>
-                                                    Phân loại: {orderDetail.variant.color} - {orderDetail.variant.size}
-                                                </p>
-                                                <span>x{orderDetail.quantity}</span>
-                                            </div>
-                                        </div>
-                                        <div className='w-[30%] flex flex-col  text-[15px] gap-2 px-6'>
-                                            <span className='text-blue-600 text-end inline-block'>
-                                                {formatToVND(orderDetail.price)}
-                                            </span>
-                                            <div className='flex justify-start items-start gap-2 w-full mt-4'>
-                                                {/* Repurchase */}
-                                                {order?.status === OrderStatus.DELIVERED && (
-                                                    <Fragment>
-                                                        <button
-                                                            onClick={() => onReview(orderDetail)}
-                                                            className='flex justify-center capitalize bg-white border border-blue-600 px-4 py-2 w-[50%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85'
-                                                        >
-                                                            <FaStarHalfStroke />
-                                                            Đánh giá
-                                                        </button>
-                                                        <MyButton
-                                                            onClick={() =>
-                                                                handleRepurchase(orderDetail.variant.id, orderDetail.quantity)
-                                                            }
-                                                            className='py-2 w-[50%] rounded-sm px-4 bg-blue-600 text-white'
-                                                        >
-                                                            Mua lại
-                                                        </MyButton>
-                                                    </Fragment>
-                                                )}
+                                            <div className='w-[35%] flex flex-col  text-[15px] gap-2 px-6'>
+                                                <span className='text-blue-600 text-end inline-block'>
+                                                    {formatToVND(orderDetail.price)}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                     </div>
                 </div>
 

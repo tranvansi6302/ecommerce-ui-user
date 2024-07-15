@@ -1,14 +1,15 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaStarHalfStroke } from 'react-icons/fa6'
 import { IoMdOpen } from 'react-icons/io'
 import { IoCheckmarkDone } from 'react-icons/io5'
 import { MdSecurity } from 'react-icons/md'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 import { Order, OrderDetail } from '~/@types/orders.type'
+import { Review } from '~/@types/reviews.type'
 import noOrder from '~/assets/images/noOrder.png'
 import CustomDialog from '~/components/CustomDialog'
 import InputMUI from '~/components/InputMUI'
@@ -16,13 +17,14 @@ import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import pathConfig from '~/configs/path.config'
 import { OrderStatus } from '~/enums/OrderStatus'
+import useCheckReviews from '~/hooks/useCheckReviews'
 import { queryClient } from '~/main'
 import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
+import cartsService from '~/services/carts.service'
 import ordersService from '~/services/orders.service'
-import reviewsService from '~/services/reviews.service'
 import { convertOrderStatus, formatDateFull, formatToVND } from '~/utils/helpers'
+import CreateReview from '../../../OrderDetail/components/CreateReview/CreateReview'
 import UpdateReview from '../../../OrderDetail/components/UpdateReview'
-import { Review } from '~/@types/reviews.type'
 
 type MyOrderItemProps = {
     orders: Order[]
@@ -31,6 +33,16 @@ type MyOrderItemProps = {
 type CancelReasonForm = OrderSchemaType
 
 export default function MyOrderItem({ orders }: MyOrderItemProps) {
+    const navigate = useNavigate()
+    const [open, setOpen] = useState<boolean>(false)
+    const [orderId, setOrderId] = useState<number>(0)
+    const { reviews, reviewExistence } = useCheckReviews(orders)
+    const [orderDetailCreated, setOrderDetailCreated] = useState<OrderDetail | null>(null)
+    const [orderDetailUpdated, setOrderDetailUpdated] = useState<OrderDetail | null>(null)
+    const [openReviewUpdated, setOpenReviewUpdated] = useState<boolean>(false)
+    const [openReviewCreated, setOpenReviewCreated] = useState<boolean>(false)
+    const [reviewUpdate, setReviewUpdate] = useState<Review | null>(null)
+
     const {
         register,
         handleSubmit,
@@ -39,11 +51,6 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
     } = useForm<CancelReasonForm>({
         resolver: yupResolver(ordersSchema)
     })
-    const [open, setOpen] = useState<boolean>(false)
-    const [orderId, setOrderId] = useState<number>(0)
-    const [reviewExistence, setReviewExistence] = useState<{ [key: number]: boolean }>({})
-    const [reviews, setReviews] = useState<{ [key: number]: any }>({})
-
     const handleCancelOrder = (orderId: number) => {
         setOpen(true)
         setOrderId(orderId)
@@ -67,48 +74,53 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
         setOrderId(0)
     })
 
-    const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null)
-    const [openReview, setOpenReview] = useState<boolean>(false)
-    const [reviewUpdate, setReviewUpdate] = useState<Review | null>(null)
-    const handleViewReview = (orderDetail: OrderDetail) => {
-        setOpenReview(true)
-        setReviewUpdate(reviews[orderDetail.id])
-
-        setOrderDetail(orderDetail)
+    const onViewReviewUpdated = (orderDetail: OrderDetail) => {
+        setOpenReviewUpdated(true)
+        setReviewUpdate(reviews[orderDetail.id] as Review | null)
+        setOrderDetailUpdated(orderDetail)
     }
 
-    useEffect(() => {
-        if (orders && orders.length > 0) {
-            orders.forEach((order) => {
-                order.order_details.forEach((orderDetail) => {
-                    reviewsService
-                        .findByReviewExist({
-                            user_id: order?.user.id,
-                            variant_id: orderDetail?.variant.id,
-                            order_id: order?.id
-                        })
-                        .then((response) => {
-                            setReviewExistence((prev) => ({
-                                ...prev,
-                                [orderDetail.id]: response.data.result?.id !== null
-                            }))
-                            setReviews((prev) => ({
-                                ...prev,
-                                [orderDetail.id]: response.data.result
-                            }))
-                        })
-                })
+    const onViewReviewCreated = (orderDetail: OrderDetail, orderId: number) => {
+        setOpenReviewCreated(true)
+        setOrderId(orderId)
+        setOrderDetailCreated(orderDetail)
+    }
+
+    // Handle Repurchase
+    const addToCartMutation = useMutation({
+        mutationFn: (body: { variant_id: number; quantity: number }) => cartsService.addProductToCart(body),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['productsInCart']
             })
         }
-    }, [orders])
+    })
+    const handleRepurchase = async (variantId: number, quantity: number) => {
+        const res = await addToCartMutation.mutateAsync({
+            variant_id: variantId,
+            quantity
+        })
+
+        navigate(pathConfig.carts, {
+            state: {
+                cart_detail_id: res.data.result?.cart_detail.id
+            }
+        })
+    }
 
     return (
         <Fragment>
             <UpdateReview
                 review={reviewUpdate as Review}
-                orderDetail={orderDetail as OrderDetail}
-                openReview={openReview}
-                setOpenReview={setOpenReview}
+                orderDetail={orderDetailUpdated as OrderDetail}
+                openReview={openReviewUpdated}
+                setOpenReview={setOpenReviewUpdated}
+            />
+            <CreateReview
+                orderId={orderId as number}
+                orderDetail={orderDetailCreated as OrderDetail}
+                openReview={openReviewCreated}
+                setOpenReview={setOpenReviewCreated}
             />
             {orders && orders.length === 0 && (
                 <div className='min-h-[100vh] bg-white flex items-center justify-center'>
@@ -266,19 +278,32 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                                     <Fragment>
                                                                         {existReview ? (
                                                                             <button
-                                                                                className='flex justify-center capitalize items-center bg-white border border-gray-600 px-4 py-2 w-[60%] text-[14px] text-gray-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'
-                                                                                onClick={() => handleViewReview(orderDetail)}
+                                                                                className='flex justify-center capitalize items-center bg-white border border-blue-600 px-4 py-2 w-[60%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'
+                                                                                onClick={() => onViewReviewUpdated(orderDetail)}
                                                                             >
                                                                                 <IoCheckmarkDone fontSize='16px' />
                                                                                 Xem đánh giá
                                                                             </button>
                                                                         ) : (
-                                                                            <button className='flex justify-center items-center capitalize bg-white border border-blue-600 px-4 py-2 w-[60%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'>
+                                                                            <button
+                                                                                onClick={() =>
+                                                                                    onViewReviewCreated(orderDetail, order.id)
+                                                                                }
+                                                                                className='flex justify-center items-center capitalize bg-white border border-red-500 px-4 py-2 w-[60%] text-[14px] text-red-500 gap-1 rounded-sm hover:opacity-85 h-[32px]'
+                                                                            >
                                                                                 <FaStarHalfStroke />
                                                                                 Đánh giá
                                                                             </button>
                                                                         )}
-                                                                        <MyButton className='py-2 w-[40%] rounded-sm px-4 bg-blue-600 text-white h-[32px] flex items-center justify-center'>
+                                                                        <MyButton
+                                                                            onClick={() =>
+                                                                                handleRepurchase(
+                                                                                    orderDetail?.variant.id,
+                                                                                    orderDetail?.quantity
+                                                                                )
+                                                                            }
+                                                                            className='py-2 w-[40%] rounded-sm px-4 bg-blue-600 text-white h-[32px] flex items-center justify-center'
+                                                                        >
                                                                             Mua lại
                                                                         </MyButton>
                                                                     </Fragment>

@@ -79,7 +79,7 @@ export default function UpdateReview({ openReview, setOpenReview, orderDetail, r
         <CustomDialog open={openReview} setOpen={setOpenReview}>
             <div className='w-[800px] bg-white py-6'>
                 <div className='flex justify-between  border-b'>
-                    <h2 className='text-gray-600 capitalize  px-6 pb-4'>Đánh giá sản phẩm</h2>
+                    <h2 className='text-gray-600 capitalize  px-6 pb-4'>Cập nhật đánh giá sản phẩm</h2>
                 </div>
                 <form onSubmit={onSubmit} className='px-6 overflow-hidden mt-8'>
                     <div className='flex gap-2'>
@@ -89,10 +89,11 @@ export default function UpdateReview({ openReview, setOpenReview, orderDetail, r
                             alt={orderDetail?.variant?.variant_name}
                         />
                         <div className=''>
-                            <p className='text-text-primary text-[14px]'>
-                                [HỘP 500G] Granola siêu hạt ngũ cốc ăn kiêng, ngũ cốc giảm cân dinh dưỡng, mix 8 loại hạt NCH
+                            <p className='text-text-primary text-[14px]'>{orderDetail?.variant?.product_name}</p>
+                            <p className='text-gray-500 text-[13px] mt-1'>
+                                Phân loại: {orderDetail?.variant?.size.toUpperCase()} -{' '}
+                                {orderDetail?.variant?.color.toUpperCase()}
                             </p>
-                            <p className='text-gray-500 text-[13px] mt-1'>Phân loại: XXL - Trắng</p>
                         </div>
                     </div>
                     <div className='mt-8 '>
@@ -128,8 +129,8 @@ export default function UpdateReview({ openReview, setOpenReview, orderDetail, r
                             <p className='text-text-primary text-[14px] inline-block mb-2'>Hình ảnh đính kèm</p>
                             <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
                                 {review &&
-                                    review.review_images.length > 0 &&
-                                    review.review_images.map((image) => (
+                                    review?.review_images?.length > 0 &&
+                                    review?.review_images?.map((image) => (
                                         <div key={image.url} className='relative p-1'>
                                             <img
                                                 src={image.url}

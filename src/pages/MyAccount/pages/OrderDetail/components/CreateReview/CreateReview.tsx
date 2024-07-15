@@ -6,6 +6,7 @@ import { OrderDetail } from '~/@types/orders.type'
 import CustomDialog from '~/components/CustomDialog'
 import MultiImageUpload from '~/components/MultiImageUpload'
 import MyButton from '~/components/MyButton'
+import { queryClient } from '~/main'
 import reviewsService from '~/services/reviews.service'
 
 type CreateReviewProps = {
@@ -31,13 +32,25 @@ export default function CreateReview({ openReview, setOpenReview, orderDetail, o
         mutationFn: (body: { rating: number; comment: string; product_id: number; variant_id: number; order_id: number }) =>
             reviewsService.createReview(body),
         onSuccess: () => {
-            setOpenReview(false)
-            reset()
+            if (!files || files.length === 0) {
+                setOpenReview(false)
+                reset()
+                queryClient.invalidateQueries({
+                    queryKey: ['checkReviews']
+                })
+            }
         }
     })
 
     const uploadImagesMutation = useMutation({
-        mutationFn: (body: { id: number; data: FormData }) => reviewsService.uploadImages(body.id, body.data)
+        mutationFn: (body: { id: number; data: FormData }) => reviewsService.uploadImages(body.id, body.data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ['checkReviews']
+            })
+            setOpenReview(false)
+            reset()
+        }
     })
 
     const onSubmit = handleSubmit(async (data) => {
@@ -83,10 +96,11 @@ export default function CreateReview({ openReview, setOpenReview, orderDetail, o
                             alt={orderDetail?.variant?.variant_name}
                         />
                         <div className=''>
-                            <p className='text-text-primary text-[14px]'>
-                                [HỘP 500G] Granola siêu hạt ngũ cốc ăn kiêng, ngũ cốc giảm cân dinh dưỡng, mix 8 loại hạt NCH
+                            <p className='text-text-primary text-[14px]'>{orderDetail?.variant?.product_name}</p>
+                            <p className='text-gray-500 text-[13px] mt-1'>
+                                Phân loại: {orderDetail?.variant?.size.toUpperCase()} -{' '}
+                                {orderDetail?.variant?.color.toUpperCase()}
                             </p>
-                            <p className='text-gray-500 text-[13px] mt-1'>Phân loại: XXL - Trắng</p>
                         </div>
                     </div>
                     <div className='mt-8 '>
