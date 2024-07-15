@@ -7,7 +7,6 @@ import { Review } from '~/@types/reviews.type'
 import CustomDialog from '~/components/CustomDialog'
 import MultiImageUpload from '~/components/MultiImageUpload'
 import MyButton from '~/components/MyButton'
-import { queryClient } from '~/main'
 import reviewsService from '~/services/reviews.service'
 
 type UpdateReviewProps = {
@@ -24,7 +23,6 @@ export default function UpdateReview({ openReview, setOpenReview, orderDetail, r
     const {
         register,
         handleSubmit,
-        reset,
         setValue,
         setError,
         formState: { errors }
@@ -55,20 +53,22 @@ export default function UpdateReview({ openReview, setOpenReview, orderDetail, r
                 message: 'Vui lòng nhập nhận xét của bạn'
             })
         }
+        const promises = []
         const finalData = {
             ...data,
             rating: valueRating as number
         }
-        updateReviewMutation.mutateAsync(finalData)
-        // const resReview = await createReviewMutation.mutateAsync(finalData)
 
-        // if (files && files.length > 0) {
-        //     const formData = new FormData()
-        //     files.forEach((file) => {
-        //         formData.append('files', file)
-        //     })
-        //     await uploadImagesMutation.mutateAsync({ id: resReview?.data.result?.id as number, data: formData })
-        // }
+        promises.push(updateReviewMutation.mutateAsync(finalData))
+
+        if (files && files.length > 0) {
+            const formData = new FormData()
+            files.forEach((file) => {
+                formData.append('files', file)
+            })
+            promises.push(uploadImagesMutation.mutateAsync({ id: review?.id as number, data: formData }))
+        }
+        await Promise.all(promises)
     })
 
     const handleFilesChange = (files: File[] | null) => {
