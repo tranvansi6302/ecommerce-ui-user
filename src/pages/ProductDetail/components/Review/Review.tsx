@@ -97,7 +97,7 @@ export default function Review({ productSale }: ReviewProps) {
                                         review?.review_images.map((image) => (
                                             <img
                                                 key={image.url}
-                                                className='w-[74px] h-[74px] object-cover'
+                                                className='w-[74px] h-[74px] object-cover border border-gray-200 rounded-sm'
                                                 src={image?.url}
                                                 alt={image?.url}
                                             />

@@ -8,7 +8,7 @@ import { IoCheckmarkDone } from 'react-icons/io5'
 import { MdSecurity } from 'react-icons/md'
 import { Link } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
-import { Order } from '~/@types/orders.type'
+import { Order, OrderDetail } from '~/@types/orders.type'
 import noOrder from '~/assets/images/noOrder.png'
 import CustomDialog from '~/components/CustomDialog'
 import InputMUI from '~/components/InputMUI'
@@ -21,6 +21,8 @@ import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
 import ordersService from '~/services/orders.service'
 import reviewsService from '~/services/reviews.service'
 import { convertOrderStatus, formatDateFull, formatToVND } from '~/utils/helpers'
+import UpdateReview from '../../../OrderDetail/components/UpdateReview'
+import { Review } from '~/@types/reviews.type'
 
 type MyOrderItemProps = {
     orders: Order[]
@@ -65,8 +67,14 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
         setOrderId(0)
     })
 
-    const handleViewReview = (orderDetailId: number) => {
-        console.log(reviews[orderDetailId])
+    const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null)
+    const [openReview, setOpenReview] = useState<boolean>(false)
+    const [reviewUpdate, setReviewUpdate] = useState<Review | null>(null)
+    const handleViewReview = (orderDetail: OrderDetail) => {
+        setOpenReview(true)
+        setReviewUpdate(reviews[orderDetail.id])
+
+        setOrderDetail(orderDetail)
     }
 
     useEffect(() => {
@@ -94,12 +102,14 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
         }
     }, [orders])
 
-    useEffect(() => {
-        console.log(reviewExistence)
-    }, [reviewExistence])
-
     return (
         <Fragment>
+            <UpdateReview
+                review={reviewUpdate as Review}
+                orderDetail={orderDetail as OrderDetail}
+                openReview={openReview}
+                setOpenReview={setOpenReview}
+            />
             {orders && orders.length === 0 && (
                 <div className='min-h-[100vh] bg-white flex items-center justify-center'>
                     <div className='flex flex-col items-center justify-center mb-20'>
@@ -257,7 +267,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                                         {existReview ? (
                                                                             <button
                                                                                 className='flex justify-center capitalize items-center bg-white border border-gray-600 px-4 py-2 w-[60%] text-[14px] text-gray-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'
-                                                                                onClick={() => handleViewReview(orderDetail.id)}
+                                                                                onClick={() => handleViewReview(orderDetail)}
                                                                             >
                                                                                 <IoCheckmarkDone fontSize='16px' />
                                                                                 Xem đánh giá

@@ -78,7 +78,7 @@ export default function MultiImageUpload({ onImagesChange }: MultiImageUploadPro
                             <img
                                 src={URL.createObjectURL(file)}
                                 alt={`preview ${index}`}
-                                className='w-full h-full object-cover border border-gray-200 '
+                                className='w-full h-full object-cover border border-gray-200 rounded-md'
                             />
                             <button
                                 type='button'

@@ -12,9 +12,14 @@ const reviewsService = {
             }
         })
     },
+
     getReviewsByProductId: (productId: number) => http.get<ListReviewResponse>(`${API_URL.REVIEWS}/${productId}/products`),
+
     findByReviewExist: (body: { user_id: number; variant_id: number; order_id: number }) =>
-        http.post<ReviewResponse>(`${API_URL.REVIEWS}/variants`, body)
+        http.post<ReviewResponse>(`${API_URL.REVIEWS}/variants`, body),
+
+    updateReview: (id: number, body: { rating: number; comment: string }) =>
+        http.patch<ReviewResponse>(`${API_URL.REVIEWS}/${id}`, body)
 }
 
 export default reviewsService
