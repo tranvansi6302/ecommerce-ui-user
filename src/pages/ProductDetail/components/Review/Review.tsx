@@ -1,30 +1,66 @@
 import { Pagination, Stack } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 import { ProductSale } from '~/@types/productSales.type'
-import { Review as ReviewType } from '~/@types/reviews.type'
+import { ReviewFilters, Review as ReviewType } from '~/@types/reviews.type'
+import avatarDefault from '~/assets/images/avatarDefault.png'
 import MyButton from '~/components/MyButton'
 import ProductRating from '~/components/ProductRating'
+import useQueryReviews from '~/hooks/useQueryReviews'
 import reviewsService from '~/services/reviews.service'
 import { formatDate } from '~/utils/helpers'
-import avatarDefault from '~/assets/images/avatarDefault.png'
+
 type ReviewProps = {
     productSale: ProductSale
 }
 
 export default function Review({ productSale }: ReviewProps) {
+    const queryConfig = useQueryReviews()
+    const [localQueryConfig, setLocalQueryConfig] = useState(queryConfig)
     const { data } = useQuery({
-        queryKey: ['reviews', productSale?.product_id],
-        queryFn: () => reviewsService.getReviewsByProductId(Number(productSale?.product_id)),
+        queryKey: ['reviews', productSale?.product_id, localQueryConfig],
+        staleTime: 3 * 60 * 1000,
+        placeholderData: keepPreviousData,
+        queryFn: () => reviewsService.getReviewsByProductId(Number(productSale?.product_id), localQueryConfig as ReviewFilters),
         enabled: !!productSale?.product_id
     })
     const reviews = data?.data.result as ReviewType[]
+    const totalPage = data?.data?.pagination?.total_page
+    const [page, setPage] = useState<number>(1)
+    const [selectedRating, setSelectedRating] = useState<number>(0)
+
+    const handleFilterRating = (rating: number) => {
+        setSelectedRating(rating)
+        if (rating === 0) {
+            setLocalQueryConfig({
+                ...localQueryConfig,
+                page: '1',
+                rating: undefined
+            })
+            return
+        }
+        setLocalQueryConfig({
+            ...localQueryConfig,
+            rating: rating?.toString()
+        })
+    }
+
+    const handlePagination = (_: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value)
+        setLocalQueryConfig({
+            ...localQueryConfig,
+            page: value.toString()
+        })
+    }
     return (
         <div className='p-6'>
             <h3 className='uppercase text-[15px] text-text-primary'>Đánh giá sản phẩm</h3>
             <div className='mt-4 flex p-6 bg-blue-50'>
                 <div className='w-[20%]'>
                     <div className='flex items-end gap-2 text-blue-600'>
-                        <span className='font-medium text-[30px]'>{Math.ceil(productSale?.average_rating * 10) / 10}</span>
+                        <span className='font-medium text-[30px]'>
+                            {isNaN(productSale?.average_rating) ? 0 : Math.ceil(productSale?.average_rating * 10) / 10}
+                        </span>
                         <span className='text-[18px] inline-block mb-1'>trên 5</span>
                     </div>
                     <div className='text-[20px] text-red-600 flex items-center gap-1 mt-2'>
@@ -38,13 +74,19 @@ export default function Review({ productSale }: ReviewProps) {
                     </div>
                 </div>
                 <div className='w-[80%] flex items-center gap-2'>
-                    <MyButton className='w-[120px] h-[32px] bg-white border'>Tất cả</MyButton>
+                    <MyButton
+                        onClick={() => handleFilterRating(0)}
+                        className={`w-[120px] h-[32px] bg-white border ${selectedRating === 0 ? 'border-blue-600 text-blue-600' : 'border-[#00000017]'}`}
+                    >
+                        Tất cả
+                    </MyButton>
                     {Array(5)
                         .fill(0)
                         .map((_, index) => (
                             <MyButton
                                 key={index}
-                                className='w-[120px] h-[32px] bg-white border border-[#00000017]  capitalize'
+                                onClick={() => handleFilterRating(index + 1)}
+                                className={`w-[120px] h-[32px] bg-white border ${selectedRating === index + 1 ? 'border-blue-600 text-blue-600' : 'border-[#00000017]'} capitalize`}
                             >{`${index + 1} sao`}</MyButton>
                         ))}
                 </div>
@@ -111,7 +153,7 @@ export default function Review({ productSale }: ReviewProps) {
             <div className='pb-10'>
                 <div className='mt-16 flex items-center justify-center'>
                     <Stack spacing={2}>
-                        <Pagination count={10} color='primary' />
+                        <Pagination page={page} onChange={handlePagination} count={totalPage} color='primary' />
                     </Stack>
                 </div>
             </div>

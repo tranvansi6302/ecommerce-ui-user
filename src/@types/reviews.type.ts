@@ -1,4 +1,4 @@
-import { ApiResponse } from './common.type'
+import { ApiResponse, PaginatedApiResponse } from './common.type'
 import { ProductImage } from './productImage.type'
 import { User } from './users.type'
 import { Variant } from './variants.type'
@@ -21,5 +21,11 @@ export type Review = {
     ]
 }
 
+export type ReviewFilters = {
+    page?: number
+    limit?: number
+    rating?: number
+}
+
 export type ReviewResponse = ApiResponse<Review>
-export type ListReviewResponse = ApiResponse<Review[]>
+export type ListReviewResponse = PaginatedApiResponse<Review[]>

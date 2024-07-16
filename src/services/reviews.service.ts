@@ -1,5 +1,5 @@
 import { MessageResponse } from '~/@types/common.type'
-import { ListReviewResponse, ReviewResponse } from '~/@types/reviews.type'
+import { ListReviewResponse, ReviewFilters, ReviewResponse } from '~/@types/reviews.type'
 import { API_URL } from '~/configs/api.config'
 import http from '~/utils/http'
 
@@ -14,7 +14,10 @@ const reviewsService = {
         })
     },
 
-    getReviewsByProductId: (productId: number) => http.get<ListReviewResponse>(`${API_URL.REVIEWS}/${productId}/products`),
+    getReviewsByProductId: (productId: number, params: ReviewFilters) =>
+        http.get<ListReviewResponse>(`${API_URL.REVIEWS}/${productId}/products`, {
+            params
+        }),
 
     findByReviewExist: (body: { user_id: number; variant_id: number; order_id: number }) =>
         http.post<ReviewResponse>(`${API_URL.REVIEWS}/variants`, body),

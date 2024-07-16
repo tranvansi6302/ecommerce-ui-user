@@ -262,7 +262,9 @@ export default function ProductDetail() {
                                     <div className='mt-8 flex items-center'>
                                         <div className='flex items-center'>
                                             <span className='mr-1 border-b border-b-blue-600 text-blue-600'>
-                                                {Math.ceil((productSale?.data.result?.average_rating as number) * 10) / 10}
+                                                {isNaN(productSale?.data.result?.average_rating as number)
+                                                    ? 0
+                                                    : Math.ceil((productSale?.data.result?.average_rating as number) * 10) / 10}
                                             </span>
                                             <ProductRating
                                                 className='gap-1'

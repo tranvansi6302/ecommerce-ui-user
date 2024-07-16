@@ -35,8 +35,12 @@ export default function CreateReview({ openReview, setOpenReview, orderDetail, o
             if (!files || files.length === 0) {
                 setOpenReview(false)
                 reset()
+                setValueRating(1)
                 queryClient.invalidateQueries({
                     queryKey: ['checkReviews']
+                })
+                queryClient.invalidateQueries({
+                    queryKey: ['productSale']
                 })
             }
         }

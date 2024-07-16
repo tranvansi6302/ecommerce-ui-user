@@ -43,6 +43,12 @@ export default function UpdateReview({ openReview, setOpenReview, orderDetail, r
         mutationFn: (body: { rating: number; comment: string }) => reviewsService.updateReview(review.id, body),
         onSuccess: () => {
             setOpenReview(false)
+            queryClient.invalidateQueries({
+                queryKey: ['reviews']
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['productSale']
+            })
         }
     })
 
@@ -86,6 +92,9 @@ export default function UpdateReview({ openReview, setOpenReview, orderDetail, r
             setOpenReview(false)
             queryClient.invalidateQueries({
                 queryKey: ['checkReviews']
+            })
+            queryClient.invalidateQueries({
+                queryKey: ['productSale']
             })
         }
     })
