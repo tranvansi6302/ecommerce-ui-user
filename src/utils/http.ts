@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
-import { API_URL } from '~/configs/api.config'
-import { ErrorMessage } from './../@types/common.type'
-import { getTokenFromLS, saveProfileToLS, saveTokenToLS } from './auth'
+import { toast } from 'react-toastify'
 import { LoginResponse } from '~/@types/auth.type'
 import { User } from '~/@types/users.type'
-import { toast } from 'react-toastify'
+import { API_URL } from '~/configs/api.config'
+import { ErrorMessage, MessageResponse } from './../@types/common.type'
+import { getTokenFromLS, saveProfileToLS, saveTokenToLS } from './auth'
 
 class Http {
     instance: AxiosInstance
@@ -27,7 +27,7 @@ class Http {
         })
         this.instance.interceptors.response.use(
             (response) => {
-                const message = (response.data as ErrorMessage).message
+                const message = (response.data as MessageResponse).message
                 toast.success(message)
                 const { url } = response.config
                 if (url?.includes(API_URL.LOGIN_GOOGLE)) {

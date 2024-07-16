@@ -1,12 +1,15 @@
-import { Alert, Rating } from '@mui/material'
+import { Alert, IconButton, Menu, MenuItem, Rating } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { BiDotsVerticalRounded } from 'react-icons/bi'
 import { OrderDetail } from '~/@types/orders.type'
 import { Review } from '~/@types/reviews.type'
+import ConfirmDialog from '~/components/ConfirmDialog'
 import CustomDialog from '~/components/CustomDialog'
 import MultiImageUpload from '~/components/MultiImageUpload'
 import MyButton from '~/components/MyButton'
+import { queryClient } from '~/main'
 import reviewsService from '~/services/reviews.service'
 
 type UpdateReviewProps = {
@@ -18,7 +21,8 @@ type UpdateReviewProps = {
 
 export default function UpdateReview({ openReview, setOpenReview, orderDetail, review }: UpdateReviewProps) {
     const [valueRating, setValueRating] = useState<number | null>(1)
-
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const [openConfirm, setOpenConfirm] = useState<boolean>(false)
     const [files, setFiles] = useState<File[]>([])
     const {
         register,
@@ -75,11 +79,65 @@ export default function UpdateReview({ openReview, setOpenReview, orderDetail, r
         setFiles(files as File[])
     }
 
+    // Handle delete review
+    const deleteReviewMutation = useMutation({
+        mutationFn: (id: number) => reviewsService.deleteReview(id),
+        onSuccess: () => {
+            setOpenReview(false)
+            queryClient.invalidateQueries({
+                queryKey: ['checkReviews']
+            })
+        }
+    })
+    const onDeleteReview = () => {
+        setAnchorEl(null)
+        setOpenConfirm(true)
+    }
+
+    const handleDeleteReview = () => {
+        deleteReviewMutation.mutate(review?.id)
+    }
     return (
         <CustomDialog open={openReview} setOpen={setOpenReview}>
-            <div className='w-[800px] bg-white py-6'>
-                <div className='flex justify-between  border-b'>
-                    <h2 className='text-gray-600 capitalize  px-6 pb-4'>Cập nhật đánh giá sản phẩm</h2>
+            <ConfirmDialog
+                onConfirm={handleDeleteReview}
+                open={openConfirm}
+                setOpen={setOpenConfirm}
+                title='Xóa đánh giá này?'
+                description='Bạn có chắc chắn muốn xóa đánh giá này? Sau khi xóa sẽ không đươc khôi phục.'
+            />
+            <div className='w-[800px] bg-white pb-6 pt-2'>
+                <div className='flex justify-between border-b items-center'>
+                    <h2 className='text-gray-600 capitalize px-6 '>Cập nhật đánh giá sản phẩm</h2>\
+                    <div>
+                        <IconButton
+                            size='large'
+                            aria-label='account of current user'
+                            aria-controls='menu-appbar'
+                            aria-haspopup='true'
+                            onClick={(e) => setAnchorEl(e.currentTarget)}
+                            color='inherit'
+                        >
+                            <BiDotsVerticalRounded className='text-blue-600' />
+                        </IconButton>
+                        <Menu
+                            id='menu-appbar'
+                            anchorEl={anchorEl}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right'
+                            }}
+                            keepMounted
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right'
+                            }}
+                            open={Boolean(anchorEl)}
+                            onClose={() => setAnchorEl(null)}
+                        >
+                            <MenuItem onClick={onDeleteReview}>Xóa bài đánh giá</MenuItem>
+                        </Menu>
+                    </div>
                 </div>
                 <form onSubmit={onSubmit} className='px-6 overflow-hidden mt-8'>
                     <div className='flex gap-2'>

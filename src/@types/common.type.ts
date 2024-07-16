@@ -3,6 +3,11 @@ export type ErrorMessage = {
     message: string
 }
 
+export type MessageResponse = {
+    code: number
+    message: string
+}
+
 export type ApiResponse<T> = {
     code: number
     message?: string

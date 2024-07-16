@@ -39,7 +39,7 @@ export default function useCheckReviews(orders: Order[]) {
         placeholderData: keepPreviousData,
         enabled: orders?.length > 0 // Only run query if orders are present
     })
-    console.log('data', data?.reviews)
+
     // Return the data along with loading and error states
     return {
         reviewExistence: data?.reviewExistence ?? {},
