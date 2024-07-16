@@ -14,7 +14,7 @@ export default function useQueryReviews() {
             omitBy(
                 {
                     page: queryParams.page || '1',
-                    limit: queryParams.limit || '2',
+                    limit: queryParams.limit || '5',
                     rating: queryParams.rating
                 },
                 isUndefined
