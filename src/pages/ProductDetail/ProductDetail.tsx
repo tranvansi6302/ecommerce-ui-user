@@ -17,6 +17,8 @@ import ProductRating from '~/components/ProductRating'
 import QuantityController from '~/components/QuantityController/QuantityController'
 import pathConfig from '~/configs/path.config'
 import useSetTitle from '~/hooks/useSetTitle'
+import { BsPatchCheck } from 'react-icons/bs'
+import { FaShippingFast } from 'react-icons/fa'
 import { queryClient } from '~/main'
 import cartsService from '~/services/carts.service'
 import productSalesService from '~/services/productSales.service'
@@ -29,6 +31,7 @@ import {
     getMinMaxSalePrice,
     getUniqueSizeAndColor
 } from '~/utils/helpers'
+import Review from './components/Review'
 
 export default function ProductDetail() {
     const navigate = useNavigate()
@@ -196,7 +199,7 @@ export default function ProductDetail() {
                                         onMouseMove={handleZoom}
                                         onMouseLeave={handleRemoveZoom}
                                         onClick={() => openImageViewer(currentIndexImages[0])}
-                                        className='relative w-full  cursor-zoom-in overflow-hidden pt-[100%] shadow'
+                                        className='relative w-full  cursor-zoom-in overflow-hidden pt-[100%]'
                                     >
                                         <img
                                             className='absolute top-0 left-0 h-full w-full object-cover pointer-events-none'
@@ -259,7 +262,9 @@ export default function ProductDetail() {
                                     <div className='mt-8 flex items-center'>
                                         <div className='flex items-center'>
                                             <span className='mr-1 border-b border-b-blue-600 text-blue-600'>
-                                                {productSale?.data.result?.average_rating}
+                                                {isNaN(productSale?.data.result?.average_rating as number)
+                                                    ? 0
+                                                    : Math.ceil((productSale?.data.result?.average_rating as number) * 10) / 10}
                                             </span>
                                             <ProductRating
                                                 className='gap-1'
@@ -276,7 +281,7 @@ export default function ProductDetail() {
                                         </div>
                                     </div>
                                     {!activeVariant && (
-                                        <div className='mt-8 flex items-center bg-gray-50 px-5 py-4'>
+                                        <div className='mt-8 flex items-center bg-blue-50 px-5 py-4'>
                                             {getMinMaxPromotionPrice(productSale?.data.result as ProductSale)
                                                 .minPromotionPrice !== 0 && (
                                                 <div className='text-gray-500 line-through text-xl'>
@@ -355,7 +360,7 @@ export default function ProductDetail() {
                                             {getMinMaxPromotionPrice(productSale?.data.result as ProductSale)
                                                 .minPromotionPrice !== 0 && (
                                                 <div className='ml-4 rounded-sm bg-blue-600 px-1 py-[2px] text-xs font-semibold uppercase text-white'>
-                                                    20 giảm
+                                                    20% giảm
                                                 </div>
                                             )}
                                         </div>
@@ -378,8 +383,14 @@ export default function ProductDetail() {
                                             </div>
                                         </div>
                                     )}
-
-                                    <div className='w-full h-[1px] bg-gray-200 mt-8'></div>
+                                    <div className='mt-8 flex items-center'>
+                                        <span className='capitalize text-gray-500 w-[110px]'>Vận chuyển</span>
+                                        <img
+                                            className='w-[120px] object-cover'
+                                            src='https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-VN.png'
+                                            alt=''
+                                        />
+                                    </div>
                                     <div className='mt-8 flex items-baseline'>
                                         <span className='capitalize text-gray-500 w-[110px]'>Màu</span>
                                         <div className='flex items-center flex-wrap'>
@@ -420,8 +431,8 @@ export default function ProductDetail() {
                                                 ))}
                                         </div>
                                     </div>
-                                    <div className='mt-8 flex items-center'>
-                                        <div className='capitalize text-gray-500'>Số lượng</div>
+                                    <div className='mt-10 flex items-center'>
+                                        <div className='capitalize text-gray-500 mr-1'>Số lượng</div>
                                         <QuantityController
                                             onDecrease={handleBuyCount}
                                             onIncrease={handleBuyCount}
@@ -435,7 +446,7 @@ export default function ProductDetail() {
                                             </div>
                                         )}
                                     </div>
-                                    <div className='mt-8 flex items-center'>
+                                    <div className='mt-12 flex items-center'>
                                         <MyButton
                                             onClick={handleAddToCart}
                                             className='h-12 rounded-sm border border-blue-600 bg-blue-50 px-5 shadow-sm hover:bg-blue-50'
@@ -450,6 +461,18 @@ export default function ProductDetail() {
                                         >
                                             Mua ngay
                                         </MyButton>
+                                    </div>
+                                    <div className='mt-8 pb-6 border-t border-gray-100'>
+                                        <div className='flex items-center gap-10 mt-6'>
+                                            <div className='text-[16px] text-gray-500 capitalize flex items-center gap-2'>
+                                                <BsPatchCheck className='text-blue-600' />
+                                                Hàng chất lượng 100%
+                                            </div>
+                                            <div className='text-[16px] text-gray-500 capitalize flex items-center gap-2'>
+                                                <FaShippingFast className='text-blue-600' />
+                                                Miễn phí vận chuyển
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -467,7 +490,12 @@ export default function ProductDetail() {
                     </div>
                 </div>
             </Container>
-            <div className=' text-text-primary'>
+            <Container style={{ padding: '0' }}>
+                <div className='my-6 bg-white'>
+                    <Review productSale={productSale?.data.result as ProductSale} />
+                </div>
+            </Container>
+            <div className='text-text-primary'>
                 <ProductFeatured title='Sản phẩm liên quan'></ProductFeatured>
             </div>
         </Fragment>

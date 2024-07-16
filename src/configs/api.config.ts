@@ -14,6 +14,7 @@ export const API_URL = {
     ADDRESS: '/users/addresses',
     CREATE_ADDRESS: '/users/addresses',
     ORDER: '/orders',
+    REVIEWS: '/reviews',
 
     // GHN
     GHN_GET_PROVINCE: '/master-data/province',
