@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import { useContext } from 'react'
 import { LuUser2 } from 'react-icons/lu'
 import { MdEdit, MdOutlineEventNote, MdOutlineMyLocation } from 'react-icons/md'
+import { PiKeyReturnFill } from 'react-icons/pi'
 import { RiLockPasswordLine } from 'react-icons/ri'
 import { Link, NavLink } from 'react-router-dom'
 import avatarDefault from '~/assets/images/avatarDefault.png'
@@ -28,6 +29,11 @@ const asideBarItems = [
         icon: <MdOutlineEventNote fontSize='20px' className='text-[#1849a9]' />,
         title: 'Đơn mua',
         to: pathConfig.accountOrders
+    },
+    {
+        icon: <PiKeyReturnFill fontSize='20px' className='text-[#1849a9]' />,
+        title: 'Đổi trả',
+        to: pathConfig.accountReturnOrder
     }
 ]
 

@@ -1,5 +1,5 @@
 export const oauth2Config = {
-    clientId: import.meta.env.VITE_OAUTH2_GOOGLE_CLIENT_ID,
-    redirectUri: import.meta.env.VITE_OAUTH2_GOOGLE_REDIRECT_URI,
-    authUri: import.meta.env.VITE_OAUTH2_GOOGLE_AUTH_URI
+    clientId: '1019417807471-mrco53nplf1ok2eil1mflhk5lg2e7bf2.apps.googleusercontent.com',
+    redirectUri: 'http://localhost:3000/authenticate',
+    authUri: 'https://accounts.google.com/o/oauth2/auth'
 }

@@ -1,6 +1,8 @@
 export const API_URL = {
     BASE_API_URL: import.meta.env.VITE_API_URL,
-    BASE_API_GHN_URL: import.meta.env.VITE_API_GHN_URL,
+    BASE_API_GHN_URL: 'https://dev-online-gateway.ghn.vn/shiip/public-api',
+    // https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/master-data/province
+
     REGISTER: '/auth/register',
     LOGIN: '/auth/login',
     LOGIN_GOOGLE: '/auth/oauth2/google',
@@ -15,6 +17,7 @@ export const API_URL = {
     CREATE_ADDRESS: '/users/addresses',
     ORDER: '/orders',
     REVIEWS: '/reviews',
+    RETURN_ORDER: '/return-orders',
 
     // GHN
     GHN_GET_PROVINCE: '/master-data/province',

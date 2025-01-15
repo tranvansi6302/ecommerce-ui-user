@@ -145,6 +145,13 @@ export default function ProductDetail() {
     })
 
     const handleAddToCart = () => {
+        // Kiểm tra chỉ cho phép tối đa có 2 sản phẩm trong giỏ hàng
+        // if (productsInCart && productsInCart?.data?.result?.length >= 2) {
+        //     toast.warning('Chỉ được thêm tối đa 2 sản phẩm vào giỏ hàng')
+        //     return
+        // }
+
+        console.log('ok')
         if (activeVariant) {
             addToCartMutation.mutate({
                 variant_id: activeVariant.id,
@@ -156,6 +163,11 @@ export default function ProductDetail() {
     }
 
     const handleByNow = async () => {
+        // // Kiểm tra chỉ cho phép tối đa có 2 sản phẩm trong giỏ hàng
+        // if (productsInCart && productsInCart?.data?.result?.length >= 2) {
+        //     toast.warning('Chỉ được thêm tối đa 2 sản phẩm vào giỏ hàng')
+        //     return
+        // }
         if (!activeVariant) {
             toast.warning('Vui lòng chọn màu và kích thước')
             return

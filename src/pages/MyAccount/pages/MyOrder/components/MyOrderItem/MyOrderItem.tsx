@@ -2,6 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { BsArrowReturnLeft } from 'react-icons/bs'
 import { FaStarHalfStroke } from 'react-icons/fa6'
 import { IoMdOpen } from 'react-icons/io'
 import { IoCheckmarkDone } from 'react-icons/io5'
@@ -16,15 +17,18 @@ import InputMUI from '~/components/InputMUI'
 import MyButton from '~/components/MyButton'
 import MyButtonMUI from '~/components/MyButtonMUI'
 import pathConfig from '~/configs/path.config'
-import { OrderStatus } from '~/enums/OrderStatus'
+import { OrderStatus, ReturnOrderStatus } from '~/enums/OrderStatus'
 import useCheckReviews from '~/hooks/useCheckReviews'
 import { queryClient } from '~/main'
 import { OrderSchemaType, ordersSchema } from '~/schemas/order.schema'
 import cartsService from '~/services/carts.service'
 import ordersService from '~/services/orders.service'
-import { convertOrderStatus, formatDateFull, formatToVND } from '~/utils/helpers'
+import { isOverThreeDays } from '~/utils/check'
+import { convertOrderStatus, formatDateFull, formatToVND, generateNameId } from '~/utils/helpers'
 import CreateReview from '../../../OrderDetail/components/CreateReview/CreateReview'
 import UpdateReview from '../../../OrderDetail/components/UpdateReview'
+import ReturnOrderForm from '../../../ReturnOrderForm/ReturnOrderForm'
+import { FaHistory } from 'react-icons/fa'
 
 type MyOrderItemProps = {
     orders: Order[]
@@ -40,8 +44,10 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
     const [orderDetailCreated, setOrderDetailCreated] = useState<OrderDetail | null>(null)
     const [orderDetailUpdated, setOrderDetailUpdated] = useState<OrderDetail | null>(null)
     const [openReviewUpdated, setOpenReviewUpdated] = useState<boolean>(false)
+    const [openReturnOrder, setOpenReturnOrder] = useState<boolean>(false)
     const [openReviewCreated, setOpenReviewCreated] = useState<boolean>(false)
     const [reviewUpdate, setReviewUpdate] = useState<Review | null>(null)
+    const [orderDetailReturn, setOrderDetailReturn] = useState<OrderDetail | null>(null)
 
     const {
         register,
@@ -80,6 +86,13 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
         setOrderDetailUpdated(orderDetail)
     }
 
+    // Return order
+    const onReturnOrder = (orderDetail: OrderDetail) => {
+        setOpenReturnOrder(true)
+        console.log('orderDetail', orderDetail)
+        setOrderDetailReturn(orderDetail)
+    }
+
     const onViewReviewCreated = (orderDetail: OrderDetail, orderId: number) => {
         setOpenReviewCreated(true)
         setOrderId(orderId)
@@ -116,6 +129,12 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                 openReview={openReviewUpdated}
                 setOpenReview={setOpenReviewUpdated}
             />
+            <ReturnOrderForm
+                orderDetail={orderDetailReturn as OrderDetail}
+                openReturnOrder={openReturnOrder}
+                setOpenReturnOrder={setOpenReturnOrder}
+            />
+
             <CreateReview
                 orderId={orderId as number}
                 orderDetail={orderDetailCreated as OrderDetail}
@@ -222,7 +241,15 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                 </div>
                                             </div>
                                             <div className='flex items-center'>
-                                                <p className='capitalize'>Ngày đặt: {formatDateFull(order.order_date)}</p>
+                                                <p className='capitalize text-gray-500'>
+                                                    Ngày đặt: {formatDateFull(order.order_date)}
+                                                </p>
+                                                <div className='h-[20px] w-[0.5px] bg-gray-400 mx-3'></div>
+                                                {order?.status === OrderStatus.DELIVERED && order?.delivered_date && (
+                                                    <p className='capitalize text-blue-600'>
+                                                        Ngày nhận: {formatDateFull(order.delivered_date)}
+                                                    </p>
+                                                )}
                                                 <div className='h-[20px] w-[0.5px] bg-gray-400 mx-3'></div>
                                                 <p className={`uppercase ${statusColorClass}`}>
                                                     {convertOrderStatus(order.status as OrderStatus)}
@@ -245,11 +272,10 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                     <div className=''>
                                         {order.order_details.map((orderDetail) => {
                                             const existReview = reviewExistence[orderDetail.id]
-
                                             return (
                                                 <div key={orderDetail.variant.id} className='border-t-[1px]'>
-                                                    <div className='my-6 flex justify-between'>
-                                                        <div className='w-[65%] flex gap-1'>
+                                                    <div className='mt-6 flex justify-between'>
+                                                        <div className='w-full flex gap-1'>
                                                             <div className='w-20 h-20 flex-shrink-0'>
                                                                 <img
                                                                     className='w-full h-full object-cover'
@@ -258,27 +284,65 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                                 />
                                                             </div>
                                                             <div className='flex-grow px-2 pt-1 pb-2 text-left text-[14px] flex flex-col gap-1'>
-                                                                <Link to={`123`} className='text-left line-clamp-1'>
+                                                                <Link
+                                                                    to={`/${generateNameId({
+                                                                        id: String(orderDetail.variant.product_id),
+                                                                        name: orderDetail.variant.product_name
+                                                                    })}`}
+                                                                    className='text-left line-clamp-1'
+                                                                >
                                                                     {orderDetail.variant.product_name}
                                                                 </Link>
-                                                                <p className='text-[14px] text-gray-500'>
+                                                                <p className='text-[14px] text-gray-500 mt-2'>
                                                                     Phân loại: {orderDetail.variant.color} -{' '}
                                                                     {orderDetail.variant.size}
                                                                 </p>
-                                                                <span>x{orderDetail.quantity}</span>
+                                                                <div className='flex items-center gap-2 mt-2'>
+                                                                    <span>x{orderDetail.quantity}</span>
+                                                                    <span className='text-blue-600'>
+                                                                        {formatToVND(orderDetail.price)}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div className='w-[35%] flex flex-col items-end justify-end text-[15px] gap-2 px-6'>
-                                                            <span className='text-blue-600'>
-                                                                {formatToVND(orderDetail.price)}
-                                                            </span>
-                                                            <div className='flex justify-start items-start gap-2 w-full mt-4'>
+                                                    </div>
+
+                                                    <div className='flex justify-end'>
+                                                        <div className='w-[60%] flex flex-col items-end text-[15px] gap-2 px-6'>
+                                                            <div className='flex justify-end items-start gap-2 w-full mt-4'>
                                                                 {/* Repurchase */}
                                                                 {order?.status === OrderStatus.DELIVERED && (
+                                                                    // Check if the product is in the return period
                                                                     <Fragment>
+                                                                        {!isOverThreeDays(order.delivered_date) &&
+                                                                            orderDetail.return_status === null && (
+                                                                                <button
+                                                                                    className='flex justify-center capitalize items-center bg-white border border-yellow-600 px-4 py-2 w-[40%] text-[14px] text-yellow-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'
+                                                                                    onClick={() => onReturnOrder(orderDetail)}
+                                                                                >
+                                                                                    <BsArrowReturnLeft fontSize='16px' />
+                                                                                    Đổi trả
+                                                                                </button>
+                                                                            )}
+
+                                                                        {(orderDetail.return_status ==
+                                                                            ReturnOrderStatus.ACCEPTED ||
+                                                                            orderDetail.return_status ==
+                                                                                ReturnOrderStatus.REJECTED ||
+                                                                            orderDetail.return_status ==
+                                                                                ReturnOrderStatus.REQUESTED) && (
+                                                                            <Link
+                                                                                to={`${pathConfig.accountReturnOrder}?search=${order.order_code}`}
+                                                                                className='flex justify-center capitalize items-center bg-white border border-blue-600 px-4 py-2 w-[50%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'
+                                                                            >
+                                                                                <FaHistory fontSize='16px' />
+                                                                                Lịch sử đổi trả
+                                                                            </Link>
+                                                                        )}
+
                                                                         {existReview ? (
                                                                             <button
-                                                                                className='flex justify-center capitalize items-center bg-white border border-blue-600 px-4 py-2 w-[60%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'
+                                                                                className='flex justify-center capitalize items-center bg-white border border-blue-600 px-4 py-2 w-[45%] text-[14px] text-blue-600 gap-1 rounded-sm hover:opacity-85 h-[32px]'
                                                                                 onClick={() => onViewReviewUpdated(orderDetail)}
                                                                             >
                                                                                 <IoCheckmarkDone fontSize='16px' />
@@ -289,7 +353,7 @@ export default function MyOrderItem({ orders }: MyOrderItemProps) {
                                                                                 onClick={() =>
                                                                                     onViewReviewCreated(orderDetail, order.id)
                                                                                 }
-                                                                                className='flex justify-center items-center capitalize bg-white border border-red-500 px-4 py-2 w-[60%] text-[14px] text-red-500 gap-1 rounded-sm hover:opacity-85 h-[32px]'
+                                                                                className='flex justify-center items-center capitalize bg-white border border-red-500 px-4 py-2 w-[40%] text-[14px] text-red-500 gap-1 rounded-sm hover:opacity-85 h-[32px]'
                                                                             >
                                                                                 <FaStarHalfStroke />
                                                                                 Đánh giá

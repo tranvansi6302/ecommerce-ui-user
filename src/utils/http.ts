@@ -5,7 +5,7 @@ import { User } from '~/@types/users.type'
 import { API_URL } from '~/configs/api.config'
 import { ErrorMessage, MessageResponse } from './../@types/common.type'
 import { getTokenFromLS, saveProfileToLS, saveTokenToLS } from './auth'
-
+console.log('API_URL', API_URL.BASE_API_URL)
 class Http {
     instance: AxiosInstance
     private token: string

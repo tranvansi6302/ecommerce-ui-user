@@ -35,6 +35,7 @@ export default function AsidebarFilterByData({ title, filterData, queryConfig, f
                                         pathname: pathConfig.productFilters,
                                         search: createSearchParams({
                                             ...queryConfig,
+                                            page: '1',
                                             ...(filterType === 'category' && { category: item.slug }),
                                             ...(filterType === 'brand' && { brand: item.slug })
                                         }).toString()

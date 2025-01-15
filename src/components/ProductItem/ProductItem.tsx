@@ -5,16 +5,34 @@ import { ProductSale } from '~/@types/productSales.type'
 import ProductRating from '~/components/ProductRating'
 import pathConfig from '~/configs/path.config'
 import { formatToVND, generateNameId, getMinMaxPromotionPrice, getMinMaxSalePrice } from '~/utils/helpers'
+import SkeletonItem from '../SkeletonItem'
 
 type ProductItemProps = {
     productSales?: ProductSale[]
+    loading: boolean
 }
 
-export default function ProductItem({ productSales }: ProductItemProps) {
+export default function ProductItem({ productSales, loading }: ProductItemProps) {
+    if (loading) {
+        return (
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: '10px'
+                }}
+            >
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+            </Box>
+        )
+    }
     return (
         <Fragment>
-            {productSales &&
-                productSales?.length > 0 &&
+            {productSales && productSales.length > 0 ? (
                 productSales?.map((product) => (
                     <Link
                         key={product.product_id}
@@ -102,7 +120,21 @@ export default function ProductItem({ productSales }: ProductItemProps) {
                             </Box>
                         </Paper>
                     </Link>
-                ))}
+                ))
+            ) : (
+                // Skeleton Loading
+                <div
+                    style={{
+                        width: '100%',
+                        display: 'flex',
+                        gap: '10px',
+                        justifyContent: 'center'
+                        // Cho grid 2 cột
+                    }}
+                >
+                    <img src='https://bepharco.com/no-products-found.png' alt='' />
+                </div>
+            )}
         </Fragment>
     )
 }

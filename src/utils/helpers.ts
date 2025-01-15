@@ -151,3 +151,22 @@ export const convertTimestampToDate = (epoch: number) => {
     const year = date.getFullYear()
     return `${day}/${month}/${year}`
 }
+
+export const RETURN_ORDER_STATUS = {
+    REQUESTED: 'REQUESTED',
+    ACCEPTED: 'ACCEPTED',
+    REJECTED: 'REJECTED'
+}
+
+export const convertReturnOrderStatus = (status: string) => {
+    switch (status) {
+        case RETURN_ORDER_STATUS.REQUESTED:
+            return 'Chờ xác nhận'
+        case RETURN_ORDER_STATUS.ACCEPTED:
+            return 'Đã xác nhận'
+        case RETURN_ORDER_STATUS.REJECTED:
+            return 'Đã từ chối'
+        default:
+            return ''
+    }
+}

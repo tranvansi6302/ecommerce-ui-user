@@ -15,7 +15,6 @@ import cartsService from '~/services/carts.service'
 import { clearCartFromLS, clearProfileFromLS, clearTokenFromLS } from '~/utils/auth'
 import HeaderSearch from '../HeaderSearch'
 import MiniCart from '../MiniCart'
-// import logo from '~/assets/images/logo.png'
 
 const settings = [
     {
@@ -72,7 +71,7 @@ export default function MainHeader({ cartTitle, checkoutTitle }: MainHeaderProps
         <Fragment>
             <header className='bg-white sticky top-0 z-50'>
                 <div
-                    className={`hidden border-b border-stroke sm:block py-2 ${cartTitle || checkoutTitle ? 'bg-blue-600' : 'bg-white'}`}
+                    className={`border-b border-stroke sm:block py-2 ${cartTitle || checkoutTitle ? 'bg-blue-600' : 'bg-white'}`}
                 >
                     <Container style={{ padding: '0' }}>
                         <div className='-mx-4 flex flex-wrap items-center'>
@@ -103,7 +102,7 @@ export default function MainHeader({ cartTitle, checkoutTitle }: MainHeaderProps
                             </div>
                             <div className='w-full px-4 md:w-1/3 lg:w-1/2'>
                                 <div
-                                    className={`hidden items-center gap-6 justify-end md:flex  ${cartTitle || checkoutTitle ? 'text-white' : 'text-text-primary'}`}
+                                    className={`items-center gap-6 justify-end md:flex  ${cartTitle || checkoutTitle ? 'text-white' : 'text-text-primary'}`}
                                 >
                                     <div>
                                         <div className='relative'>
@@ -186,16 +185,16 @@ export default function MainHeader({ cartTitle, checkoutTitle }: MainHeaderProps
                     </Container>
                 </div>
                 <Container style={{ padding: '0' }}>
-                    <div className='w-full h-[72px]'>
-                        <div className='relative -mx-4 flex items-center justify-center sm:justify-between'>
+                    <div className='w-full h-[72px] flex items-center'>
+                        <div className='relative -mx-4 flex items-center justify-center sm:justify-between w-full'>
                             <div
                                 className={`max-w-full px-4 ${cartTitle || checkoutTitle ? 'w-[35%] shrink-0 flex items-center' : 'w-60'}`}
                             >
                                 <Link to={pathConfig.home} className='py-5 lg:py-3 flex items-center gap-2'>
                                     <img
-                                        src='https://laz-img-cdn.alicdn.com/images/ims-web/TB1T7K2d8Cw3KVjSZFuXXcAOpXa.png'
+                                        src='https://dtf.digital/wp-content/uploads/elementor/thumbs/magento2-logo-q1wwm861pgdml86x55pwt7j25up4avud9ou9mkdfmw.png'
                                         alt='logo'
-                                        className='w-[138px] h-full object-cover'
+                                        className='w-[120px] h-full object-cover'
                                     />
                                 </Link>
                                 {(cartTitle || checkoutTitle) && (
@@ -221,7 +220,7 @@ export default function MainHeader({ cartTitle, checkoutTitle }: MainHeaderProps
                                     </div>
                                 )}
                                 {!cartTitle && !checkoutTitle && (
-                                    <div className='hidden w-[20%] items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-16'>
+                                    <div className=' w-[20%] items-center gap-6 justify-end space-x-4 pr-[70px] sm:flex lg:pr-16'>
                                         <div className='relative z-1'>
                                             <MiniCart productsInCart={(productsInCart?.data.result as Cart[]) || []} />
                                         </div>

@@ -35,6 +35,7 @@ export default function FilterMinMaxPrice({ title, queryConfig }: FilterMinMaxPr
             pathname: pathConfig.productFilters,
             search: createSearchParams({
                 ...queryConfig,
+                page: '1',
                 min_price: data.min_price.toString(),
                 max_price: data.max_price.toString()
             }).toString()

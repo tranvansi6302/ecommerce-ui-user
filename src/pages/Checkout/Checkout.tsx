@@ -9,7 +9,7 @@ import { GoPlus } from 'react-icons/go'
 import { LiaMoneyCheckAltSolid } from 'react-icons/lia'
 import { MdOutlineNoteAlt } from 'react-icons/md'
 import { TfiExchangeVertical } from 'react-icons/tfi'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Address } from '~/@types/addresses.type'
 import { SaveCartToLSType } from '~/@types/carts.type'
 import { AvailableService, AvailableServiceRequest, FeeRequest, Leadtime, LeadtimeRequest } from '~/@types/ghn.type'
@@ -75,6 +75,7 @@ export default function Checkout() {
     const [feeMoney, setFeeMoney] = useState<number>(0)
     const { setGlobalOpenCreateAddessDialog, setGlobalOpenUpdateAddessDialog, setAddressIdContext, profile } =
         useContext(AppContext)
+    const navigate = useNavigate()
     const { register, handleSubmit } = useForm<{ note: string }>()
     const [selectedPayment, setSelectedPayment] = useState<string>('')
     const [open, setOpen] = useState<boolean>(false)
@@ -282,6 +283,9 @@ export default function Checkout() {
                     }
                 }
             )
+        } else {
+            toast.success('Đặt hàng thành công!')
+            navigate(pathConfig.carts)
         }
     })
     return (

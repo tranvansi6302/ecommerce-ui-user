@@ -7,3 +7,9 @@ export enum OrderStatus {
     DELIVERED = 'DELIVERED',
     CANCELLED = 'CANCELLED'
 }
+
+export enum ReturnOrderStatus {
+    REQUESTED = 'REQUESTED',
+    ACCEPTED = 'ACCEPTED',
+    REJECTED = 'REJECTED'
+}

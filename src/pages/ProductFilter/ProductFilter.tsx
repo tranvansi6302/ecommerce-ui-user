@@ -1,7 +1,8 @@
-import { Container, Grid, Pagination, Stack, Typography } from '@mui/material'
+import { Container, Grid, Pagination, PaginationItem, Stack, Typography } from '@mui/material'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 import omit from 'lodash/omit'
+import { useEffect, useState } from 'react'
 import { MdOutlineFilterAltOff } from 'react-icons/md'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import { Brand } from '~/@types/brands.type'
@@ -11,15 +12,14 @@ import MyButton from '~/components/MyButton'
 import ProductItem from '~/components/ProductItem'
 import pathConfig from '~/configs/path.config'
 import useQueryProductSales from '~/hooks/useQueryProductSales'
+import useSetTitle from '~/hooks/useSetTitle'
 import MySelectSortPrice from '~/pages/ProductFilter/components/MySelectSortPrice'
 import brandsService from '~/services/brands.service'
 import categoriesService from '~/services/categories.service'
 import productSalesService from '~/services/productSales.service'
 import AsidebarFilterByData from './components/AsidebarFilterByData'
-import FilterMinMaxPrice from './components/SortMinMaxPrice/FilterMinMaxPrice'
 import FilterRating from './components/FilterRating'
-import { useEffect } from 'react'
-import useSetTitle from '~/hooks/useSetTitle'
+import FilterMinMaxPrice from './components/SortMinMaxPrice/FilterMinMaxPrice'
 
 export default function ProductFilters() {
     useSetTitle('Bộ lọc tìm kiếm sản phẩm')
@@ -30,7 +30,7 @@ export default function ProductFilters() {
         window.scrollTo(0, 0)
     }, [queryConfig])
 
-    const { data: productSales } = useQuery({
+    const { data: productSales, isLoading } = useQuery({
         queryKey: ['productSales', queryConfig],
         queryFn: () => productSalesService.getAllProductSales(queryConfig as ProductSaleFilters),
         staleTime: 3 * 60 * 1000,
@@ -56,6 +56,12 @@ export default function ProductFilters() {
             search: createSearchParams(omit(queryConfig, ['min_price', 'max_price', 'rating', 'category', 'brand'])).toString()
         })
     }
+    const [page, setPage] = useState(1)
+    const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value)
+    }
+
+    const pageSize = productSales?.data.pagination.total_page
 
     return (
         <Container style={{ padding: '0' }}>
@@ -146,13 +152,37 @@ export default function ProductFilters() {
                         </div>
                     </div>
                     <div className='grid-wrapper max-5'>
-                        <ProductItem productSales={productSales?.data.result} />
+                        <ProductItem loading={isLoading} productSales={productSales?.data.result} />
                     </div>
 
                     {/* Pagination */}
                     <div className='mt-16 flex items-center justify-center'>
                         <Stack spacing={2}>
-                            <Pagination count={10} color='primary' />
+                            <Pagination
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    mt: 6
+                                }}
+                                count={pageSize}
+                                page={page}
+                                onChange={handleChange}
+                                color='secondary'
+                                renderItem={(item) => (
+                                    <PaginationItem
+                                        {...item}
+                                        component={Link}
+                                        to={{
+                                            pathname: pathConfig.productFilters,
+                                            search: createSearchParams({
+                                                ...queryConfig,
+                                                page: item.page?.toString() || '1'
+                                            }).toString()
+                                        }}
+                                    />
+                                )}
+                            />
                         </Stack>
                     </div>
                 </Grid>

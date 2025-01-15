@@ -22,6 +22,8 @@ export default function OrderDetail() {
 
     const order = data?.data.result as Order
 
+    console.log('order', order)
+
     const handleBack = () => {
         navigate(-1)
     }
@@ -51,7 +53,7 @@ export default function OrderDetail() {
             }
         )
     }
-
+    console.log(order?.delivered_date)
     return (
         <Fragment>
             <div className='rounded-sm  pb-10  min-h-[100vh] md:pb-20'>
@@ -104,8 +106,11 @@ export default function OrderDetail() {
                     <div className='w-1/2'>
                         <h2 className='capitalize text-lg'>Thông tin đơn hàng</h2>
                         <div className='mt-4'>
-                            <h5 className='text-text-primary'>Ngày đặt hàng: {formatDateFull(order?.order_date)}</h5>
-                            <p className='mt-2 text-[12px] leading-5'>Ghi chú: {order?.note || 'Không có'}</p>
+                            <h5 className='text-gray-500'>Ngày đặt hàng: {formatDateFull(order?.order_date)}</h5>
+                            {order?.status === OrderStatus.DELIVERED && (
+                                <h5 className='text-blue-600 mt-3'>Ngày nhận hàng: {formatDateFull(order?.delivered_date)}</h5>
+                            )}
+                            <p className='mt-3 text-[12px] leading-5'>Ghi chú: {order?.note || 'Không có'}</p>
                         </div>
                     </div>
                 </div>

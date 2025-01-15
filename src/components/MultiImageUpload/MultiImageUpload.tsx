@@ -18,7 +18,8 @@ export default function MultiImageUpload({ onImagesChange }: MultiImageUploadPro
             const selectedFiles = Array.from(e.target.files)
             const validFiles = selectedFiles.filter((file) => {
                 const fileType = file.type.toLowerCase()
-                const validType = fileType === 'image/jpeg' || fileType === 'image/png'
+                // add sp for webp
+                const validType = fileType === 'image/jpeg' || fileType === 'image/png' || fileType === 'image/webp'
                 const validSize = file.size <= 10 * 1024 * 1024 // 10MB
 
                 if (!validType) {
@@ -68,7 +69,7 @@ export default function MultiImageUpload({ onImagesChange }: MultiImageUploadPro
                         className='mb-4 p-2 border border-gray-300 rounded hidden'
                         id='files'
                         name='files'
-                        accept='.jpg,.jpeg,.png'
+                        accept='.jpg,.jpeg,.png,.webp'
                     />
                 </div>
 

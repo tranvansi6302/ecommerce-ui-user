@@ -79,17 +79,17 @@ export default function Banner() {
                     <Slider {...settings}>
                         <img
                             className='w-full object-cover h-[400px]'
-                            src='https://salt.tikicdn.com/cache/w750/ts/tikimsp/a6/f0/8f/5d9b2d0e0fd529c2170cb1e11677a406.png.webp'
+                            src='https://img.freepik.com/free-vector/youtube-thumbnail-fashion-collection-style_23-2150721107.jpg?t=st=1733452968~exp=1733456568~hmac=f87e46bb5b0bc6f99eb5dfd2607436109d0d5cbea36a82fdc1545d6d94704526&w=1380'
                             alt=''
                         />
                         <img
                             className='w-full object-cover h-[400px]'
-                            src='https://img.lazcdn.com/us/domino/7f98e08b737fb0b9b14f5883084d3d91.jpg_2200x2200q80.jpg_.webp'
+                            src='https://img.freepik.com/free-vector/fashion-sale-landing-page_23-2148589843.jpg?t=st=1733452993~exp=1733456593~hmac=4a91ce619f6991403a9cb0a7e33da87fc81f5abd22313412ffc8f428f82ff2d7&w=1380'
                             alt=''
                         />
                         <img
                             className='w-full object-cover h-[400px]'
-                            src='https://img.lazcdn.com/g/tps/imgextra/i4/O1CN01Japgaw1DWdggoK9pl_!!6000000000224-0-tps-1976-688.jpg_2200x2200q80.jpg_.webp'
+                            src='https://img.freepik.com/free-vector/flat-design-fashion-week-facebook-cover_23-2151084422.jpg?t=st=1733453061~exp=1733456661~hmac=518a88c951fe9a7c9a3d36d5d1cc43f3faabc6e53b4a1b4b350092756b6cce0b&w=1380'
                             alt=''
                         />
                     </Slider>

@@ -33,7 +33,7 @@ export type OrderDetail = {
     id: number
     price: number
     quantity: number
-
+    return_status: string
     current_price_plans: PricePlan
     variant: Variant & {
         product_images: ProductImage[]

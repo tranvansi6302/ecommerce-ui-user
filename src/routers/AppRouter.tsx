@@ -19,6 +19,8 @@ import ProductFilter from '~/pages/ProductFilter'
 import ProductHome from '~/pages/ProductHome'
 import Register from '~/pages/Register'
 import ShoppingLayout from '~/layouts/ShoppingLayout'
+import ReturnOrders from '~/pages/ReturnOrders'
+import ReturnOrderDetail from '~/pages/ReturnOrders/ReturnOrderDetail'
 const ProtectedRoute = () => {
     const { isAuthenticated } = useContext(AppContext)
 
@@ -143,6 +145,22 @@ export default function AppRouter() {
                         <ShoppingLayout checkoutTitle='Thanh toán'>
                             <Checkout />
                         </ShoppingLayout>
+                    )
+                },
+                {
+                    path: pathConfig.accountReturnOrder,
+                    element: (
+                        <AccountLayout>
+                            <ReturnOrders />
+                        </AccountLayout>
+                    )
+                },
+                {
+                    path: pathConfig.accountReturnOrder + '/:id',
+                    element: (
+                        <AccountLayout>
+                            <ReturnOrderDetail />
+                        </AccountLayout>
                     )
                 }
             ]

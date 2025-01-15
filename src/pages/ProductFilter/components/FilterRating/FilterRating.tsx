@@ -27,6 +27,7 @@ export default function FilterRating({ title, queryConfig }: FilterRatingProps) 
                                     pathname: pathConfig.productFilters,
                                     search: createSearchParams({
                                         ...queryConfig,
+                                        page: '1',
                                         rating: (5 - index).toString()
                                     }).toString()
                                 }}
