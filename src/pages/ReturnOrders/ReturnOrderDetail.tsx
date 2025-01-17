@@ -4,7 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 import { ReturnOrderStatus } from '~/enums/OrderStatus'
 import returnOrderService from '~/services/returnOrder.service'
-import { convertReturnOrderStatus, formatDateFull } from '~/utils/helpers'
+import { convertReturnOrderStatus, formatDateFull, formatToVND } from '~/utils/helpers'
 
 export default function ReturnOrderDetail() {
     const { id } = useParams()
@@ -89,8 +89,22 @@ export default function ReturnOrderDetail() {
                                 </div>
                             </div>
                         </div>
-                        <div className='mt-2 border-t border-t-gray-100 pt-4'>
-                            <h2 className='text-gray-600 text-[14px]'>Thông tin đổi trả</h2>
+                        <div className='mt-2  border-t-gray-100 pt-4 border border-dashed border-gray-300 rounded-lg p-4'>
+                            <h2 className='text-black text-[14px] pb-2'>Thông tin đổi trả</h2>
+                            {/* Line */}
+                            <div className='border-t border-dashed border-t-gray-100 my-3'></div>
+                            <p className='text-gray-600 text-[13px]'>Màu cũ: {returnOrder?.old_variant.color}</p>
+                            <p className='text-gray-600 text-[13px] mt-2'>Màu mới: {returnOrder?.variant.color}</p>
+                            {/* Line */}
+                            <div className='border-t border-dashed border-t-gray-100 my-3'></div>
+                            <p className='text-gray-600 text-[13px]'>Kích cỡ cũ: {returnOrder?.old_variant.size}</p>
+                            <p className='text-gray-600 text-[13px] mt-2'>Kích cỡ mới: {returnOrder?.variant.size}</p>
+
+                            {/* Line */}
+                            <div className='border-t border-dashed border-t-gray-100 my-3'></div>
+
+                            <p className='text-gray-600 text-[13px]'>Giá cũ: {formatToVND(returnOrder?.old_price as number)}</p>
+                            <p className='text-gray-600 text-[13px] mt-2'>Giá mới: {formatToVND(returnOrder?.price as number)}</p>
                         </div>
                     </div>
                 </div>
